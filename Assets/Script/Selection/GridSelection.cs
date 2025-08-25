@@ -9,7 +9,8 @@ public class DragSelection : MonoBehaviour
     private Vector2 startPos;
     private Vector2 endPos;
 
-    private List<GameObject> selectedObjects = new List<GameObject>();
+    private List<GameObject> selectedObjects = new List<GameObject>();   // final selection
+    private List<GameObject> previewObjects = new List<GameObject>();    // preview selection
 
     void Update()
     {
@@ -23,11 +24,12 @@ public class DragSelection : MonoBehaviour
         {
             endPos = Input.mousePosition;
             DrawSelectionBox();
+            PreviewSelection(); // tampilkan preview warna saat drag
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            SelectObjects();
+            ConfirmSelection(); // jadikan final selection
             selectionBoxUI.gameObject.SetActive(false);
         }
     }
@@ -40,8 +42,17 @@ public class DragSelection : MonoBehaviour
         Vector2 localStartPos;
         Vector2 localEndPos;
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, startPos, parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : cam, out localStartPos);
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, endPos, parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : cam, out localEndPos);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect, startPos,
+            parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : cam,
+            out localStartPos
+        );
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect, endPos,
+            parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : cam,
+            out localEndPos
+        );
 
         Vector2 boxCenter = (localStartPos + localEndPos) / 2f;
         Vector2 boxSize = new Vector2(Mathf.Abs(localEndPos.x - localStartPos.x), Mathf.Abs(localEndPos.y - localStartPos.y));
@@ -50,20 +61,18 @@ public class DragSelection : MonoBehaviour
         selectionBoxUI.sizeDelta = boxSize;
     }
 
-
-
-    void SelectObjects()
+    void PreviewSelection()
     {
-        // Reset warna object lama
-        foreach (var obj in selectedObjects)
+        // Reset warna preview lama
+        foreach (var obj in previewObjects)
         {
-            if (obj != null)
+            if (obj != null && !selectedObjects.Contains(obj)) // jangan reset kalau sudah final selected
             {
                 SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = Color.white;
             }
         }
-        selectedObjects.Clear();
+        previewObjects.Clear();
 
         // Buat rect world dari mouse drag
         Vector3 p1 = cam.ScreenToWorldPoint(startPos);
@@ -80,13 +89,42 @@ public class DragSelection : MonoBehaviour
         {
             if (hit.CompareTag("Selectable"))
             {
-                selectedObjects.Add(hit.gameObject);
+                previewObjects.Add(hit.gameObject);
 
-                // Highlight kuning
+                // Highlight biru untuk preview
                 SpriteRenderer sr = hit.GetComponent<SpriteRenderer>();
+                if (sr != null) sr.color = Color.cyan;
+            }
+        }
+    }
+
+    void ConfirmSelection()
+    {
+        // Reset warna final selection lama
+        foreach (var obj in selectedObjects)
+        {
+            if (obj != null)
+            {
+                SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+                if (sr != null) sr.color = Color.white;
+            }
+        }
+        selectedObjects.Clear();
+
+        // Jadikan preview -> final selection
+        foreach (var obj in previewObjects)
+        {
+            if (obj != null)
+            {
+                selectedObjects.Add(obj);
+
+                // Warna kuning untuk final
+                SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = Color.yellow;
             }
         }
+
+        previewObjects.Clear();
 
         Debug.Log("Selected " + selectedObjects.Count + " objects");
     }
