@@ -5,7 +5,7 @@ public class GridCursor : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera cam;   // drag Main Camera ke sini
-    [SerializeField] private Grid grid;    // drag object 'Grid' ke sini
+    [SerializeField] public Grid grid;    // drag object 'Grid' ke sini
 
     [Header("Options")]
     [SerializeField] private bool lockZ = true;

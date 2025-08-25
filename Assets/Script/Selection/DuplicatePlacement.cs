@@ -5,6 +5,7 @@ public class DuplicatePlacement : MonoBehaviour
 {
     [SerializeField] private Camera cam;
     [SerializeField] private DragSelection selectionManager;
+    [SerializeField] private GridCursor gridCursor; // referensi ke GridCursor
 
     private List<GameObject> previewClones = new List<GameObject>();
     private bool isPlacing = false;
@@ -25,7 +26,7 @@ public class DuplicatePlacement : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0)) // Confirm
             {
-                if (canPlace) // hanya bisa place jika tidak bertabrakan
+                if (canPlace)
                     PlaceDuplicates();
                 else
                     Debug.Log("❌ Tidak bisa place: objek bertabrakan!");
@@ -40,7 +41,7 @@ public class DuplicatePlacement : MonoBehaviour
     void StartPlacementMode()
     {
         isPlacing = true;
-        selectionManager.IsSelectionEnabled = false; // disable selection
+        selectionManager.IsSelectionEnabled = false;
 
         previewClones.Clear();
 
@@ -50,7 +51,7 @@ public class DuplicatePlacement : MonoBehaviour
             {
                 GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
                 var sr = clone.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = new Color(1f, 1f, 1f, 0.5f); // ghost transparan
+                if (sr != null) sr.color = new Color(1f, 1f, 1f, 0.5f);
                 previewClones.Add(clone);
             }
         }
@@ -60,11 +61,12 @@ public class DuplicatePlacement : MonoBehaviour
     {
         if (selectionManager.SelectedObjects.Count == 0) return;
 
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f;
+        // 🔥 Ambil posisi grid cursor
+        Vector3 mouseCellCenter = gridCursor.CurrentCellCenter;
+        mouseCellCenter.z = 0f;
 
-        Vector3 offset = mouseWorld - selectionManager.SelectedObjects[0].transform.position;
-        bool isOffset = offset.sqrMagnitude > 0.01f; // cek apakah sudah digeser
+        // Hitung offset dari object pertama
+        Vector3 offset = mouseCellCenter - selectionManager.SelectedObjects[0].transform.position;
 
         canPlace = true;
 
@@ -73,35 +75,30 @@ public class DuplicatePlacement : MonoBehaviour
         {
             if (previewClones[i] == null || selectionManager.SelectedObjects[i] == null) continue;
 
-            // geser clone ke posisi baru
-            previewClones[i].transform.position = selectionManager.SelectedObjects[i].transform.position + offset;
+            // Geser ke posisi baru
+            Vector3 newPos = selectionManager.SelectedObjects[i].transform.position + offset;
+            previewClones[i].transform.position = newPos;
 
-            // cek tabrakan
+            // ✅ Cek overlap pakai bounds
             Collider2D col = previewClones[i].GetComponent<Collider2D>();
             if (col != null)
             {
-                Collider2D[] results = new Collider2D[10];
-                ContactFilter2D filter = new ContactFilter2D();
-                filter.NoFilter();
-                int hits = Physics2D.OverlapCollider(col, filter, results);
+                Bounds previewBounds = col.bounds;
 
-                for (int h = 0; h < hits; h++)
+                Collider2D[] hits = Physics2D.OverlapBoxAll(previewBounds.center, previewBounds.size * 0.95f, 0f);
+
+                foreach (var hit in hits)
                 {
-                    if (results[h] == null) continue;
-                    GameObject hitObj = results[h].gameObject;
+                    if (hit == null) continue;
+                    GameObject hitObj = hit.gameObject;
 
-                    if (hitObj == previewClones[i]) continue;        // abaikan dirinya sendiri
-                    if (previewClones.Contains(hitObj)) continue;    // abaikan sesama preview
+                    if (hitObj == previewClones[i]) continue;      // abaikan diri sendiri
+                    if (previewClones.Contains(hitObj)) continue;  // abaikan sesama preview
 
-                    // jika sudah geser, jangan boleh overlap dengan original
-                    if (isOffset && selectionManager.SelectedObjects.Contains(hitObj))
-                    {
-                        canPlace = false;
-                        break;
-                    }
+                    // ❌ Jangan abaikan original selection (fix utama di sini!)
+                    // artinya: kalau overlap dengan original object → tidak boleh place
 
-                    // overlap dengan object lain juga tidak boleh
-                    if (!selectionManager.SelectedObjects.Contains(hitObj))
+                    if (previewBounds.Intersects(hit.bounds))
                     {
                         canPlace = false;
                         break;
@@ -110,7 +107,7 @@ public class DuplicatePlacement : MonoBehaviour
             }
         }
 
-        // update warna preview sesuai status
+        // Ubah warna preview
         foreach (var obj in previewClones)
         {
             if (obj != null)
@@ -118,8 +115,8 @@ public class DuplicatePlacement : MonoBehaviour
                 var sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null)
                 {
-                    if (canPlace) sr.color = new Color(0f, 1f, 0f, 0.5f); // hijau transparan
-                    else sr.color = new Color(1f, 0f, 0f, 0.5f); // merah transparan
+                    if (canPlace) sr.color = new Color(0f, 1f, 0f, 0.5f); // hijau
+                    else sr.color = new Color(1f, 0f, 0f, 0.5f);          // merah
                 }
             }
         }
@@ -138,7 +135,7 @@ public class DuplicatePlacement : MonoBehaviour
         }
         previewClones.Clear();
         isPlacing = false;
-        selectionManager.IsSelectionEnabled = true; // aktifkan selection lagi
+        selectionManager.IsSelectionEnabled = true;
     }
 
     void CancelPlacement()
@@ -149,6 +146,6 @@ public class DuplicatePlacement : MonoBehaviour
         }
         previewClones.Clear();
         isPlacing = false;
-        selectionManager.IsSelectionEnabled = true; // aktifkan selection lagi
+        selectionManager.IsSelectionEnabled = true;
     }
 }
