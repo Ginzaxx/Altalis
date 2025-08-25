@@ -5,6 +5,7 @@ public class DragSelection : MonoBehaviour
 {
     [SerializeField] private Camera cam;
     [SerializeField] private RectTransform selectionBoxUI;
+    public bool IsSelectionEnabled { get; set; } = true;
 
     private Vector2 startPos;
     private Vector2 endPos;
@@ -14,6 +15,8 @@ public class DragSelection : MonoBehaviour
 
     void Update()
     {
+        if (!IsSelectionEnabled) return;
+        
         if (Input.GetMouseButtonDown(0))
         {
             startPos = Input.mousePosition;
