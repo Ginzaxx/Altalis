@@ -4,13 +4,13 @@ using System.Collections.Generic;
 public class DragSelection : MonoBehaviour
 {
     [SerializeField] private Camera cam;
-    [SerializeField] private RectTransform selectionBoxUI; // UI overlay box
+    [SerializeField] private RectTransform selectionBoxUI;
 
     private Vector2 startPos;
     private Vector2 endPos;
 
-    private List<GameObject> selectedObjects = new List<GameObject>();   // final selection
-    private List<GameObject> previewObjects = new List<GameObject>();    // preview selection
+    public List<GameObject> SelectedObjects { get; private set; } = new List<GameObject>();
+    private List<GameObject> previewSelection = new List<GameObject>();
 
     void Update()
     {
@@ -24,12 +24,12 @@ public class DragSelection : MonoBehaviour
         {
             endPos = Input.mousePosition;
             DrawSelectionBox();
-            PreviewSelection(); // tampilkan preview warna saat drag
+            PreviewSelection();
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            ConfirmSelection(); // jadikan final selection
+            ConfirmSelection();
             selectionBoxUI.gameObject.SetActive(false);
         }
     }
@@ -63,18 +63,16 @@ public class DragSelection : MonoBehaviour
 
     void PreviewSelection()
     {
-        // Reset warna preview lama
-        foreach (var obj in previewObjects)
+        foreach (var obj in previewSelection)
         {
-            if (obj != null && !selectedObjects.Contains(obj)) // jangan reset kalau sudah final selected
+            if (obj != null && !SelectedObjects.Contains(obj))
             {
-                SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+                var sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = Color.white;
             }
         }
-        previewObjects.Clear();
+        previewSelection.Clear();
 
-        // Buat rect world dari mouse drag
         Vector3 p1 = cam.ScreenToWorldPoint(startPos);
         Vector3 p2 = cam.ScreenToWorldPoint(endPos);
 
@@ -89,10 +87,9 @@ public class DragSelection : MonoBehaviour
         {
             if (hit.CompareTag("Selectable"))
             {
-                previewObjects.Add(hit.gameObject);
+                previewSelection.Add(hit.gameObject);
 
-                // Highlight biru untuk preview
-                SpriteRenderer sr = hit.GetComponent<SpriteRenderer>();
+                var sr = hit.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = Color.cyan;
             }
         }
@@ -100,32 +97,29 @@ public class DragSelection : MonoBehaviour
 
     void ConfirmSelection()
     {
-        // Reset warna final selection lama
-        foreach (var obj in selectedObjects)
+        foreach (var obj in SelectedObjects)
         {
             if (obj != null)
             {
-                SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+                var sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = Color.white;
             }
         }
-        selectedObjects.Clear();
+        SelectedObjects.Clear();
 
-        // Jadikan preview -> final selection
-        foreach (var obj in previewObjects)
+        foreach (var obj in previewSelection)
         {
             if (obj != null)
             {
-                selectedObjects.Add(obj);
+                SelectedObjects.Add(obj);
 
-                // Warna kuning untuk final
-                SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+                var sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = Color.yellow;
             }
         }
 
-        previewObjects.Clear();
+        previewSelection.Clear();
 
-        Debug.Log("Selected " + selectedObjects.Count + " objects");
+        Debug.Log("Selected " + SelectedObjects.Count + " objects");
     }
 }
