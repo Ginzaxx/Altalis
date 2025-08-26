@@ -4550,10 +4550,10 @@ MonoBehaviour:
   target: {fileID: 2025974428}
   offset: {x: 0, y: 2, z: -10}
   smoothSpeed: 0.125
-  useManualBorders: 0
-  minPosition: {x: 0, y: 0}
-  maxPosition: {x: 0, y: 0}
-  bounds: {fileID: 530493678}
+  useManualBorders: 1
+  minPosition: {x: -10, y: -5}
+  maxPosition: {x: 32, y: 16}
+  bounds: {fileID: 0}
 --- !u!114 &357817143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7027,7 +7027,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!61 &530493678
 BoxCollider2D:
   m_ObjectHideFlags: 0

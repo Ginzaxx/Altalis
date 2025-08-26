@@ -47,9 +47,17 @@ public class CameraFollow2D : MonoBehaviour
 
         // Clamp posisi kamera
         float clampX, clampY;
-        
-        clampX = Mathf.Clamp(desiredPosition.x, minBounds.x + camHalfWidth, maxBounds.x - camHalfWidth);
-        clampY = Mathf.Clamp(desiredPosition.y, minBounds.y + camHalfHeight, maxBounds.y - camHalfHeight);
+
+        if (useManualBorders)
+        {
+            clampX = Mathf.Clamp(desiredPosition.x, minPosition.x + camHalfWidth, maxPosition.x - camHalfWidth);
+            clampY = Mathf.Clamp(desiredPosition.y, minPosition.y + camHalfHeight, maxPosition.y - camHalfHeight);
+        }
+        else
+        {
+            clampX = Mathf.Clamp(desiredPosition.x, minBounds.x + camHalfWidth, maxBounds.x - camHalfWidth);
+            clampY = Mathf.Clamp(desiredPosition.y, minBounds.y + camHalfHeight, maxBounds.y - camHalfHeight);
+        }
 
         Vector3 clampedPosition = new Vector3(clampX, clampY, desiredPosition.z);
 
