@@ -49,11 +49,18 @@ public class DuplicatePlacement : MonoBehaviour
 
         previewClones.Clear();
 
+
         foreach (var obj in selectionManager.SelectedObjects)
         {
             if (obj != null)
             {
                 GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
+                clone.GetComponent<BoxCollider2D>().enabled = false;
+                Rigidbody2D cloneRB = clone.GetComponent<Rigidbody2D>();
+                if (cloneRB != null)
+                {
+                    clone.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+                }
                 var sr = clone.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = new Color(1f, 1f, 1f, 0.5f);
                 previewClones.Add(clone);
@@ -125,9 +132,12 @@ public class DuplicatePlacement : MonoBehaviour
             }
         }
     }
-
+  
     void PlaceDuplicates()
     {
+        // Create a new list containing the final placed objects
+        List<GameObject> placedObjects = new List<GameObject>();
+
         foreach (var obj in previewClones)
         {
             if (obj != null)
@@ -135,38 +145,20 @@ public class DuplicatePlacement : MonoBehaviour
                 var sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = Color.white;
                 obj.tag = "Selectable";
+                // Add the finalized object to our new list
+                placedObjects.Add(obj);
             }
         }
+
+        // 🔥 Broadcast the event and pass the list of placed objects.
+        // The '?' ensures it only runs if at least one script is listening.
+        OnObjectsPlaced?.Invoke(placedObjects);
+        Debug.Log($"Event triggered for {placedObjects.Count} placed objects.");
+
         previewClones.Clear();
         isPlacing = false;
         selectionManager.IsSelectionEnabled = true;
     }
-    // void PlaceDuplicates()
-    // {
-    //     // Create a new list containing the final placed objects
-    //     List<GameObject> placedObjects = new List<GameObject>();
-
-    //     foreach (var obj in previewClones)
-    //     {
-    //         if (obj != null)
-    //         {
-    //             var sr = obj.GetComponent<SpriteRenderer>();
-    //             if (sr != null) sr.color = Color.white;
-    //             obj.tag = "Selectable";
-    //             // Add the finalized object to our new list
-    //             placedObjects.Add(obj);
-    //         }
-    //     }
-
-    //     // 🔥 Broadcast the event and pass the list of placed objects.
-    //     // The '?' ensures it only runs if at least one script is listening.
-    //     OnObjectsPlaced?.Invoke(placedObjects);
-    //     Debug.Log($"Event triggered for {placedObjects.Count} placed objects.");
-
-    //     previewClones.Clear();
-    //     isPlacing = false;
-    //     selectionManager.IsSelectionEnabled = true;
-    // }
 
     void CancelPlacement()
     {

@@ -27,6 +27,7 @@ public class ActivatingRB : MonoBehaviour
         {
             if (obj != null)
             {
+                obj.GetComponent<BoxCollider2D>().enabled = true;
                 // Find the Rigidbody2D component on the newly placed object
                 Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
 
