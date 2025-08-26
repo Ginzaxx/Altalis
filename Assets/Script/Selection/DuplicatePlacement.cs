@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq; // Needed to easily create a copy of the list.
 
 public class DuplicatePlacement : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class DuplicatePlacement : MonoBehaviour
     private List<GameObject> previewClones = new List<GameObject>();
     private bool isPlacing = false;
     private bool canPlace = true;
+
+    //aflah broadcast signal for placement
+    public static event System.Action<List<GameObject>> OnObjectsPlaced; // The event that will be broadcast.
 
     void Update()
     {
@@ -137,6 +141,32 @@ public class DuplicatePlacement : MonoBehaviour
         isPlacing = false;
         selectionManager.IsSelectionEnabled = true;
     }
+    // void PlaceDuplicates()
+    // {
+    //     // Create a new list containing the final placed objects
+    //     List<GameObject> placedObjects = new List<GameObject>();
+
+    //     foreach (var obj in previewClones)
+    //     {
+    //         if (obj != null)
+    //         {
+    //             var sr = obj.GetComponent<SpriteRenderer>();
+    //             if (sr != null) sr.color = Color.white;
+    //             obj.tag = "Selectable";
+    //             // Add the finalized object to our new list
+    //             placedObjects.Add(obj);
+    //         }
+    //     }
+
+    //     // 🔥 Broadcast the event and pass the list of placed objects.
+    //     // The '?' ensures it only runs if at least one script is listening.
+    //     OnObjectsPlaced?.Invoke(placedObjects);
+    //     Debug.Log($"Event triggered for {placedObjects.Count} placed objects.");
+
+    //     previewClones.Clear();
+    //     isPlacing = false;
+    //     selectionManager.IsSelectionEnabled = true;
+    // }
 
     void CancelPlacement()
     {
