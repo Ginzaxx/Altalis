@@ -60,6 +60,14 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7569640256778842355, guid: 2166eff135345d44898a66602eb80faf, type: 3}
+      propertyPath: m_Size.x
+      value: 0.9637661
+      objectReference: {fileID: 0}
+    - target: {fileID: 7569640256778842355, guid: 2166eff135345d44898a66602eb80faf, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.00000011920929
+      objectReference: {fileID: 0}
     - target: {fileID: 7629353983298431104, guid: 2166eff135345d44898a66602eb80faf, type: 3}
       propertyPath: m_Name
       value: Square Variant
@@ -92,7 +100,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8677771193172830170}
-  m_BodyType: 2
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -110,7 +118,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 5
 --- !u!114 &-4494248558705421515
 MonoBehaviour:
   m_ObjectHideFlags: 0
