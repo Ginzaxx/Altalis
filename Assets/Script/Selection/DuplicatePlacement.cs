@@ -125,12 +125,9 @@ public class DuplicatePlacement : MonoBehaviour
             }
         }
     }
-
+  
     void PlaceDuplicates()
     {
-        // Create a new list containing the final placed objects
-        List<GameObject> placedObjects = new List<GameObject>();
-
         foreach (var obj in previewClones)
         {
             if (obj != null)
@@ -138,20 +135,38 @@ public class DuplicatePlacement : MonoBehaviour
                 var sr = obj.GetComponent<SpriteRenderer>();
                 if (sr != null) sr.color = Color.white;
                 obj.tag = "Selectable";
-                // Add the finalized object to our new list
-                placedObjects.Add(obj);
             }
         }
-
-        // 🔥 Broadcast the event and pass the list of placed objects.
-        // The '?' ensures it only runs if at least one script is listening.
-        OnObjectsPlaced?.Invoke(placedObjects);
-        Debug.Log($"Event triggered for {placedObjects.Count} placed objects.");
-
         previewClones.Clear();
         isPlacing = false;
         selectionManager.IsSelectionEnabled = true;
     }
+    // void PlaceDuplicates()
+    // {
+    //     // Create a new list containing the final placed objects
+    //     List<GameObject> placedObjects = new List<GameObject>();
+
+    //     foreach (var obj in previewClones)
+    //     {
+    //         if (obj != null)
+    //         {
+    //             var sr = obj.GetComponent<SpriteRenderer>();
+    //             if (sr != null) sr.color = Color.white;
+    //             obj.tag = "Selectable";
+    //             // Add the finalized object to our new list
+    //             placedObjects.Add(obj);
+    //         }
+    //     }
+
+    //     // 🔥 Broadcast the event and pass the list of placed objects.
+    //     // The '?' ensures it only runs if at least one script is listening.
+    //     OnObjectsPlaced?.Invoke(placedObjects);
+    //     Debug.Log($"Event triggered for {placedObjects.Count} placed objects.");
+
+    //     previewClones.Clear();
+    //     isPlacing = false;
+    //     selectionManager.IsSelectionEnabled = true;
+    // }
 
     void CancelPlacement()
     {
