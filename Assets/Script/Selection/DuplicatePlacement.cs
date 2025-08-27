@@ -15,6 +15,13 @@ public class DuplicatePlacement : MonoBehaviour
     //aflah broadcast signal for placement
     public static event System.Action<List<GameObject>> OnObjectsPlaced; // The event that will be broadcast.
 
+    private List<GameObject> lastPlacedObjects = new List<GameObject>();
+
+    public List<GameObject> GetLastPlacedObjects()
+    {
+        return lastPlacedObjects;
+    }
+
     void Update()
     {
         if (!isPlacing)
@@ -154,6 +161,8 @@ public class DuplicatePlacement : MonoBehaviour
         // The '?' ensures it only runs if at least one script is listening.
         OnObjectsPlaced?.Invoke(placedObjects);
         Debug.Log($"Event triggered for {placedObjects.Count} placed objects.");
+
+        lastPlacedObjects = placedObjects;
 
         previewClones.Clear();
         isPlacing = false;

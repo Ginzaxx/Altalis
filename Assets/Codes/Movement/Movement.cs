@@ -11,12 +11,18 @@ public class Movement : MonoBehaviour
 
     [Header("Movement")]
     public float SideSpeed = 8f;
+    private float originalSideSpeed; // Store original speed for crouch calculations
+    
     [Header("Jumping")]
     public float JumpPower = 4f;
     public float GravityPower = 1f;
+    
     [Header("Crouching")]
     public float CrouchPower = 2f;
+    private bool isCrouching = false;
+    
     private float SideMove;
+    
     [Header("GroundCheck")]
     public Vector2 GroundCheckSize = new Vector2(0.5f, 0.05f);
     public Transform GroundCheckPos;
@@ -27,22 +33,34 @@ public class Movement : MonoBehaviour
         // Get Rigidbody and Animator values
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
+        
+        // Store original speed
+        originalSideSpeed = SideSpeed;
     }
 
     void Update()
     {
-        // Set Rigicbody Velocity value
+        // Only move if movement is enabled and we're in movement mode
+        if (!enabled) return;
+        
+        // Set Rigidbody Velocity value
         RbD.velocity = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
     }
 
     public void Move(InputAction.CallbackContext context)
     {
+        // Only process movement input if the script is enabled
+        if (!enabled) return;
+        
         // Convert Player Inputs into Vector values
         SideMove = context.ReadValue<Vector2>().x;
     }
 
     public void Jump(InputAction.CallbackContext context)
     {
+        // Only process jump input if the script is enabled
+        if (!enabled) return;
+              
         // Convert Player Inputs into Jump Power values
         if (context.performed)
         {
@@ -58,19 +76,51 @@ public class Movement : MonoBehaviour
 
     public void Crouch(InputAction.CallbackContext context)
     {
+        // Only process crouch input if the script is enabled
+        if (!enabled) return;
+        
         // Convert Player Inputs into Crouch Slowness
         if (context.performed)
         {
-            SideSpeed = SideSpeed / CrouchPower;
+            isCrouching = true;
+            SideSpeed = originalSideSpeed / CrouchPower;
         }
-        if (context.canceled)
+        else if (context.canceled && isCrouching)
         {
-            SideSpeed = SideSpeed * CrouchPower;
+            isCrouching = false;
+            SideSpeed = originalSideSpeed;
+        }
+    }
+
+    // Ground checking method (you might want to implement this properly)
+    private bool IsGrounded()
+    {
+        if (GroundCheckPos == null) return true; // Default to true if no ground check setup
+        
+        Collider2D groundHit = Physics2D.OverlapBox(GroundCheckPos.position, GroundCheckSize, 0f, GroundMask);
+        return groundHit != null;
+    }
+
+    // Called when the script is enabled
+    void OnEnable()
+    {
+        // Reset movement values
+        SideMove = 0f;
+        
+        // Reset crouch state
+        if (isCrouching)
+        {
+            isCrouching = false;
+            SideSpeed = originalSideSpeed;
         }
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawCube(GroundCheckPos.position, GroundCheckSize);
+        if (GroundCheckPos != null)
+        {
+            Gizmos.color = IsGrounded() ? Color.green : Color.red;
+            Gizmos.DrawCube(GroundCheckPos.position, GroundCheckSize);
+        }
     }
 }
