@@ -101,20 +101,6 @@ public class Movement : MonoBehaviour
         return groundHit != null;
     }
 
-    // Called when the script is enabled
-    void OnEnable()
-    {
-        // Reset movement values
-        SideMove = 0f;
-        
-        // Reset crouch state
-        if (isCrouching)
-        {
-            isCrouching = false;
-            SideSpeed = originalSideSpeed;
-        }
-    }
-
     private void OnDrawGizmosSelected()
     {
         if (GroundCheckPos != null)

@@ -20,34 +20,39 @@ public class PhysicsCombiner : MonoBehaviour
     {
         if (objects == null || objects.Count == 0) return;
 
-        // Buat parent kosong
         GameObject parent = new GameObject("CombinedObject");
         parent.tag = "Selectable";
 
-        // Tambahkan Rigidbody2D utama
         Rigidbody2D rb = parent.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Dynamic;
 
-        // Cari posisi tengah dari semua object
+        // Cari posisi tengah
         Vector3 center = Vector3.zero;
-        foreach (var obj in objects)
-        {
-            center += obj.transform.position;
-        }
+        foreach (var obj in objects) center += obj.transform.position;
         center /= objects.Count;
         parent.transform.position = center;
 
-        // Pindahkan semua object jadi child
+        // Gabung bounds untuk collider besar
+        Bounds combinedBounds = new Bounds(objects[0].transform.position, Vector3.zero);
         foreach (var obj in objects)
         {
             if (obj == null) continue;
+            Collider2D col = obj.GetComponent<Collider2D>();
+            if (col != null) combinedBounds.Encapsulate(col.bounds);
 
             obj.transform.SetParent(parent.transform);
 
-            // Buang rigidbody lama (supaya tidak bentrok)
             Rigidbody2D childRB = obj.GetComponent<Rigidbody2D>();
             if (childRB != null) Destroy(childRB);
+
+            Collider2D childCol = obj.GetComponent<Collider2D>();
+            if (childCol != null) Destroy(childCol); // 🔥 buang collider anak
         }
+
+        // Tambahkan BoxCollider2D di parent sesuai bounds gabungan
+        BoxCollider2D parentCol = parent.AddComponent<BoxCollider2D>();
+        parentCol.offset = parent.transform.InverseTransformPoint(combinedBounds.center);
+        parentCol.size = combinedBounds.size;
 
         Debug.Log($"✅ Combined {objects.Count} objects into one physics body.");
     }

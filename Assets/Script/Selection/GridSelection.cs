@@ -135,27 +135,41 @@ public class DragSelection : MonoBehaviour
 
         foreach (Collider2D hit in hits)
         {
-            if (hit.CompareTag("Selectable"))
-            {
-                previewSelection.Add(hit.gameObject);
+            GameObject target = hit.gameObject;
 
-                var sr = hit.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = Color.cyan;
+            // 🔥 Kalau collider anak tapi parent selectable → naik ke parent
+            if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
+            {
+                target = target.transform.parent.gameObject;
+            }
+
+            if (target.CompareTag("Selectable") && !previewSelection.Contains(target))
+            {
+                previewSelection.Add(target);
+
+                // 🔥 Warnai semua child renderer jadi cyan
+                foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    sr.color = Color.cyan;
+                }
             }
         }
     }
 
     void ConfirmSelection()
     {
-        // Clear previous selection highlighting
         foreach (var obj in SelectedObjects)
-        {
-            if (obj != null)
             {
-                var sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = Color.white;
+                if (obj != null)
+                {
+                    // 🔥 Reset warna semua child juga
+                    foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+                    {
+                        sr.color = Color.white;
+                    }
+                }
             }
-        }
+
         SelectedObjects.Clear();
 
         // Apply new selection
@@ -165,8 +179,11 @@ public class DragSelection : MonoBehaviour
             {
                 SelectedObjects.Add(obj);
 
-                var sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = Color.yellow;
+                // 🔥 Warnai semua child saat parent terseleksi
+                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    sr.color = Color.yellow;
+                }
             }
         }
 
@@ -182,8 +199,11 @@ public class DragSelection : MonoBehaviour
         {
             if (obj != null)
             {
-                var sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = Color.white;
+                // 🔥 Reset semua anak juga
+                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    sr.color = Color.white;
+                }
             }
         }
         SelectedObjects.Clear();
@@ -192,8 +212,10 @@ public class DragSelection : MonoBehaviour
         {
             if (obj != null)
             {
-                var sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = Color.white;
+                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    sr.color = Color.white;
+                }
             }
         }
         previewSelection.Clear();

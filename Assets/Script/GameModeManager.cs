@@ -97,47 +97,47 @@ public class GameModeManager : MonoBehaviour
     
     void EnableMovementMode()
     {
-        // Enable movement script
         if (movementScript != null)
         {
             movementScript.enabled = true;
         }
-        
-        // Disable selection script
+
         if (dragSelectionScript != null)
         {
             dragSelectionScript.enabled = false;
             dragSelectionScript.IsSelectionEnabled = false;
-            
-            // Hide selection box if it's active
+
+            // 🔥 Clear selection saat keluar dari Selection Mode
+            dragSelectionScript.ClearSelection();
+
             if (dragSelectionScript.selectionBoxUI != null)
             {
                 dragSelectionScript.selectionBoxUI.gameObject.SetActive(false);
             }
         }
-        
-        // Return to normal time scale
+
         targetTimeScale = normalTimeScale;
     }
     
     void EnableSelectionMode()
     {
-        // Disable movement script
         if (movementScript != null)
         {
             movementScript.enabled = false;
         }
-        
-        // Enable selection script
+
         if (dragSelectionScript != null)
         {
             dragSelectionScript.enabled = true;
             dragSelectionScript.IsSelectionEnabled = true;
+
+            // 🔥 Clear selection saat masuk Selection Mode baru
+            dragSelectionScript.ClearSelection();
         }
-        
-        // Set slow motion time scale
+
         targetTimeScale = slowMotionTimeScale;
     }
+
     
     void UpdateUI()
     {
