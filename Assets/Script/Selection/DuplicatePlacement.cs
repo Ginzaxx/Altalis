@@ -132,7 +132,7 @@ public class DuplicatePlacement : MonoBehaviour
             }
         }
     }
-
+  
     void PlaceDuplicates()
     {
         // Create a new list containing the final placed objects
