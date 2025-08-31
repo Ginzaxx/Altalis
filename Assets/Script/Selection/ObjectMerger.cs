@@ -1,0 +1,59 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+public class PhysicsCombiner : MonoBehaviour
+{
+    [SerializeField] private DuplicatePlacement duplicatePlacement;
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            if (duplicatePlacement != null && duplicatePlacement.GetLastPlacedObjects().Count > 0)
+            {
+                CombineObjects(duplicatePlacement.GetLastPlacedObjects());
+            }
+        }
+    }
+
+    void CombineObjects(List<GameObject> objects)
+    {
+        if (objects == null || objects.Count == 0) return;
+
+        GameObject parent = new GameObject("CombinedObject");
+        parent.tag = "Selectable";
+
+        Rigidbody2D rb = parent.AddComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Dynamic;
+
+        // Cari posisi tengah
+        Vector3 center = Vector3.zero;
+        foreach (var obj in objects) center += obj.transform.position;
+        center /= objects.Count;
+        parent.transform.position = center;
+
+        // Gabung bounds untuk collider besar
+        Bounds combinedBounds = new Bounds(objects[0].transform.position, Vector3.zero);
+        foreach (var obj in objects)
+        {
+            if (obj == null) continue;
+            Collider2D col = obj.GetComponent<Collider2D>();
+            if (col != null) combinedBounds.Encapsulate(col.bounds);
+
+            obj.transform.SetParent(parent.transform);
+
+            Rigidbody2D childRB = obj.GetComponent<Rigidbody2D>();
+            if (childRB != null) Destroy(childRB);
+
+            Collider2D childCol = obj.GetComponent<Collider2D>();
+            if (childCol != null) Destroy(childCol); // 🔥 buang collider anak
+        }
+
+        // Tambahkan BoxCollider2D di parent sesuai bounds gabungan
+        BoxCollider2D parentCol = parent.AddComponent<BoxCollider2D>();
+        parentCol.offset = parent.transform.InverseTransformPoint(combinedBounds.center);
+        parentCol.size = combinedBounds.size;
+
+        Debug.Log($"✅ Combined {objects.Count} objects into one physics body.");
+    }
+}

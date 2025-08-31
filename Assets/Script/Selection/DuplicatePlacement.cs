@@ -1,19 +1,24 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq; // Needed to easily create a copy of the list.
+using System.Linq;
+using UnityEngine.Tilemaps;
 
 public class DuplicatePlacement : MonoBehaviour
 {
     [SerializeField] private Camera cam;
     [SerializeField] private DragSelection selectionManager;
-    [SerializeField] private GridCursor gridCursor; // referensi ke GridCursor
+    [SerializeField] private GridCursor gridCursor;
+    [SerializeField] private Tilemap targetTilemap;
 
     private List<GameObject> previewClones = new List<GameObject>();
     private bool isPlacing = false;
     private bool canPlace = true;
 
-    //aflah broadcast signal for placement
-    public static event System.Action<List<GameObject>> OnObjectsPlaced; // The event that will be broadcast.
+    // Aflah broadcast signal for placement
+    public static event System.Action<List<GameObject>> OnObjectsPlaced;
+
+    private List<GameObject> lastPlacedObjects = new List<GameObject>();
+    public List<GameObject> GetLastPlacedObjects() => lastPlacedObjects;
 
     void Update()
     {
@@ -49,53 +54,74 @@ public class DuplicatePlacement : MonoBehaviour
 
         previewClones.Clear();
 
-
         foreach (var obj in selectionManager.SelectedObjects)
         {
             if (obj != null)
             {
                 GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
-                clone.GetComponent<BoxCollider2D>().enabled = false;
-                Rigidbody2D cloneRB = clone.GetComponent<Rigidbody2D>();
-                if (cloneRB != null)
-                {
-                    clone.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-                }
-                var sr = clone.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = new Color(1f, 1f, 1f, 0.5f);
+
+                // Matikan collider & rigidbody supaya tidak ikut physics
+                var col = clone.GetComponent<Collider2D>();
+                if (col != null) col.enabled = false;
+
+                var rb = clone.GetComponent<Rigidbody2D>();
+                if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+
+                // Bikin transparan
+                foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
+                    sr.color = new Color(1f, 1f, 1f, 0.5f);
+
                 previewClones.Add(clone);
             }
         }
+    }
+
+    // 🔥 Helper function buat hitung pivot snap ke grid
+    private Vector3 CalcSnapPivot(GameObject obj)
+    {
+        var renderers = obj.GetComponentsInChildren<SpriteRenderer>();
+        if (renderers.Length > 0)
+        {
+            Bounds b = renderers[0].bounds;
+            foreach (var r in renderers) b.Encapsulate(r.bounds);
+            Vector3 center = b.center;
+
+            // Snap ke cell center tilemap
+            Vector3Int cell = targetTilemap.WorldToCell(center);
+            return targetTilemap.GetCellCenterWorld(cell);
+        }
+        return obj.transform.position;
     }
 
     void UpdatePreviewPosition()
     {
         if (selectionManager.SelectedObjects.Count == 0) return;
 
-        // 🔥 Ambil posisi grid cursor
+        // 🔥 Ambil posisi grid cursor (target snap posisi)
         Vector3 mouseCellCenter = gridCursor.CurrentCellCenter;
         mouseCellCenter.z = 0f;
 
-        // Hitung offset dari object pertama
-        Vector3 offset = mouseCellCenter - selectionManager.SelectedObjects[0].transform.position;
+        // 🔥 Pivot reference dari object pertama
+        Vector3 referencePos = CalcSnapPivot(selectionManager.SelectedObjects[0]);
+        Vector3 offset = mouseCellCenter - referencePos;
 
         canPlace = true;
 
+        // Geser semua preview clone sesuai offset
         int count = Mathf.Min(previewClones.Count, selectionManager.SelectedObjects.Count);
         for (int i = 0; i < count; i++)
         {
             if (previewClones[i] == null || selectionManager.SelectedObjects[i] == null) continue;
 
-            // Geser ke posisi baru
-            Vector3 newPos = selectionManager.SelectedObjects[i].transform.position + offset;
+            Vector3 objRefPos = CalcSnapPivot(selectionManager.SelectedObjects[i]);
+            Vector3 newPos = objRefPos + offset;
             previewClones[i].transform.position = newPos;
 
-            // ✅ Cek overlap pakai bounds
+            // ✅ Cek overlap
             Collider2D col = previewClones[i].GetComponent<Collider2D>();
             if (col != null)
             {
                 Bounds previewBounds = col.bounds;
-
                 Collider2D[] hits = Physics2D.OverlapBoxAll(previewBounds.center, previewBounds.size * 0.95f, 0f);
 
                 foreach (var hit in hits)
@@ -106,9 +132,6 @@ public class DuplicatePlacement : MonoBehaviour
                     if (hitObj == previewClones[i]) continue;      // abaikan diri sendiri
                     if (previewClones.Contains(hitObj)) continue;  // abaikan sesama preview
 
-                    // ❌ Jangan abaikan original selection (fix utama di sini!)
-                    // artinya: kalau overlap dengan original object → tidak boleh place
-
                     if (previewBounds.Intersects(hit.bounds))
                     {
                         canPlace = false;
@@ -118,42 +141,40 @@ public class DuplicatePlacement : MonoBehaviour
             }
         }
 
-        // Ubah warna preview
+        // 🔥 Update warna preview
         foreach (var obj in previewClones)
         {
             if (obj != null)
             {
-                var sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null)
+                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
                 {
-                    if (canPlace) sr.color = new Color(0f, 1f, 0f, 0.5f); // hijau
-                    else sr.color = new Color(1f, 0f, 0f, 0.5f);          // merah
+                    sr.color = canPlace ? new Color(0f, 1f, 0f, 0.5f) // hijau
+                                        : new Color(1f, 0f, 0f, 0.5f); // merah
                 }
             }
         }
     }
-  
+
     void PlaceDuplicates()
     {
-        // Create a new list containing the final placed objects
         List<GameObject> placedObjects = new List<GameObject>();
 
         foreach (var obj in previewClones)
         {
             if (obj != null)
             {
-                var sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = Color.white;
+                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+                    sr.color = Color.white;
+
                 obj.tag = "Selectable";
-                // Add the finalized object to our new list
                 placedObjects.Add(obj);
             }
         }
 
-        // 🔥 Broadcast the event and pass the list of placed objects.
-        // The '?' ensures it only runs if at least one script is listening.
         OnObjectsPlaced?.Invoke(placedObjects);
-        Debug.Log($"Event triggered for {placedObjects.Count} placed objects.");
+        Debug.Log($"✅ Event triggered for {placedObjects.Count} placed objects.");
+
+        lastPlacedObjects = placedObjects;
 
         previewClones.Clear();
         isPlacing = false;
