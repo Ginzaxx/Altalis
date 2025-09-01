@@ -36,16 +36,28 @@ public class DuplicatePlacement : MonoBehaviour
             if (Input.GetMouseButtonDown(0)) // Confirm
             {
                 if (canPlace)
-                    PlaceDuplicates();
+                {
+                    if (ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
+                    {
+                        PlaceDuplicates();
+                    }
+                    else
+                    {
+                        Debug.Log("❌ Tidak bisa place: Mana habis!");
+                        CancelPlacement();
+                    }
+                }
                 else
+                {
                     Debug.Log("❌ Tidak bisa place: objek bertabrakan!");
-            }
-            else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape)) // Cancel
-            {
-                CancelPlacement();
+                }
+                }
+                else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape)) // Cancel
+                {
+                    CancelPlacement();
+                }
             }
         }
-    }
 
     void StartPlacementMode()
     {

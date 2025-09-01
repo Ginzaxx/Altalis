@@ -25,28 +25,29 @@ public class ActivatingRB : MonoBehaviour
 
         foreach (GameObject obj in placedObjects)
         {
-            if (obj != null)
+            if (obj == null) continue;
+
+            // 🔥 Cek dulu collider ada atau tidak
+            BoxCollider2D col = obj.GetComponent<BoxCollider2D>();
+            if (col != null)
             {
-                obj.GetComponent<BoxCollider2D>().enabled = true;
-                // Find the Rigidbody2D component on the newly placed object
-                Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
+                col.enabled = true;
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ Object {obj.name} has no BoxCollider2D.");
+            }
 
-                if (rb != null)
-                {
-                    // This is where you implement your logic.
-                    // For example, activate it by setting its body type.
-                    // If it was Kinematic, setting it to Dynamic will make it respond to physics.
-                    rb.bodyType = RigidbodyType2D.Dynamic;
-
-                    // Or if it was sleeping, you can wake it up
-                    // rb.WakeUp();
-
-                    Debug.Log($"Activated Rigidbody2D on {obj.name}");
-                }
-                else
-                {
-                    Debug.LogWarning($"Object {obj.name} was placed but has no Rigidbody2D to activate.");
-                }
+            // Cek Rigidbody2D
+            Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                Debug.Log($"✅ Activated Rigidbody2D on {obj.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ Object {obj.name} was placed but has no Rigidbody2D.");
             }
         }
     }
