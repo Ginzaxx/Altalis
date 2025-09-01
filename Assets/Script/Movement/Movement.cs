@@ -14,7 +14,7 @@ public class Movement : MonoBehaviour
     private float originalSideSpeed; // Store original speed for crouch calculations
     
     [Header("Jumping")]
-    public float JumpPower = 4f;
+    public float JumpPower = 6f;
     public float GravityPower = 1f;
     
     [Header("Crouching")]
@@ -60,17 +60,17 @@ public class Movement : MonoBehaviour
     {
         // Only process jump input if the script is enabled
         if (!enabled) return;
-              
+
         // Convert Player Inputs into Jump Power values
         if (context.performed)
         {
             // Hold Down on Jump Button = Big Jump
-            RbD.velocity = new Vector2(RbD.velocity.y, JumpPower);
+            RbD.velocity = new Vector2(RbD.velocity.x, JumpPower);
         }
-        else if (context.canceled)
+        else if (context.canceled && RbD.velocity.y > JumpPower * 0.5)
         {
             // Light tap on Jump Button = Small Jump
-            RbD.velocity = new Vector2(RbD.velocity.y, JumpPower * 0.5f);
+            RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
         }
     }
 
