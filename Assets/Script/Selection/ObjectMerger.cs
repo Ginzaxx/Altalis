@@ -26,11 +26,33 @@ public class PhysicsCombiner : MonoBehaviour
         Rigidbody2D rb = parent.AddComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Dynamic;
 
-        // Cari posisi tengah
-        Vector3 center = Vector3.zero;
-        foreach (var obj in objects) center += obj.transform.position;
-        center /= objects.Count;
-        parent.transform.position = center;
+        // 🔥 Cari object paling kiri berdasarkan bounds.min.x
+        GameObject leftmostObj = null;
+        float minX = float.MaxValue;
+
+        foreach (var obj in objects)
+        {
+            if (obj == null) continue;
+            Collider2D col = obj.GetComponent<Collider2D>();
+            if (col == null) continue;
+
+            float objMinX = col.bounds.min.x; // sisi kiri object
+            if (objMinX < minX)
+            {
+                minX = objMinX;
+                leftmostObj = obj;
+            }
+        }
+
+        // 🔥 Gunakan center dari bounds object paling kiri
+        if (leftmostObj != null)
+        {
+            Collider2D col = leftmostObj.GetComponent<Collider2D>();
+            if (col != null)
+                parent.transform.position = col.bounds.center;
+            else
+                parent.transform.position = leftmostObj.transform.position;
+        }
 
         // Gabung bounds untuk collider besar
         Bounds combinedBounds = new Bounds(objects[0].transform.position, Vector3.zero);
@@ -54,6 +76,6 @@ public class PhysicsCombiner : MonoBehaviour
         parentCol.offset = parent.transform.InverseTransformPoint(combinedBounds.center);
         parentCol.size = combinedBounds.size;
 
-        Debug.Log($"✅ Combined {objects.Count} objects into one physics body.");
+        Debug.Log($"✅ Combined {objects.Count} objects. Parent at center of leftmost object.");
     }
 }
