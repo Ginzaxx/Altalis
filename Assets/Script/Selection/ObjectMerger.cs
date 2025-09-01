@@ -28,6 +28,7 @@ public class PhysicsCombiner : MonoBehaviour
 
         // 🔥 Cari object paling kiri berdasarkan bounds.min.x
         GameObject leftmostObj = null;
+        float minX = float.MaxValue;
 
         foreach (var obj in objects)
         {
