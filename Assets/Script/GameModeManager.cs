@@ -46,7 +46,7 @@ public class GameModeManager : MonoBehaviour
     void Start()
     {
         SwitchMode(currentMode);
-
+        SaveSystem.Instance.DeleteSave();
         // 🔥 Tambahkan Load Game disini
         SaveData data = SaveSystem.Instance.Load();
         if (data != null && movementScript != null)
