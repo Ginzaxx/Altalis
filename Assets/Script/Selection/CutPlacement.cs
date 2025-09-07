@@ -142,6 +142,8 @@ public class CutPlacement : MonoBehaviour
 
                     if (previewBounds.Intersects(hit.bounds))
                     {
+                        if (hitObj.CompareTag("ManaOrb")) continue;
+
                         canPlace = false;
                         break;
                     }

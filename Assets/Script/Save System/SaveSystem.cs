@@ -60,7 +60,7 @@ public class SaveSystem : MonoBehaviour
         Debug.Log($"💾 Game Saved with {data.placedObjects.Count} objects");
     }
 
-    public SaveData Load()
+        public SaveData Load()
     {
         if (File.Exists(savePath))
         {
@@ -72,6 +72,39 @@ public class SaveSystem : MonoBehaviour
 
         Debug.LogWarning("⚠️ No save file found.");
         return null;
+    }
+
+    public SaveData RestoreSave()
+    {
+        SaveData data = Load();
+        if (data == null)
+        {
+            Debug.LogWarning("⚠️ No save file found.");
+            return null;
+        }
+
+        // 🧹 Hapus object lama (langsung, tidak menunggu end of frame)
+        GameObject[] oldObjects = GameObject.FindGameObjectsWithTag("Selectable");
+        foreach (var obj in oldObjects)
+        {
+            Debug.LogWarning("⚠️ Destroying past object.");
+            DestroyImmediate(obj); // ✅ langsung dihapus
+        }
+
+        // 🔄 Spawn object dari save
+        foreach (var pod in data.placedObjects)
+        {
+            GameObject prefab = GetPrefabByName(pod.prefabName);
+            if (prefab == null) continue;
+
+            GameObject newObj = Instantiate(
+                prefab,
+                new Vector3(pod.posX, pod.posY, pod.posZ),
+                Quaternion.Euler(0, 0, pod.rotZ));
+            newObj.transform.localScale = new Vector3(pod.scaleX, pod.scaleY, pod.scaleZ);
+        }
+
+        return data; // <— biar bisa dipakai di luar
     }
 
     public void DeleteSave()
