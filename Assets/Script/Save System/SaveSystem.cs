@@ -37,7 +37,6 @@ public class SaveSystem : MonoBehaviour
         {
             if (obj == null) continue;
 
-            // ✅ Ambil prefabID tetap
             PrefabID id = obj.GetComponent<PrefabID>();
             string prefabName = (id != null) ? id.PrefabIDValue : obj.name;
 
@@ -60,7 +59,7 @@ public class SaveSystem : MonoBehaviour
         Debug.Log($"💾 Game Saved with {data.placedObjects.Count} objects");
     }
 
-        public SaveData Load()
+    public SaveData Load()
     {
         if (File.Exists(savePath))
         {
@@ -83,15 +82,14 @@ public class SaveSystem : MonoBehaviour
             return null;
         }
 
-        // 🧹 Hapus object lama (langsung, tidak menunggu end of frame)
+        // Hapus object lama
         GameObject[] oldObjects = GameObject.FindGameObjectsWithTag("Selectable");
         foreach (var obj in oldObjects)
         {
-            Debug.LogWarning("⚠️ Destroying past object.");
-            DestroyImmediate(obj); // ✅ langsung dihapus
+            DestroyImmediate(obj);
         }
 
-        // 🔄 Spawn object dari save
+        // Spawn object dari save
         foreach (var pod in data.placedObjects)
         {
             GameObject prefab = GetPrefabByName(pod.prefabName);
@@ -104,7 +102,7 @@ public class SaveSystem : MonoBehaviour
             newObj.transform.localScale = new Vector3(pod.scaleX, pod.scaleY, pod.scaleZ);
         }
 
-        return data; // <— biar bisa dipakai di luar
+        return data;
     }
 
     public void DeleteSave()
@@ -113,10 +111,6 @@ public class SaveSystem : MonoBehaviour
         {
             File.Delete(savePath);
             Debug.Log("🗑️ Save data deleted.");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ No save file found to delete.");
         }
     }
 
@@ -131,6 +125,19 @@ public class SaveSystem : MonoBehaviour
         Debug.LogWarning($"Prefab {idName} not found in database!");
         return null;
     }
-        //kalo mau delete pake command di bawha ini, nanti taruh di kode yang mati
-        //SaveSystem.Instance.DeleteSave();
+
+    // 🔥 Otomatis hapus save kalau keluar game
+    private void OnApplicationQuit()
+    {
+        DeleteSave();
+    }
+
+    // 🔥 Otomatis hapus save kalau scene berganti
+    private void OnDestroy()
+    {
+        if (Instance == this) 
+        {
+            DeleteSave();
+        }
+    }
 }
