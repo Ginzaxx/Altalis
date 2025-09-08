@@ -64,12 +64,11 @@ public class StartMenuController : MonoBehaviour
     {
         if (SaveSystem.Instance != null && SaveSystem.Instance.Load() != null)
         {
-            // ✅ Ada save → langsung load
-            FadeIn();
+            // ✅ Ada save → load scene terakhir dari save
+            SaveSystem.Instance.LoadLastScene();
         }
         else
         {
-            // ❌ Tidak ada save → treat as New Game
             Debug.LogWarning("⚠️ No save found! Starting a new game.");
             OnNewGameClicked();
         }
@@ -79,10 +78,10 @@ public class StartMenuController : MonoBehaviour
     {
         if (SaveSystem.Instance != null)
         {
-            SaveSystem.Instance.DeleteSave(); // 🗑️ Delete save lama
+            SaveSystem.Instance.DeleteAllSaves(); // 🗑️ Delete semua save
         }
 
-        FadeIn();
+        FadeIn(); // langsung start dari sceneName inspector (New Game)
     }
 
     public void OnCreditsClicked()
@@ -92,11 +91,11 @@ public class StartMenuController : MonoBehaviour
 
     public void OnExitClick()
     {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+    #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+    #else
+            Application.Quit();
+    #endif
     }
 
     // === Fade Helper ===

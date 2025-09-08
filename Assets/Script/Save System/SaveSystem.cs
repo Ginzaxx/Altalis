@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class SaveSystem : MonoBehaviour
 {
@@ -27,6 +29,7 @@ public class SaveSystem : MonoBehaviour
     {
         SaveData data = new SaveData
         {
+            sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name, // 👈 simpan nama scene
             playerX = playerPos.x,
             playerY = playerPos.y,
             mana = mana
@@ -56,7 +59,7 @@ public class SaveSystem : MonoBehaviour
 
         string json = JsonUtility.ToJson(data, true);
         File.WriteAllText(savePath, json);
-        Debug.Log($"💾 Game Saved with {data.placedObjects.Count} objects");
+        Debug.Log($"💾 Game Saved in scene {data.sceneName} with {data.placedObjects.Count} objects");
     }
 
     public SaveData Load()
@@ -76,9 +79,13 @@ public class SaveSystem : MonoBehaviour
     public SaveData RestoreSave()
     {
         SaveData data = Load();
-        if (data == null)
+        if (data == null) return null;
+
+        // ✅ Cek apakah save ini memang untuk scene saat ini
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (data.sceneName != currentScene)
         {
-            Debug.LogWarning("⚠️ No save file found.");
+            Debug.Log($"⚠️ Save ditemukan, tapi untuk scene '{data.sceneName}', bukan '{currentScene}'. Abaikan restore.");
             return null;
         }
 
@@ -101,7 +108,6 @@ public class SaveSystem : MonoBehaviour
                 Quaternion.Euler(0, 0, pod.rotZ));
             newObj.transform.localScale = new Vector3(pod.scaleX, pod.scaleY, pod.scaleZ);
         }
-
         return data;
     }
 
@@ -126,18 +132,44 @@ public class SaveSystem : MonoBehaviour
         return null;
     }
 
-    // 🔥 Otomatis hapus save kalau keluar game
-    private void OnApplicationQuit()
+    public void LoadLastScene()
     {
-        DeleteSave();
+        SaveData data = Load();
+        if (data == null)
+        {
+            Debug.LogWarning("⚠️ No save found, cannot load scene.");
+            return;
+        }
+
+        string sceneToLoad = data.sceneName;
+        if (!string.IsNullOrEmpty(sceneToLoad))
+        {
+            Debug.Log($"🔄 Loading last played scene: {sceneToLoad}");
+            SceneManager.LoadScene(sceneToLoad);
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ Save file has no scene info.");
+        }
     }
 
-    // 🔥 Otomatis hapus save kalau scene berganti
-    private void OnDestroy()
+    public void DeleteAllSaves()
     {
-        if (Instance == this) 
+        string dir = Application.persistentDataPath;
+        string[] files = Directory.GetFiles(dir, "save_*.json"); // cari semua save per scene
+
+        foreach (var file in files)
         {
-            DeleteSave();
+            File.Delete(file);
+            Debug.Log($"🗑️ Deleted save file: {Path.GetFileName(file)}");
+        }
+
+        // juga hapus save.json utama kalau ada
+        string mainSave = Path.Combine(dir, "save.json");
+        if (File.Exists(mainSave))
+        {
+            File.Delete(mainSave);
+            Debug.Log("🗑️ Deleted main save.json");
         }
     }
 }
