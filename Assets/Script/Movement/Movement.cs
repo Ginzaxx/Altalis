@@ -43,10 +43,14 @@ public class Movement : MonoBehaviour
         {
             RbD.gravityScale = 1;
             IsGrounded = true;
+            IsJumping = false;
         }
 
         // Set Rigidbody Velocity value
         RbD.velocity = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
+
+        Animate.SetFloat("XVelocity", RbD.velocity.x);
+        Animate.SetBool("Jump", IsJumping);
     }
 
     public void Move(InputAction.CallbackContext context)
