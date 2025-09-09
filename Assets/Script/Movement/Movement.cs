@@ -50,7 +50,7 @@ public class Movement : MonoBehaviour
         RbD.velocity = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
 
         Animate.SetFloat("XVelocity", RbD.velocity.x);
-        Animate.SetBool("Jump", IsJumping);
+        Animate.SetBool("Jumping", IsJumping);
     }
 
     public void Move(InputAction.CallbackContext context)
