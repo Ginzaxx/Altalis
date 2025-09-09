@@ -146,6 +146,8 @@ public class DuplicatePlacement : MonoBehaviour
 
                     if (previewBounds.Intersects(hit.bounds))
                     {
+                        if (hitObj.CompareTag("ManaOrb")) continue;
+
                         canPlace = false;
                         break;
                     }
