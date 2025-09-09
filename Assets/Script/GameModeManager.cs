@@ -46,33 +46,18 @@ public class GameModeManager : MonoBehaviour
     void Start()
     {
         SwitchMode(currentMode);
-        SaveSystem.Instance.DeleteSave();
-        // 🔥 Tambahkan Load Game disini
-        SaveData data = SaveSystem.Instance.Load();
+
+        // Restore + ambil datanya sekali saja
+        SaveData data = SaveSystem.Instance.RestoreSave();
+
+        // apply posisi player
         if (data != null && movementScript != null)
         {
-            // set posisi player
-            movementScript.transform.position = new Vector3(data.playerX, data.playerY, movementScript.transform.position.z);
-
-            // hapus semua selectable lama
-            foreach (var obj in GameObject.FindGameObjectsWithTag("Selectable"))
-                Destroy(obj);
-
-            // spawn ulang object
-            foreach (var pod in data.placedObjects)
-            {
-                GameObject prefab = SaveSystem.Instance.GetPrefabByName(pod.prefabName);
-                if (prefab != null)
-                {
-                    GameObject obj = Instantiate(
-                        prefab,
-                        new Vector3(pod.posX, pod.posY, pod.posZ),
-                        Quaternion.Euler(0, 0, pod.rotZ)
-                    );
-                    obj.transform.localScale = new Vector3(pod.scaleX, pod.scaleY, pod.scaleZ);
-                    obj.tag = "Selectable";
-                }
-            }
+            movementScript.transform.position = new Vector3(
+                data.playerX,
+                data.playerY,
+                movementScript.transform.position.z
+            );
         }
     }
     
