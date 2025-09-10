@@ -24,7 +24,7 @@ public class DuplicatePlacement : MonoBehaviour
     {
         if (!isPlacing)
         {
-            if (Input.GetKeyDown(KeyCode.V) && selectionManager.SelectedObjects.Count > 0)
+            if (Input.GetKeyDown(KeyCode.C) && selectionManager.SelectedObjects.Count > 0)
             {
                 StartPlacementMode();
             }
@@ -33,7 +33,7 @@ public class DuplicatePlacement : MonoBehaviour
         {
             UpdatePreviewPosition();
 
-            if (Input.GetMouseButtonDown(0)) // Confirm
+            if (Input.GetKeyDown(KeyCode.V)) // Confirm
             {
                 if (canPlace)
                 {
@@ -193,6 +193,12 @@ public class DuplicatePlacement : MonoBehaviour
         previewClones.Clear();
         isPlacing = false;
         selectionManager.IsSelectionEnabled = true;
+
+        // 🔥 Langsung balik ke Movement Mode
+        if (GameModeManager.Instance != null)
+        {
+            GameModeManager.Instance.SwitchMode(GameMode.Movement);
+        }
     }
 
     void CancelPlacement()

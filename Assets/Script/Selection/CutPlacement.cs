@@ -23,7 +23,7 @@ public class CutPlacement : MonoBehaviour
     {
         if (!isPlacing)
         {
-            if (Input.GetKeyDown(KeyCode.C) && selectionManager.SelectedObjects.Count > 0)
+            if (Input.GetKeyDown(KeyCode.X) && selectionManager.SelectedObjects.Count > 0)
             {
                 StartPlacementMode();
             }
@@ -32,7 +32,7 @@ public class CutPlacement : MonoBehaviour
         {
             UpdatePreviewPosition();
 
-            if (Input.GetMouseButtonDown(0)) // Confirm
+            if (Input.GetKeyDown(KeyCode.V)) // Confirm
             {
                 if (canPlace)
                 {
@@ -163,7 +163,7 @@ public class CutPlacement : MonoBehaviour
         }
     }
 
-    void PlaceCutObjects()
+  void PlaceCutObjects()
     {
         List<GameObject> placedObjects = new List<GameObject>();
 
@@ -171,24 +171,20 @@ public class CutPlacement : MonoBehaviour
         {
             if (obj != null)
             {
-                // Pulihkan warna
                 foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
                     sr.color = Color.white;
 
-                // ✅ Pulihkan Collider2D
                 var col = obj.GetComponent<Collider2D>();
                 if (col != null) col.enabled = true;
 
-                // ✅ Pulihkan Rigidbody2D
                 var rb = obj.GetComponent<Rigidbody2D>();
-                if (rb != null) rb.bodyType = RigidbodyType2D.Dynamic; // atau Kinematic sesuai kebutuhan game
+                if (rb != null) rb.bodyType = RigidbodyType2D.Dynamic;
 
                 obj.tag = "Selectable";
                 placedObjects.Add(obj);
             }
         }
 
-        // 🔥 Hapus semua original setelah berhasil place
         foreach (var orig in originals)
         {
             if (orig != null) Destroy(orig);
@@ -203,8 +199,13 @@ public class CutPlacement : MonoBehaviour
         originals.Clear();
         isPlacing = false;
         selectionManager.IsSelectionEnabled = true;
-    }
 
+        // 🔥 Langsung balik ke Movement Mode
+        if (GameModeManager.Instance != null)
+        {
+            GameModeManager.Instance.SwitchMode(GameMode.Movement);
+        }
+    }
 
     void CancelPlacement()
     {
