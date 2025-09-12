@@ -11,16 +11,16 @@ public class Movement : MonoBehaviour
     [Header("Movement")]
     public float SideSpeed = 8f;
     private float SideMove;
-    private bool IsFacingRight = true;
+    private float OriginalSideSpeed;
 
-    [Header("Jumping & Gliding")]
-    public float JumpPower = 8f;
-    public float GlideSpeed = 2f;
+    [Header("Jumping")]
+    public float JumpPower = 6f;
+    public float GlideSpeed = -0.5f;
     private bool IsJumping = false;
     private bool IsGrounded = true;
 
     [Header("Crouching")]
-    public float CrouchPower = 4f;
+    public float CrouchSlowness = 4f;
     private bool IsCrouching = false;
 
     void Start()
@@ -28,6 +28,9 @@ public class Movement : MonoBehaviour
         // Get Rigidbody and Animator values
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
+
+        // Set original speed
+        OriginalSideSpeed = SideSpeed;
     }
 
     void Update()
@@ -35,13 +38,15 @@ public class Movement : MonoBehaviour
         // Only move if movement is enabled and we're in movement mode
         if (!enabled) return;
 
+        // Set Grounded when not falling
+        if (RbD.velocity.y >= -0.05 && RbD.velocity.y <= 0.05)
+        {
+            RbD.gravityScale = 1;
+            IsGrounded = true;
+        }
+
         // Set Rigidbody Velocity value
         RbD.velocity = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
-
-        Animate.SetFloat("XVelocity", RbD.velocity.x * RbD.velocity.x);
-
-        GroundCheck();
-        Flip();
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -67,12 +72,11 @@ public class Movement : MonoBehaviour
                 RbD.velocity = new Vector2(RbD.velocity.x, JumpPower);
                 IsGrounded = false;
                 IsJumping = true;
-                Animate.SetTrigger("Jumping");
             }
-            else if (IsJumping)
+            else if (IsJumping) 
             {
                 // Double tap on Jump Button = Glide
-                RbD.velocity = new Vector2(RbD.velocity.x, -GlideSpeed);
+                RbD.velocity = new Vector2(RbD.velocity.x, GlideSpeed);
                 RbD.gravityScale = 0;
                 IsJumping = false;
             }
@@ -90,36 +94,15 @@ public class Movement : MonoBehaviour
         if (!enabled) return;
 
         // Convert Player Inputs into Crouch Slowness
-        if (context.performed && !IsCrouching)
+        if (context.performed)
         {
             IsCrouching = true;
-            SideSpeed /= CrouchPower;
+            SideSpeed = OriginalSideSpeed / CrouchSlowness;
         }
         else if (context.canceled && IsCrouching)
         {
             IsCrouching = false;
-            SideSpeed *= CrouchPower;
-        }
-    }
-
-    private void GroundCheck()
-    {
-        // Set Grounded when not falling
-        if (RbD.velocity.y >= -0.01 && RbD.velocity.y <= 0.01)
-        {
-            RbD.gravityScale = 1;
-            IsGrounded = true;
-            IsJumping = false;
-        }
-    }
-
-    private void Flip()
-    {
-        if (IsFacingRight && SideMove < 0 || !IsFacingRight && SideMove > 0)
-        {
-            IsFacingRight = !IsFacingRight;
-            Vector3 ls = transform.localScale;
-            ls.x *= -1f;
+            SideSpeed = OriginalSideSpeed;
         }
     }
 }
