@@ -1,11 +1,8 @@
 using UnityEngine;
-using System.Collections;
 
 public class ManaOrb : MonoBehaviour
 {
-    [SerializeField] private float respawnTime = 10f;
     [SerializeField] private GameObject orbVisual; // child visual (sprite / particle)
-
     private Collider2D orbCollider;
 
     private void Awake()
@@ -37,24 +34,9 @@ public class ManaOrb : MonoBehaviour
 
                 // Tambahkan mana
                 ResourceManager.Instance.AddMana(1);
-
-                // Disable orb (visual + collider)
-                StartCoroutine(RespawnRoutine());
+                
+                Destroy(gameObject);
             }
         }
-    }
-
-    private IEnumerator RespawnRoutine()
-    {
-        // Hide orb
-        if (orbVisual != null) orbVisual.SetActive(false);
-        if (orbCollider != null) orbCollider.enabled = false;
-
-        // Wait
-        yield return new WaitForSeconds(respawnTime);
-
-        // Respawn orb
-        if (orbVisual != null) orbVisual.SetActive(true);
-        if (orbCollider != null) orbCollider.enabled = true;
     }
 }
