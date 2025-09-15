@@ -239,7 +239,7 @@ public class MovementAflahVersion : MonoBehaviour
     private bool IsJumping = false;
     private bool isJumpButtonPressed = false;
     [Header("Jump Cooldown")]
-    public float jumpCooldown = 2f; // Durasi cooldown lompat (detik), atur di Inspector
+    public float jumpCooldown = 0f; // Durasi cooldown lompat (detik), atur di Inspector
     private bool isJumpCooldownActive = false; // Flag untuk cek apakah cooldown aktif
 
     [Header("Crouching")]
