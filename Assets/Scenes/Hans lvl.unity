@@ -1155,6 +1155,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Square Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 8683371501603618729, guid: 197c4dc7e8105414ca0d7be245f0e6d1, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14734,7 +14738,7 @@ SpriteRenderer:
   m_Size: {x: 2.4, y: 3.9}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &1156293028
