@@ -17,11 +17,15 @@ public class Movement : MonoBehaviour
     public float JumpPower = 8f;
     public float GlideSpeed = 2f;
     private bool IsJumping = false;
-    private bool IsGrounded = true;
-
+    
     [Header("Crouching")]
     public float CrouchPower = 4f;
     private bool IsCrouching = false;
+
+    [Header("Groundcheck")]
+    public Transform GroundCheckPos;
+    public Vector2 GroundCheckSize = new Vector2(0.9f, 0.1f);
+    public LayerMask GroundLayer;
 
     void Start()
     {
@@ -39,8 +43,9 @@ public class Movement : MonoBehaviour
         RbD.velocity = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
 
         Animate.SetFloat("XVelocity", RbD.velocity.x * RbD.velocity.x);
+        Animate.SetBool("Grounded", IsGrounded());
 
-        GroundCheck();
+        IsGrounded();
         Flip();
     }
 
@@ -61,13 +66,12 @@ public class Movement : MonoBehaviour
         // Convert Player Inputs into Jump or Glide values
         if (context.performed)
         {
-            if (IsGrounded) // Check if Player is on Ground to Jump
+            if (IsGrounded()) // Check if Player is on Ground to Jump
             {
                 // Hold Down on Jump Button = Big Jump
                 RbD.velocity = new Vector2(RbD.velocity.x, JumpPower);
-                IsGrounded = false;
                 IsJumping = true;
-                Animate.SetTrigger("Jumping");
+                // Animate.SetTrigger("Jumping");
             }
             else if (IsJumping)
             {
@@ -102,15 +106,16 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void GroundCheck()
+    private bool IsGrounded()
     {
-        // Set Grounded when not falling
-        if (RbD.velocity.y >= -0.01 && RbD.velocity.y <= 0.01)
-        {
-            RbD.gravityScale = 1;
-            IsGrounded = true;
-            IsJumping = false;
-        }
+        if (Physics2D.OverlapBox(GroundCheckPos.position, GroundCheckSize, 0, GroundLayer)) return true;
+        return false;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(GroundCheckPos.position, GroundCheckSize);
     }
 
     private void Flip()
@@ -120,6 +125,7 @@ public class Movement : MonoBehaviour
             IsFacingRight = !IsFacingRight;
             Vector3 ls = transform.localScale;
             ls.x *= -1f;
+            transform.localScale = ls;
         }
     }
 }
