@@ -23252,6 +23252,7 @@ GameObject:
   - component: {fileID: 1156293023}
   - component: {fileID: 1156293022}
   - component: {fileID: 1156293027}
+  - component: {fileID: 1156293028}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -23266,7 +23267,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1156293021}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e14a46dff9488742818404cafb031de, type: 3}
   m_Name: 
@@ -23314,8 +23315,8 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1156293022}
-        m_TargetAssemblyTypeName: Movement, Assembly-CSharp
+      - m_Target: {fileID: 1156293028}
+        m_TargetAssemblyTypeName: MovementAflahVersion, Assembly-CSharp
         m_MethodName: Move
         m_Mode: 0
         m_Arguments:
@@ -23386,8 +23387,8 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1156293022}
-        m_TargetAssemblyTypeName: Movement, Assembly-CSharp
+      - m_Target: {fileID: 1156293028}
+        m_TargetAssemblyTypeName: MovementAflahVersion, Assembly-CSharp
         m_MethodName: Jump
         m_Mode: 0
         m_Arguments:
@@ -23428,7 +23429,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1156293021}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -23482,7 +23483,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: 372188a0e5a96da4a8783973812938eb, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -23517,7 +23518,7 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1156293021}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -23545,6 +23546,33 @@ CapsuleCollider2D:
   m_Offset: {x: 0.008918047, y: 0.48933113}
   m_Size: {x: 0.99584436, y: 1.9786623}
   m_Direction: 0
+--- !u!114 &1156293028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156293021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6a91766fefdfbc438f7e3fdefa17abf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SideSpeed: 8
+  JumpPower: 5
+  fallMultiplier: 2.5
+  lowJumpMultiplier: 2
+  jumpCooldown: 2
+  CrouchSlowness: 4
+  coyoteTime: 0.1
+  groundCheckPoint: {fileID: 347612754}
+  groundCheckDistance: 1.62
+  slideSpeedMultiplier: 100
+  uphillDrag: 80
+  slideJumpVelocityThreshold: -0.37
+  jumpRestrictionTime: 0.3
+  isLeft: 0
+  isRight: 0
 --- !u!1001 &1158282989
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28414,11 +28442,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4045187600193642609, guid: acf4fb23fff4bdf48b1d341e74294557, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.5
+      value: -5.68
       objectReference: {fileID: 0}
     - target: {fileID: 4045187600193642609, guid: acf4fb23fff4bdf48b1d341e74294557, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0.67
       objectReference: {fileID: 0}
     - target: {fileID: 4045187600193642609, guid: acf4fb23fff4bdf48b1d341e74294557, type: 3}
       propertyPath: m_LocalPosition.z
