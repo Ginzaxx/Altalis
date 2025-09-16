@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Movement : MonoBehaviour
+public class MovementGinza : MonoBehaviour
 {
     private Rigidbody2D RbD;
     private Animator Animate;
@@ -10,7 +10,6 @@ public class Movement : MonoBehaviour
     [Header("Movement")]
     public float SideSpeed = 8f;
     private float SideMove;
-    private float OriginalSideSpeed;
 
     [Header("Jumping")]
     public float JumpPower = 6f;
@@ -31,7 +30,6 @@ public class Movement : MonoBehaviour
     {
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
-        OriginalSideSpeed = SideSpeed;
     }
 
     void Update()
