@@ -1,9 +1,9 @@
-// using System.Collections;
 // using UnityEngine;
 // using UnityEngine.InputSystem;
 
-// public class Movement : MonoBehaviour
+// public class MovementAflahVersion : MonoBehaviour
 // {
+//     // ... (Variabel lain tetap sama) ...
 //     private Rigidbody2D RbD;
 //     private Animator Animate;
 
@@ -13,253 +13,206 @@
 //     private float OriginalSideSpeed;
 
 //     [Header("Jumping")]
-//     public float JumpPower = 6f;
+//     public float JumpPower = 16f;
+//     public float fallMultiplier = 2.5f;
+//     public float lowJumpMultiplier = 2f;
 //     private bool IsJumping = false;
+//     private bool isJumpButtonPressed = false;
+
+//     [Header("Crouching")]
+//     public float CrouchSlowness = 4f;
+
+//     // --- ADD THESE TWO LINES HERE ---
+//     [Header("Ground Check & Coyote Time")]
+//     public float coyoteTime = 0.1f; // This is the value you set in the Inspector.
+//     private float coyoteTimeCounter;  // This is the script's internal timer.
+//     // -----------------------------
+//     public Transform groundCheckPoint;
+//     public float groundCheckDistance = 0.5f;
 //     private bool IsGrounded = true;
 
-//     [Header("Ice Slope")]
-//     private bool OnIceSlope = false;
-//     private bool MovementLocked = false;
-//     public float IceSlideSpeed = 8f; // 🔥 Kecepatan licin di slope
+//     [Header("Ice & Slope Physics")]
+//     public float slideSpeedMultiplier = 5f;
+//     public float uphillDrag = 3f;
+//     private bool isOnIce = false;
+//     private Vector2 slopeNormalPerp;
+//     private RaycastHit2D groundHit;
+//     public float slideJumpVelocityThreshold = 2f;
 
-//     [Header("Ground Check")]
-//     public Transform groundCheck;
-//     public float groundCheckRadius = 0.2f;
-//     public LayerMask groundLayer;
+//     public bool isLeft = false;
+//     public bool isRight = false;
+
+
 
 //     void Start()
 //     {
 //         RbD = GetComponent<Rigidbody2D>();
 //         Animate = GetComponent<Animator>();
 //         OriginalSideSpeed = SideSpeed;
+//         Physics2D.queriesStartInColliders = false;
+
+//         // --- PENAMBAHAN PENGAMAN ---
+//         // Memastikan slideSpeedMultiplier tidak akan pernah negatif, meskipun salah input di Inspector.
+//         if (slideSpeedMultiplier < 0)
+//         {
+//             slideSpeedMultiplier = Mathf.Abs(slideSpeedMultiplier);
+//         }
 //     }
 
-//     void Update()
+//     void FixedUpdate()
 //     {
+//         // Debug.Log("IsGrounded status: " + IsGrounded);
 //         if (!enabled) return;
 
-//         // ✅ Cek grounded pakai OverlapCircle
-//         IsGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+//         CheckGround();
+//         // Debug.Log(IsGrounded);
 
-//         // Movement
-//         if (!OnIceSlope)
+//         if (isOnIce && IsGrounded && !isJumpButtonPressed)
 //         {
-//             // Kalau movement dikunci → abaikan input kiri
-//             float moveX = (MovementLocked ? Mathf.Max(0, SideMove) : SideMove) * SideSpeed;
-//             RbD.velocity = new Vector2(moveX, RbD.velocity.y);
+//             ApplyIceMovement();
+//         }
+//         else if (isJumpButtonPressed && isRight == true && isLeft == false && Input.GetKey(KeyCode.D))
+//         {
+//             ApplyNormalMovement();
+//         }
+//         else if (IsGrounded)
+//         {
+//             isLeft = false;
+//             isRight = false;
+//             ApplyNormalMovement();
+//         }
+//         // DELETE THIS ENTIRE IF/ELSE BLOCK
+//         if (IsGrounded)
+//         {
+//             coyoteTimeCounter = coyoteTime;
 //         }
 //         else
 //         {
-//             // ❄️ Di IceSlope → selalu geser ke kanan dengan IceSlideSpeed
-//             float moveX = Mathf.Max(0, SideMove) * SideSpeed; 
-//             float finalX = moveX + IceSlideSpeed; // gabungan input + licin
-//             RbD.velocity = new Vector2(finalX, RbD.velocity.y);
+//             coyoteTimeCounter -= Time.fixedDeltaTime;
+//         }
+//     }
+
+//     private void CheckGround()
+//     {
+//         isOnIce = false;
+//         IsGrounded = false;
+//         // Simpan hasil raycast ke variabel groundHit
+//         groundHit = Physics2D.Raycast(groundCheckPoint.position, Vector2.down, groundCheckDistance, LayerMask.GetMask("Ground"));
+//         Debug.DrawRay(groundCheckPoint.position, Vector2.down * groundCheckDistance, Color.red);
+
+//         if (groundHit.collider != null)
+//         {
+//             IsGrounded = true;
+//             IsJumping = false;
+
+//             slopeNormalPerp = new Vector2(groundHit.normal.y, -groundHit.normal.x);
+
+
+//             // --- INILAH SOLUSI KUNCINYA ---
+//             // Memaksa vektor agar SELALU menunjuk ke arah bawah (komponen Y negatif)
+//             if (slopeNormalPerp.y > 0)
+//             {
+//                 slopeNormalPerp *= -1;
+//             }
+//             // --- SELESAI ---
+
+//             if (groundHit.collider.CompareTag("Ice"))
+//             {
+//                 if (groundHit.collider.gameObject.name == "tileiceFaceRight")
+//                 {
+//                     isRight = true;
+//                     isLeft = false;
+//                 }
+//                 isOnIce = true;
+//             }
+//         }
+//     }
+
+//     private void ApplyNormalMovement()
+//     {
+//         RbD.velocity = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
+//     }
+
+//     private void ApplyIceMovement()
+//     {
+//         Vector2 slideForce = slopeNormalPerp * slideSpeedMultiplier;
+//         RbD.AddForce(slideForce);
+
+//         Vector2 playerForce = new Vector2(SideMove * SideSpeed, 0);
+
+//         if (Vector2.Dot(RbD.velocity, slopeNormalPerp) > 0)
+//         {
+//             playerForce *= (1 / uphillDrag);
+//         }
+
+//         RbD.AddForce(playerForce);
+//         RbD.velocity = Vector2.ClampMagnitude(RbD.velocity, 50f);
+//     }
+
+//     public void Jump(InputAction.CallbackContext context)
+//     {
+
+//         // STEP 1: See if this function is even being called.
+//         if (context.performed)
+//         {
+//             // Debug.LogWarning("Jump button PRESSED!");
+//         }
+
+//         // STEP 2: Check the value of the coyote timer when you press the button.
+//         // Debug.LogWarning("Current Coyote Time Counter: " + coyoteTimeCounter);
+//         if (!enabled) return;
+
+//         // Sekarang kondisi lompat hanya perlu mengecek coyote time (yang direset saat grounded)
+//         // dan langsung memanggil satu fungsi lompat yang kuat dan konsisten.
+//         if (context.performed && coyoteTimeCounter > 0f)
+//         {
+//             PerformJump();
+//         }
+
+//         if (context.performed) isJumpButtonPressed = true;
+//         else if (context.canceled) isJumpButtonPressed = false;
+//     }
+
+
+//     private void PerformJump()
+//     {
+//         // INILAH LOMPATAN "HARD RESET"
+//         // Secara paksa mengatur kecepatan vertikal ke JumpPower, mengabaikan seberapa cepat
+//         // karakter sedang meluncur ke bawah. Ini memberikan rasa "impuls" yang spontan.
+//         // Kecepatan horizontal (RbD.velocity.x) dipertahankan agar momentum tetap ada.
+
+
+//         RbD.velocity = new Vector2(RbD.velocity.x, JumpPower);
+
+
+
+
+
+
+//         IsJumping = true;
+//         coyoteTimeCounter = 0f; // Reset coyote time agar tidak bisa double jump di udara
+//     }
+//     private void BetterJump()
+//     {
+//         if (RbD.velocity.y < 0)
+//         {
+//             RbD.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+//         }
+//         else if (RbD.velocity.y > 0 && !isJumpButtonPressed)
+//         {
+//             RbD.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
 //         }
 //     }
 
 //     public void Move(InputAction.CallbackContext context)
 //     {
-//         if (!enabled) return;
 //         SideMove = context.ReadValue<Vector2>().x;
-
-//         // Abaikan input kiri saat di slope atau movement lock
-//         if ((OnIceSlope || MovementLocked) && SideMove < 0)
-//             SideMove = 0;
 //     }
 
-//     public void Jump(InputAction.CallbackContext context)
+//     public void Crouch(InputAction.CallbackContext context)
 //     {
-//         if (!enabled) return;
-
-//         if (context.performed)
-//         {
-//             if (IsGrounded || OnIceSlope)
-//             {
-//                 float jumpDirection = SideMove;
-
-//                 if (OnIceSlope && jumpDirection < 0)
-//                     jumpDirection = 0; // Abaikan loncat kiri di slope
-
-//                 // 🚀 Jump tetap normal, tidak dipengaruhi licin
-//                 RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
-
-//                 IsGrounded = false;
-//                 IsJumping = true;
-//             }
-//         }
-//         else if (context.canceled && RbD.velocity.y >= 0)
-//         {
-//             // Light tap = small jump
-//             RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
-//         }
-//     }
-
-//     private void OnCollisionEnter2D(Collision2D collision)
-//     {
-//         if (collision.collider.CompareTag("Ice"))
-//         {
-//             OnIceSlope = true;
-//             MovementLocked = false;
-//             Debug.Log("On Ice (Collision)");
-//         }
-//     }
-
-//     private void OnCollisionExit2D(Collision2D collision)
-//     {
-//         if (collision.collider.CompareTag("Ice"))
-//         {
-//             OnIceSlope = false;
-//             Debug.Log("Exit Ice (Collision)");
-
-//             // Lock kiri selama 2 detik setelah keluar dari es
-//             StartCoroutine(LockLeftMovement(2f));
-//         }
-//     }
-
-//     private IEnumerator LockLeftMovement(float duration)
-//     {
-//         MovementLocked = true;
-//         yield return new WaitForSeconds(duration);
-//         MovementLocked = false;
-//     }
-// }
-
-
-
-// using System.Collections;
-// using UnityEngine;
-// using UnityEngine.InputSystem;
-
-// public class Movement : MonoBehaviour
-// {
-//     private Rigidbody2D RbD;
-//     private Animator Animate;
-
-//     [Header("Movement")]
-//     public float SideSpeed = 8f;
-//     private float SideMove;
-//     private float OriginalSideSpeed;
-
-//     [Header("Jumping")]
-//     public float JumpPower = 6f;
-//     private bool IsJumping = false;
-//     private bool IsGrounded = true;
-
-//     [Header("Ice Slope")]
-//     private bool OnIceSlope = false;
-//     private bool MovementLocked = false;
-//     public float IceSlideSpeed = 8f; // Kecepatan licin di slope
-//     public float IceAcceleration = 10f; // Kecepatan akselerasi saat masuk ke es
-//     private Vector2 slopeTangent; // Arah tangen slope untuk sliding
-
-//     [Header("Ground Check")]
-//     public Transform groundCheck;
-//     public float groundCheckRadius = 0.2f;
-//     public LayerMask groundLayer;
-
-//     void Start()
-//     {
-//         RbD = GetComponent<Rigidbody2D>();
-//         Animate = GetComponent<Animator>();
-//         OriginalSideSpeed = SideSpeed;
-//         RbD.constraints = RigidbodyConstraints2D.FreezeRotation; // Pastikan rotasi terkunci
-//     }
-
-//     void Update()
-//     {
-//         if (!enabled) return;
-
-//         // Cek grounded pakai OverlapCircle
-//         IsGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-
-//         // Movement
-//         if (!OnIceSlope)
-//         {
-//             // Normal movement
-//             float moveX = (MovementLocked ? Mathf.Max(0, SideMove) : SideMove) * SideSpeed;
-//             RbD.velocity = new Vector2(moveX, RbD.velocity.y);
-//         }
-//         else
-//         {
-//             // Ice slope movement: slide along slope tangent
-//             float moveX = Mathf.Max(0, SideMove) * SideSpeed; // Input pemain (hanya ke kanan)
-//             // Target velocity: kombinasi input pemain dan kecepatan licin sepanjang slope
-//             Vector2 targetVelocity = slopeTangent * (moveX + IceSlideSpeed);
-//             // Interpolasi halus ke target velocity
-//             Vector2 currentVelocity = new Vector2(RbD.velocity.x, RbD.velocity.y);
-//             Vector2 newVelocity = Vector2.Lerp(currentVelocity, targetVelocity, IceAcceleration * Time.deltaTime);
-//             RbD.velocity = newVelocity;
-//         }
-//     }
-
-//     public void Move(InputAction.CallbackContext context)
-//     {
-//         if (!enabled) return;
-//         SideMove = context.ReadValue<Vector2>().x;
-
-//         // Abaikan input kiri saat di slope atau movement lock
-//         if ((OnIceSlope || MovementLocked) && SideMove < 0)
-//             SideMove = 0;
-//     }
-
-//     public void Jump(InputAction.CallbackContext context)
-//     {
-//         if (!enabled) return;
-
-//         if (context.performed)
-//         {
-//             if (IsGrounded || OnIceSlope)
-//             {
-//                 float jumpDirection = SideMove;
-
-//                 if (OnIceSlope && jumpDirection < 0)
-//                     jumpDirection = 0; // Abaikan loncat kiri di slope
-
-//                 // Jump tetap normal, tidak dipengaruhi licin
-//                 RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
-
-//                 IsGrounded = false;
-//                 IsJumping = true;
-//             }
-//         }
-//         else if (context.canceled && RbD.velocity.y >= 0)
-//         {
-//             // Light tap = small jump
-//             RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
-//         }
-//     }
-
-//     private void OnCollisionEnter2D(Collision2D collision)
-//     {
-//         if (collision.collider.CompareTag("Ice"))
-//         {
-//             OnIceSlope = true;
-//             MovementLocked = false;
-//             // Hitung arah tangen slope berdasarkan normal kontak
-//             Vector2 contactNormal = collision.GetContact(0).normal;
-//             slopeTangent = new Vector2(-contactNormal.y, contactNormal.x).normalized; // Tangen = perpendicular ke normal
-//             // Pastikan arah tangen mengarah ke bawah/kanan (sesuaikan dengan slope)
-//             if (slopeTangent.x < 0) slopeTangent = -slopeTangent;
-//             Debug.Log("On Ice (Collision), Slope Tangent: " + slopeTangent);
-//         }
-//     }
-
-//     private void OnCollisionExit2D(Collision2D collision)
-//     {
-//         if (collision.collider.CompareTag("Ice"))
-//         {
-//             OnIceSlope = false;
-//             Debug.Log("Exit Ice (Collision)");
-//             // Lock kiri selama 2 detik setelah keluar dari es
-//             StartCoroutine(LockLeftMovement(2f));
-//         }
-//     }
-
-//     private IEnumerator LockLeftMovement(float duration)
-//     {
-//         MovementLocked = true;
-//         yield return new WaitForSeconds(duration);
-//         MovementLocked = false;
+//         if (context.performed) SideSpeed = OriginalSideSpeed / CrouchSlowness;
+//         else if (context.canceled) SideSpeed = OriginalSideSpeed;
 //     }
 // }
 
@@ -268,8 +221,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Movement : MonoBehaviour
+public class MovementAflahVersion : MonoBehaviour
 {
+    // ... (Variabel lain tetap sama) ...
     private Rigidbody2D RbD;
     private Animator Animate;
 
@@ -279,133 +233,268 @@ public class Movement : MonoBehaviour
     private float OriginalSideSpeed;
 
     [Header("Jumping")]
-    public float JumpPower = 6f;
+    public float JumpPower = 16f;
+    public float fallMultiplier = 2.5f;
+    public float lowJumpMultiplier = 2f;
     private bool IsJumping = false;
+    private bool isJumpButtonPressed = false;
+    [Header("Jump Cooldown")]
+    public float jumpCooldown = 0f; // Durasi cooldown lompat (detik), atur di Inspector
+    private bool isJumpCooldownActive = false; // Flag untuk cek apakah cooldown aktif
+
+    [Header("Crouching")]
+    public float CrouchSlowness = 4f;
+
+    [Header("Ground Check & Coyote Time")]
+    public float coyoteTime = 0.1f;
+    private float coyoteTimeCounter;
+    public Transform groundCheckPoint;
+    public float groundCheckDistance = 0.5f;
     private bool IsGrounded = true;
 
-    [Header("Ice Slope")]
-    private bool OnIceSlope = false;
-    private bool MovementLocked = false;
-    public float IceSlideSpeed = 8f; // Kecepatan licin di slope
-    public float IceAcceleration = 10f; // Kecepatan akselerasi saat masuk ke es
-    private Vector2 slopeTangent; // Arah tangen slope untuk sliding
+    [Header("Ice & Slope Physics")]
+    public float slideSpeedMultiplier = 5f;
+    public float uphillDrag = 3f;
+    private bool isOnIce = false;
+    private Vector2 slopeNormalPerp;
+    private RaycastHit2D groundHit;
+    public float slideJumpVelocityThreshold = 2f;
 
-    [Header("Ground Check")]
-    public Transform groundCheck;
-    public float groundCheckRadius = 0.2f;
-    public LayerMask groundLayer;
+    // MODIFIKASI: Tambah variabel untuk batasi jump direction di ice
+    [Header("Ice Jump Restriction")]
+    public float jumpRestrictionTime = 0.3f; // Durasi batasan input setelah jump di ice (detik)
+    private float jumpRestrictionTimer = 0f; // Timer internal
+    private bool isJumpRestricted = false; // Flag apakah sedang dibatasi
+
+
+
+    public bool isLeft = false;
+    public bool isRight = false;
 
     void Start()
     {
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
         OriginalSideSpeed = SideSpeed;
-        RbD.constraints = RigidbodyConstraints2D.FreezeRotation; // Pastikan rotasi terkunci
+        Physics2D.queriesStartInColliders = false;
+
+        if (slideSpeedMultiplier < 0)
+        {
+            slideSpeedMultiplier = Mathf.Abs(slideSpeedMultiplier);
+        }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (!enabled) return;
 
-        // Cek grounded pakai OverlapCircle
-        IsGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        CheckGround();
 
-        // Movement
-        if (!OnIceSlope)
+        // Update timer restriction (untuk ice jump restriction)
+        if (isJumpRestricted)
         {
-            // Normal movement
-            float moveX = (MovementLocked ? Mathf.Max(0, SideMove) : SideMove) * SideSpeed;
-            RbD.velocity = new Vector2(moveX, RbD.velocity.y);
+            jumpRestrictionTimer -= Time.fixedDeltaTime;
+            if (jumpRestrictionTimer <= 0f)
+            {
+                isJumpRestricted = false;
+            }
+        }
+
+        if (isOnIce && !IsGrounded && IsJumping)
+        {
+            ApplyIceJumpMovement();
+        }
+        else if (isOnIce && IsGrounded && !isJumpButtonPressed)
+        {
+            ApplyIceMovement();
         }
         else
         {
-            // Ice slope movement: slide along slope tangent
-            float moveX = Mathf.Max(0, SideMove) * SideSpeed; // Input pemain (hanya ke kanan)
-            // Target velocity: kombinasi input pemain dan kecepatan licin sepanjang slope
-            Vector2 targetVelocity = slopeTangent * (moveX + IceSlideSpeed);
-            // Interpolasi halus ke target velocity
-            Vector2 currentVelocity = new Vector2(RbD.velocity.x, RbD.velocity.y);
-            Vector2 newVelocity = Vector2.Lerp(currentVelocity, targetVelocity, IceAcceleration * Time.deltaTime);
-            RbD.velocity = newVelocity;
+            isLeft = false;
+            isRight = false;
+            ApplyNormalMovement();
+        }
+
+        if (IsGrounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.fixedDeltaTime;
+        }
+
+        BetterJump();
+    }
+
+    private void CheckGround()
+    {
+        isOnIce = false;
+        IsGrounded = false;
+        groundHit = Physics2D.Raycast(groundCheckPoint.position, Vector2.down, groundCheckDistance, LayerMask.GetMask("Ground"));
+        Debug.DrawRay(groundCheckPoint.position, Vector2.down * groundCheckDistance, Color.red);
+
+        if (groundHit.collider != null)
+        {
+            IsGrounded = true;
+            IsJumping = false;
+
+            slopeNormalPerp = new Vector2(groundHit.normal.y, -groundHit.normal.x);
+
+            if (slopeNormalPerp.y > 0)
+            {
+                slopeNormalPerp *= -1;
+            }
+
+            if (groundHit.collider.CompareTag("Ice"))
+            {
+                if (groundHit.collider.gameObject.name == "tileiceFaceRight")
+                {
+                    isRight = true;
+                    isLeft = false;
+                }
+                else
+                {
+                    // Asumsi jika bukan right, maka left (tambah ini untuk robustness)
+                    isLeft = true;
+                    isRight = false;
+                }
+                isOnIce = true;
+            }
         }
     }
 
-    public void Move(InputAction.CallbackContext context)
+    private void ApplyNormalMovement()
     {
-        if (!enabled) return;
-        SideMove = context.ReadValue<Vector2>().x;
+        RbD.velocity = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
+    }
 
-        // Abaikan input kiri saat di slope atau movement lock
-        if ((OnIceSlope || MovementLocked) && SideMove < 0)
-            SideMove = 0;
+    private void ApplyIceMovement()
+    {
+        Vector2 slideForce = slopeNormalPerp * slideSpeedMultiplier;
+        RbD.AddForce(slideForce);
+
+        Vector2 playerForce = new Vector2(SideMove * SideSpeed, 0);
+
+        if (Vector2.Dot(RbD.velocity, slopeNormalPerp) > 0)
+        {
+            playerForce *= (1 / uphillDrag);
+        }
+
+        // MODIFIKASI: Tambah resistensi saat input melawan slope
+        if (isJumpRestricted)
+        {
+            if (isRight && SideMove < 0f)
+            {
+                playerForce.x = Mathf.Max(playerForce.x, 0f);
+                RbD.AddForce(slopeNormalPerp * slideSpeedMultiplier * 0.5f);
+            }
+            else if (isLeft && SideMove > 0f)
+            {
+                playerForce.x = Mathf.Min(playerForce.x, 0f);
+                RbD.AddForce(-slopeNormalPerp * slideSpeedMultiplier * 0.5f);
+            }
+        }
+
+        RbD.AddForce(playerForce);
+        RbD.velocity = Vector2.ClampMagnitude(RbD.velocity, 50f);
+    }
+
+
+    // MODIFIKASI: Fungsi baru untuk handle movement saat lompat di ice
+    private void ApplyIceJumpMovement()
+    {
+        // Debug untuk cek input
+        Debug.Log($"Applying Ice Jump Movement: SideMove = {SideMove}, isRight = {isRight}, isLeft = {isLeft}");
+
+        Vector2 playerForce = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
+
+        // Batasi input berdasarkan arah slope saat restriction aktif
+        if (isJumpRestricted)
+        {
+            if (isRight && SideMove < 0f) // Coba ke kiri di slope kanan
+            {
+                playerForce.x = Mathf.Max(playerForce.x, 0f); // Tidak izinkan ke kiri
+                RbD.AddForce(slopeNormalPerp * slideSpeedMultiplier * 0.5f); // Dorong ke arah slope
+            }
+            else if (isLeft && SideMove > 0f) // Coba ke kanan di slope kiri
+            {
+                playerForce.x = Mathf.Min(playerForce.x, 0f); // Tidak izinkan ke kanan
+                RbD.AddForce(-slopeNormalPerp * slideSpeedMultiplier * 0.5f);
+            }
+        }
+
+        // Terapkan kecepatan horizontal
+        RbD.velocity = new Vector2(playerForce.x, RbD.velocity.y);
+        RbD.velocity = Vector2.ClampMagnitude(RbD.velocity, 50f);
     }
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (!enabled) return;
-
         if (context.performed)
         {
-            if (IsGrounded || OnIceSlope)
-            {
-                float jumpDirection = SideMove;
-
-                if (OnIceSlope && jumpDirection < 0)
-                    jumpDirection = 0; // Abaikan loncat kiri di slope
-
-                // Jump tetap normal, tidak dipengaruhi licin
-                RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
-
-                IsGrounded = false;
-                IsJumping = true;
-            }
+            Debug.LogWarning($"Jump button pressed, Cooldown Active: {isJumpCooldownActive}");
         }
-        else if (context.canceled && RbD.velocity.y >= 0)
+
+        if (!enabled) return;
+
+        // MODIFIKASI: Cek apakah cooldown tidak aktif dan coyote time valid
+        if (context.performed && coyoteTimeCounter > 0f && !isJumpCooldownActive)
         {
-            // Light tap = small jump
-            RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
+            PerformJump();
         }
+
+        if (context.performed) isJumpButtonPressed = true;
+        else if (context.canceled) isJumpButtonPressed = false;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void PerformJump()
     {
-        if (collision.collider.CompareTag("Ice"))
+        RbD.velocity = new Vector2(RbD.velocity.x, JumpPower);
+        Debug.Log($"Jump Performed: Horizontal Velocity = {RbD.velocity.x}, Starting Cooldown for {jumpCooldown} seconds");
+
+        IsJumping = true;
+        coyoteTimeCounter = 0f;
+
+        if (isOnIce)
         {
-            OnIceSlope = true;
-            MovementLocked = false;
-            // Hitung arah tangen slope berdasarkan normal kontak
-            Vector2 contactNormal = collision.GetContact(0).normal;
-            slopeTangent = new Vector2(-contactNormal.y, contactNormal.x).normalized;
-            // Pastikan tangen mengarah ke bawah (y negatif) dan sesuai arah slope
-            if (contactNormal.x > 0) // Rightward slope (normal points right/up, slide down-right)
-            {
-                if (slopeTangent.x < 0) slopeTangent = -slopeTangent;
-            }
-            else // Leftward slope (normal points left/up, slide down-left)
-            {
-                if (slopeTangent.x > 0) slopeTangent = -slopeTangent;
-            }
-            // Final check: Ensure downhill (y < 0)
-            if (slopeTangent.y > 0) slopeTangent = -slopeTangent;
-            Debug.Log("On Ice (Collision), Slope Tangent: " + slopeTangent + ", Normal: " + contactNormal);
+            isJumpRestricted = true;
+            jumpRestrictionTimer = jumpRestrictionTime;
         }
+
+        // MODIFIKASI: Mulai coroutine untuk cooldown
+        StartCoroutine(JumpCooldown());
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+
+    // MODIFIKASI: Coroutine untuk mengelola jump cooldown
+    private IEnumerator JumpCooldown()
     {
-        if (collision.collider.CompareTag("Ice"))
-        {
-            OnIceSlope = false;
-            Debug.Log("Exit Ice (Collision)");
-            // Lock kiri selama 2 detik setelah keluar dari es
-            StartCoroutine(LockLeftMovement(2f));
-        }
+        isJumpCooldownActive = true;
+        yield return new WaitForSeconds(jumpCooldown);
+        isJumpCooldownActive = false;
+        Debug.Log("Jump Cooldown Finished, Jump Allowed Again");
+    }
+    private void BetterJump()
+    {
+        // if (RbD.velocity.y < 0)
+        // {
+        //     RbD.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        // }
+        // else if (RbD.velocity.y > 0 && !isJumpButtonPressed)
+        // {
+        //     RbD.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+        // }
     }
 
-    private IEnumerator LockLeftMovement(float duration)
+    public void Move(InputAction.CallbackContext context)
     {
-        MovementLocked = true;
-        yield return new WaitForSeconds(duration);
-        MovementLocked = false;
+        SideMove = context.ReadValue<Vector2>().x;
+    }
+
+    public void Crouch(InputAction.CallbackContext context)
+    {
+        if (context.performed) SideSpeed = OriginalSideSpeed / CrouchSlowness;
+        else if (context.canceled) SideSpeed = OriginalSideSpeed;
     }
 }
