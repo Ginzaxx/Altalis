@@ -10,13 +10,14 @@ public class Movement : MonoBehaviour
     [Header("Movement")]
     public float SideSpeed = 8f;
     private float SideMove;
+    private float Walking;
     private bool IsFacingRight = true;
 
     [Header("Jumping & Gliding")]
     public float JumpPower = 8f;
+    private bool IsGrounded;
     // public float GlideSpeed = 2f;
     // private bool IsJumping = false;
-    private bool IsGrounded;
 
     // [Header("Crouching")]
     // public float CrouchPower = 4f;
@@ -48,19 +49,21 @@ public class Movement : MonoBehaviour
         // Only Update if Scene is enabled
         if (!enabled) return;
 
-        // Set Rigidbody Velocity value
-        RbD.velocity = new Vector2(SideMove * SideSpeed + IceSlideMove, RbD.velocity.y);
+        IceSlope();
+        Flip();
 
-        // Check if Player is on Ground
-        IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
-
-
+        // Set Animator values
         Animate.SetFloat("SideMove", SideMove * SideMove);
         Animate.SetBool("Grounded", IsGrounded);
 
-        // IsGrounded();
-        IceSlope();
-        Flip();
+        // Set Rigidbody Velocity value
+
+        // Ignore Inputs when Movement is Locked
+        SideMove = ((MovementLockedLeft && SideMove < 0) || (MovementLockedRight && SideMove > 0)) ? 0 : Walking;
+        RbD.velocity = new Vector2(SideMove + IceSlideMove, RbD.velocity.y);
+
+        // Check if Player is on Ground
+        IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -69,13 +72,7 @@ public class Movement : MonoBehaviour
         if (!enabled) return;
 
         // Convert Player Inputs into Vector values
-        SideMove = context.ReadValue<Vector2>().x;
-
-        // Ignore Inputs when On Ice Slope or Movement is Locked
-        if ((OnIceSlopeLeft || MovementLockedLeft) && SideMove < 0)
-            SideMove = 0;
-        if ((OnIceSlopeRight || MovementLockedRight) && SideMove > 0)
-            SideMove = 0;
+        Walking = context.ReadValue<Vector2>().x * SideSpeed;
     }
 
     public void Jump(InputAction.CallbackContext context)
@@ -91,9 +88,9 @@ public class Movement : MonoBehaviour
                 // Hold Down on Jump Button = Big Jump
                 RbD.velocity = new Vector2(RbD.velocity.x, JumpPower);
                 // IsJumping = true;
-            // }
-            // else if (IsJumping) 
-            // {
+                // }
+                // else if (IsJumping) 
+                // {
                 // Double tap on Jump Button = Glide
                 // RbD.velocity = new Vector2(RbD.velocity.x, -GlideSpeed);
                 // RbD.gravityScale = 0;
@@ -111,7 +108,6 @@ public class Movement : MonoBehaviour
     // {
     // Only process crouch input if the script is enabled
     // if (!enabled) return;
-
     // Convert Player Inputs into Crouch Slowness
     // if (context.performed && !IsCrouching) 
     // {
@@ -125,35 +121,56 @@ public class Movement : MonoBehaviour
     // }
     // }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void Flip()
     {
-        if (collision.collider.CompareTag("IceLeft"))
+        if (IsFacingRight && SideMove < 0 || !IsFacingRight && SideMove > 0)
         {
-            OnIceSlopeLeft = true;
-            MovementLockedLeft = true;
-            Debug.Log("On Ice Left (Collision)");
-        }
-        if (collision.collider.CompareTag("IceRight"))
-        {
-            OnIceSlopeRight = true;
-            MovementLockedLeft = true;
-            Debug.Log("On Ice Right (Collision)");
+            Vector3 ls = transform.localScale;
+            ls.x *= -1f;
+            transform.localScale = ls;
+            IsFacingRight = !IsFacingRight;
         }
     }
-    private void OnCollisionExit2D(Collision2D collision)
+
+    private void IceSlope()
     {
-        if (collision.collider.CompareTag("IceLeft"))
+        if (OnIceSlopeLeft)
+            IceSlideMove = IceSlideSpeed;
+        if (OnIceSlopeRight)
+            IceSlideMove = -IceSlideSpeed;
+        if (!OnIceSlopeLeft && !OnIceSlopeRight)
+            IceSlideMove = 0;
+    }
+    
+    private void OnCollisionEnter2D(Collision2D IceBox)
+    {
+        if (IceBox.collider.CompareTag("IceLeft"))
+        {
+            MovementLockedLeft = true;
+            OnIceSlopeLeft = true;
+            Debug.Log("On Ice Left (IceBox)");
+        }
+        if (IceBox.collider.CompareTag("IceRight"))
+        {
+            MovementLockedRight = true;
+            OnIceSlopeRight = true;
+            Debug.Log("On Ice Right (IceBox)");
+        }
+    }
+    private void OnCollisionExit2D(Collision2D IceBox)
+    {
+        if (IceBox.collider.CompareTag("IceLeft"))
         {
             OnIceSlopeLeft = false;
-            Debug.Log("Exit Ice Left (Collision)");
+            Debug.Log("Exit Ice Left (IceBox)");
 
             // Lock kiri selama 2 detik setelah keluar dari es
             StartCoroutine(LockLeftMovement(1f));
         }
-        if (collision.collider.CompareTag("IceRight"))
+        if (IceBox.collider.CompareTag("IceRight"))
         {
             OnIceSlopeRight = false;
-            Debug.Log("Exit Ice Right (Collision)");
+            Debug.Log("Exit Ice Right (IceBox)");
 
             // Lock kiri selama 2 detik setelah keluar dari es
             StartCoroutine(LockRightMovement(1f));
@@ -164,42 +181,13 @@ public class Movement : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         MovementLockedLeft = false;
+        Debug.Log("Left Movement Unlocked");
     }
     private IEnumerator LockRightMovement(float duration)
     {
         yield return new WaitForSeconds(duration);
         MovementLockedRight = false;
-    }
-
-    // private bool IsGrounded()
-    // {
-        // if (Physics2D.OverlapBox(GroundCheckPos.position, GroundCheckSize, 0, GroundLayer))
-        // {
-            // RbD.gravityScale = 1;
-            // return true;
-        // }
-        // return false;
-    // }
-
-    private void IceSlope()
-    {
-        if (MovementLockedLeft)
-            IceSlideMove = Mathf.Min(0, SideMove) * -SideSpeed + (OnIceSlopeLeft ? IceSlideSpeed : 0);
-        else if (MovementLockedRight)
-            IceSlideMove = Mathf.Max(0, SideMove) * -SideSpeed - (OnIceSlopeRight ? IceSlideSpeed : 0);
-        else
-            IceSlideMove = 0;
-    }
-
-    private void Flip()
-    {
-        if (IsFacingRight && SideMove < 0 || !IsFacingRight && SideMove > 0)
-        {
-            IsFacingRight = !IsFacingRight;
-            Vector3 ls = transform.localScale;
-            ls.x *= -1f;
-            transform.localScale = ls;
-        }
+        Debug.Log("Right Movement Unlocked");
     }
 
     private void OnDrawGizmosSelected()
