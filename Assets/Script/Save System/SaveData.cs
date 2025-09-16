@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class PlacedObjectData
 {
     public string prefabName;
+    public string tag; // simpan juga tag
+
     public float posX, posY, posZ;
     public float rotZ;
     public float scaleX, scaleY, scaleZ;
@@ -18,3 +20,4 @@ public class SaveData
     public int mana;
     public List<PlacedObjectData> placedObjects = new List<PlacedObjectData>();
 }
+

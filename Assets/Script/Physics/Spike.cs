@@ -14,23 +14,6 @@ public class Spike : MonoBehaviour
             // Hancurkan player
             Destroy(other.gameObject);
 
-            // Ambil jumlah kematian dari PlayerPrefs
-            int deathCount = PlayerPrefs.GetInt(DeathCountKey, 0);
-            deathCount++;
-
-            if (deathCount >= 3)
-            {
-                // Hapus save game
-                SaveSystem.Instance.DeleteSave();
-
-                // Reset death counter
-                deathCount = 0;
-            }
-
-            // Simpan jumlah kematian terbaru
-            PlayerPrefs.SetInt(DeathCountKey, deathCount);
-            PlayerPrefs.Save();
-
             // Reload scene setelah 0.5 detik (bisa langsung kalau mau instant)
             StartCoroutine(ReloadSceneWithDelay(0.5f));
         }
