@@ -958,7 +958,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMode: 0
-  movementScript: {fileID: 51975900}
+  movementScript: {fileID: 0}
   dragSelectionScript: {fileID: 1739641415}
   movementModeUI: {fileID: 0}
   selectionModeUI: {fileID: 1477477938}
@@ -1715,8 +1715,8 @@ GameObject:
   - component: {fileID: 51975903}
   - component: {fileID: 51975902}
   - component: {fileID: 51975901}
-  - component: {fileID: 51975900}
   - component: {fileID: 51975899}
+  - component: {fileID: 51975905}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -1759,27 +1759,6 @@ CapsuleCollider2D:
   m_Offset: {x: -0.008142233, y: 0.53547156}
   m_Size: {x: 1.0299649, y: 1.8863814}
   m_Direction: 0
---- !u!114 &51975900
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 51975898}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6a91766fefdfbc438f7e3fdefa17abf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SideSpeed: 8
-  JumpPower: 6
-  IceSlideSpeed: 8
-  IceAcceleration: 10
-  groundCheck: {fileID: 662229600}
-  groundCheckRadius: 0.2
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &51975901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1819,7 +1798,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 51975900}
+      - m_Target: {fileID: 51975905}
         m_TargetAssemblyTypeName: Movement, Assembly-CSharp
         m_MethodName: Move
         m_Mode: 0
@@ -1891,7 +1870,7 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 51975900}
+      - m_Target: {fileID: 51975905}
         m_TargetAssemblyTypeName: Movement, Assembly-CSharp
         m_MethodName: Jump
         m_Mode: 0
@@ -2015,6 +1994,27 @@ Transform:
   - {fileID: 662229600}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &51975905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 51975898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e14a46dff9488742818404cafb031de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SideSpeed: 4
+  JumpPower: 7
+  IceSlideSpeed: 8
+  IceAcceleration: 10
+  groundCheck: {fileID: 662229600}
+  groundCheckRadius: 0.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!4 &55415609 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4045187600193642609, guid: 2166eff135345d44898a66602eb80faf, type: 3}
