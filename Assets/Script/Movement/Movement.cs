@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,121 +10,116 @@ public class Movement : MonoBehaviour
     [Header("Movement")]
     public float SideSpeed = 8f;
     private float SideMove;
-    private bool IsFacingRight = true;
+    private float OriginalSideSpeed;
 
-    [Header("Jumping & Gliding")]
-    public float JumpPower = 8f;
-    public float GlideSpeed = 2f;
+    [Header("Jumping")]
+    public float JumpPower = 6f;
     private bool IsJumping = false;
-    
-    [Header("Crouching")]
-    public float CrouchPower = 4f;
-    private bool IsCrouching = false;
+    private bool IsGrounded = true;
 
-    [Header("Groundcheck")]
-    public Transform GroundCheckPos;
-    public Vector2 GroundCheckSize = new Vector2(0.9f, 0.1f);
-    public LayerMask GroundLayer;
+    [Header("Ice Slope")]
+    private bool OnIceSlope = false;
+    private bool MovementLocked = false;
+    public float IceSlideSpeed = 8f; // 🔥 Kecepatan licin di slope
+
+    [Header("Ground Check")]
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
 
     void Start()
     {
-        // Get Rigidbody and Animator values
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
+        OriginalSideSpeed = SideSpeed;
     }
 
     void Update()
     {
-        // Only move if movement is enabled and we're in movement mode
         if (!enabled) return;
 
-        // Set Rigidbody Velocity value
-        RbD.velocity = new Vector2(SideMove * SideSpeed, RbD.velocity.y);
+        // ✅ Cek grounded pakai OverlapCircle
+        IsGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        Animate.SetFloat("XVelocity", RbD.velocity.x * RbD.velocity.x);
-        Animate.SetBool("Grounded", IsGrounded());
-
-        IsGrounded();
-        Flip();
+        // Movement
+        if (!OnIceSlope)
+        {
+            // Kalau movement dikunci → abaikan input kiri
+            float moveX = (MovementLocked ? Mathf.Max(0, SideMove) : SideMove) * SideSpeed;
+            RbD.velocity = new Vector2(moveX, RbD.velocity.y);
+        }
+        else
+        {
+            // ❄️ Di IceSlope → selalu geser ke kanan dengan IceSlideSpeed
+            float moveX = Mathf.Max(0, SideMove) * SideSpeed; 
+            float finalX = moveX + IceSlideSpeed; // gabungan input + licin
+            RbD.velocity = new Vector2(finalX, RbD.velocity.y);
+        }
     }
 
     public void Move(InputAction.CallbackContext context)
     {
-        // Only process movement input if the script is enabled
         if (!enabled) return;
-
-        // Convert Player Inputs into Vector values
         SideMove = context.ReadValue<Vector2>().x;
+
+        // Abaikan input kiri saat di slope atau movement lock
+        if ((OnIceSlope || MovementLocked) && SideMove < 0)
+            SideMove = 0;
     }
 
     public void Jump(InputAction.CallbackContext context)
     {
-        // Only process jump input if the script is enabled
         if (!enabled) return;
 
-        // Convert Player Inputs into Jump or Glide values
         if (context.performed)
         {
-            if (IsGrounded()) // Check if Player is on Ground to Jump
+            if (IsGrounded || OnIceSlope)
             {
-                // Hold Down on Jump Button = Big Jump
-                RbD.velocity = new Vector2(RbD.velocity.x, JumpPower);
+                float jumpDirection = SideMove;
+
+                if (OnIceSlope && jumpDirection < 0)
+                    jumpDirection = 0; // Abaikan loncat kiri di slope
+
+                // 🚀 Jump tetap normal, tidak dipengaruhi licin
+                RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
+
+                IsGrounded = false;
                 IsJumping = true;
-                // Animate.SetTrigger("Jumping");
-            }
-            else if (IsJumping)
-            {
-                // Double tap on Jump Button = Glide
-                RbD.velocity = new Vector2(RbD.velocity.x, -GlideSpeed);
-                RbD.gravityScale = 0;
-                IsJumping = false;
             }
         }
         else if (context.canceled && RbD.velocity.y >= 0)
         {
-            // Light tap on Jump Button = Small Jump
+            // Light tap = small jump
             RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
         }
     }
 
-    public void Crouch(InputAction.CallbackContext context)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Only process crouch input if the script is enabled
-        if (!enabled) return;
-
-        // Convert Player Inputs into Crouch Slowness
-        if (context.performed && !IsCrouching)
+        if (collision.collider.CompareTag("Ice"))
         {
-            IsCrouching = true;
-            SideSpeed /= CrouchPower;
-        }
-        else if (context.canceled && IsCrouching)
-        {
-            IsCrouching = false;
-            SideSpeed *= CrouchPower;
+            OnIceSlope = true;
+            MovementLocked = false;
+            Debug.Log("On Ice (Collision)");
         }
     }
 
-    private bool IsGrounded()
+    private void OnCollisionExit2D(Collision2D collision)
     {
-        if (Physics2D.OverlapBox(GroundCheckPos.position, GroundCheckSize, 0, GroundLayer)) return true;
-        return false;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(GroundCheckPos.position, GroundCheckSize);
-    }
-
-    private void Flip()
-    {
-        if (IsFacingRight && SideMove < 0 || !IsFacingRight && SideMove > 0)
+        if (collision.collider.CompareTag("Ice"))
         {
-            IsFacingRight = !IsFacingRight;
-            Vector3 ls = transform.localScale;
-            ls.x *= -1f;
-            transform.localScale = ls;
+            OnIceSlope = false;
+            Debug.Log("Exit Ice (Collision)");
+
+            // Lock kiri selama 2 detik setelah keluar dari es
+            StartCoroutine(LockLeftMovement(2f));
         }
+    }
+
+    private IEnumerator LockLeftMovement(float duration)
+    {
+        MovementLocked = true;
+        yield return new WaitForSeconds(duration);
+        MovementLocked = false;
     }
 }
