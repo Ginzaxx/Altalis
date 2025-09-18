@@ -14433,6 +14433,7 @@ GameObject:
   - component: {fileID: 1156293028}
   - component: {fileID: 1156293023}
   - component: {fileID: 1156293022}
+  - component: {fileID: 1156293029}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -14454,12 +14455,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SideSpeed: 6
   JumpPower: 8
-  IceSlideSpeed: 8
+  GlideSpeed: 2
+  CrouchPower: 4
   GroundCheckPos: {fileID: 347612754}
   GroundCheckSize: {x: 0.9, y: 0.05}
   GroundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!114 &1156293023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14767,6 +14769,29 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1156293029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156293021}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6a91766fefdfbc438f7e3fdefa17abf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SideSpeed: 8
+  JumpPower: 16
+  fallMultiplier: 2.5
+  lowJumpMultiplier: 2
+  CrouchSlowness: 4
+  coyoteTime: 0.1
+  groundCheckPoint: {fileID: 0}
+  groundCheckDistance: 0.5
+  slideSpeedMultiplier: 5
+  uphillDrag: 3
+  slideJumpVelocityThreshold: 2
 --- !u!70 &1156293030
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
