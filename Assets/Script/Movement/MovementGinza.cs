@@ -13,7 +13,6 @@ public class MovementGinza : MonoBehaviour
 
     [Header("Jumping")]
     public float JumpPower = 6f;
-    private bool IsJumping = false;
     private bool IsGrounded = true;
 
     [Header("Ice Slope")]
@@ -82,7 +81,6 @@ public class MovementGinza : MonoBehaviour
                 RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
 
                 IsGrounded = false;
-                IsJumping = true;
             }
         }
         else if (context.canceled && RbD.velocity.y >= 0)

@@ -923,7 +923,7 @@ GameObject:
   - component: {fileID: 24050794}
   - component: {fileID: 24050793}
   - component: {fileID: 24050792}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: tileice (2)
   m_TagString: IceRight
   m_Icon: {fileID: 0}
@@ -1046,7 +1046,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 2135025522}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &24512830
 PrefabInstance:
@@ -8300,7 +8300,7 @@ GameObject:
   - component: {fileID: 299694317}
   - component: {fileID: 299694318}
   - component: {fileID: 299694319}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: tileice
   m_TagString: IceRight
   m_Icon: {fileID: 0}
@@ -8320,7 +8320,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 2135025522}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &299694318
 SpriteRenderer:
@@ -9599,7 +9599,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.6233134
+  orthographic size: 5.6
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -9642,7 +9642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8883d3181deecd41a57b9e605e4a833, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 1496191269}
   offset: {x: 0, y: 2, z: -10}
   smoothSpeed: 0.125
   useManualBorders: 1
@@ -53485,7 +53485,7 @@ GameObject:
   - component: {fileID: 2108931376}
   - component: {fileID: 2108931375}
   - component: {fileID: 2108931374}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: tileice (1)
   m_TagString: IceRight
   m_Icon: {fileID: 0}
@@ -53608,7 +53608,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 2135025522}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2108973329
 PrefabInstance:
@@ -55445,9 +55445,6 @@ Transform:
   - {fileID: 499131699}
   - {fileID: 1237852184}
   - {fileID: 1547140881}
-  - {fileID: 299694317}
-  - {fileID: 2108931376}
-  - {fileID: 24050794}
   m_Father: {fileID: 1082924827}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!483693784 &2135025523
@@ -55925,4 +55922,7 @@ SceneRoots:
   - {fileID: 1592291940}
   - {fileID: 173577616}
   - {fileID: 2048777434}
+  - {fileID: 299694317}
+  - {fileID: 2108931376}
+  - {fileID: 24050794}
   - {fileID: 1496191269}
