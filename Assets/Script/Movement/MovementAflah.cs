@@ -221,7 +221,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MovementAflahVersion : MonoBehaviour
+public class MovementAflah : MonoBehaviour
 {
     // ... (Variabel lain tetap sama) ...
     private Rigidbody2D RbD;

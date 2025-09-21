@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Movement : MonoBehaviour
+public class MovementHans : MonoBehaviour
 {
     private Rigidbody2D RbD;
     private Animator Animate;
@@ -10,10 +10,6 @@ public class Movement : MonoBehaviour
     [Header("Movement")]
     public float SideSpeed = 8f;
     private float SideMove;
-<<<<<<< HEAD
-=======
-    private float Walking;
->>>>>>> parent of a9c9216 (revert 2)
     private bool IsFacingRight = true;
 
     [Header("Jumping & Gliding")]
@@ -28,12 +24,11 @@ public class Movement : MonoBehaviour
 
     [Header("Ice Slope")]
     public float IceSlideSpeed = 8f;
-    private float IceSlideMove;
-    private bool OnIceSlopeLeft = false;
-    private bool OnIceSlopeRight = false;
-    private bool MovementLockedLeft = false;
-    private bool MovementLockedRight = false;
-
+    private bool OnIceSlope = false;
+    private bool MovementLocked = false;
+    public float IceAcceleration = 10f; // Kecepatan akselerasi saat masuk ke es
+    private Vector2 slopeTangent; // Arah tangen slope untuk sliding
+    
     [Header("Groundcheck")]
     public Transform GroundCheckPos;
     // public Vector2 GroundCheckSize = new Vector2(0.9f, 0.1f);
@@ -45,10 +40,7 @@ public class Movement : MonoBehaviour
         // Get Rigidbody and Animator values
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
-<<<<<<< HEAD
         RbD.constraints = RigidbodyConstraints2D.FreezeRotation; // Pastikan rotasi terkunci
-=======
->>>>>>> parent of a9c9216 (revert 2)
     }
 
     void Update()
@@ -56,9 +48,8 @@ public class Movement : MonoBehaviour
         // Only Update if Scene is enabled
         if (!enabled) return;
 
-<<<<<<< HEAD
-        // Cek grounded pakai OverlapCircle
-        IsGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        // Check if Player is on Ground
+        IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
 
         // Movement
         if (!OnIceSlope)
@@ -78,40 +69,22 @@ public class Movement : MonoBehaviour
             Vector2 newVelocity = Vector2.Lerp(currentVelocity, targetVelocity, IceAcceleration * Time.deltaTime);
             RbD.velocity = newVelocity;
         }
-=======
-        IceSlope();
-        Flip();
 
         // Set Animator values
         Animate.SetFloat("SideMove", SideMove * SideMove);
         Animate.SetBool("Grounded", IsGrounded);
-
-        // Set Rigidbody Velocity value
-
-        // Ignore Inputs when Movement is Locked
-        SideMove = ((MovementLockedLeft && SideMove < 0) || (MovementLockedRight && SideMove > 0)) ? 0 : Walking;
-        RbD.velocity = new Vector2(SideMove + IceSlideMove, RbD.velocity.y);
-
-        // Check if Player is on Ground
-        IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
->>>>>>> parent of a9c9216 (revert 2)
+        Flip();
     }
 
     public void Move(InputAction.CallbackContext context)
     {
         // Only process Movement input if the script is enabled
         if (!enabled) return;
-<<<<<<< HEAD
         SideMove = context.ReadValue<Vector2>().x;
 
         // Abaikan input kiri saat di slope atau movement lock
         if ((OnIceSlope || MovementLocked) && SideMove < 0)
             SideMove = 0;
-=======
-
-        // Convert Player Inputs into Vector values
-        Walking = context.ReadValue<Vector2>().x * SideSpeed;
->>>>>>> parent of a9c9216 (revert 2)
     }
 
     public void Jump(InputAction.CallbackContext context)
@@ -124,19 +97,15 @@ public class Movement : MonoBehaviour
         {
             if (IsGrounded) // Check if Player is on Ground to Jump
             {
-<<<<<<< HEAD
                 float jumpDirection = SideMove;
 
                 if (OnIceSlope && jumpDirection < 0)
                     jumpDirection = 0; // Abaikan loncat kiri di slope
 
                 // Jump tetap normal, tidak dipengaruhi licin
+                // Hold Down on Jump Button = Big Jump
                 RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
 
-                IsGrounded = false;
-=======
-                // Hold Down on Jump Button = Big Jump
-                RbD.velocity = new Vector2(RbD.velocity.x, JumpPower);
                 // IsJumping = true;
                 // }
                 // else if (IsJumping) 
@@ -145,7 +114,6 @@ public class Movement : MonoBehaviour
                 // RbD.velocity = new Vector2(RbD.velocity.x, -GlideSpeed);
                 // RbD.gravityScale = 0;
                 // IsJumping = false;
->>>>>>> parent of a9c9216 (revert 2)
             }
         }
         else if (context.canceled && RbD.velocity.y >= 0)
@@ -183,7 +151,6 @@ public class Movement : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Ice"))
@@ -216,73 +183,18 @@ public class Movement : MonoBehaviour
             Debug.Log("Exit Ice (Collision)");
             // Lock kiri selama 2 detik setelah keluar dari es
             StartCoroutine(LockMovement(2f));
-=======
-    private void IceSlope()
-    {
-        if (OnIceSlopeLeft)
-            IceSlideMove = IceSlideSpeed;
-        if (OnIceSlopeRight)
-            IceSlideMove = -IceSlideSpeed;
-        if (!OnIceSlopeLeft && !OnIceSlopeRight)
-            IceSlideMove = 0;
-    }
-    
-    private void OnCollisionEnter2D(Collision2D IceBox)
-    {
-        if (IceBox.collider.CompareTag("IceLeft"))
-        {
-            MovementLockedLeft = true;
-            OnIceSlopeLeft = true;
-            Debug.Log("On Ice Left (IceBox)");
-        }
-        if (IceBox.collider.CompareTag("IceRight"))
-        {
-            MovementLockedRight = true;
-            OnIceSlopeRight = true;
-            Debug.Log("On Ice Right (IceBox)");
-        }
-    }
-    private void OnCollisionExit2D(Collision2D IceBox)
-    {
-        if (IceBox.collider.CompareTag("IceLeft"))
-        {
-            OnIceSlopeLeft = false;
-            Debug.Log("Exit Ice Left (IceBox)");
-
-            // Lock kiri selama 2 detik setelah keluar dari es
-            StartCoroutine(LockLeftMovement(1f));
-        }
-        if (IceBox.collider.CompareTag("IceRight"))
-        {
-            OnIceSlopeRight = false;
-            Debug.Log("Exit Ice Right (IceBox)");
-
-            // Lock kiri selama 2 detik setelah keluar dari es
-            StartCoroutine(LockRightMovement(1f));
->>>>>>> parent of a9c9216 (revert 2)
         }
     }
 
     private IEnumerator LockMovement(float duration)
     {
         yield return new WaitForSeconds(duration);
-<<<<<<< HEAD
         MovementLocked = false;
-=======
-        MovementLockedLeft = false;
-        Debug.Log("Left Movement Unlocked");
-    }
-    private IEnumerator LockRightMovement(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        MovementLockedRight = false;
-        Debug.Log("Right Movement Unlocked");
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(GroundCheckPos.position, GroundCheckRad);
->>>>>>> parent of a9c9216 (revert 2)
     }
 }
