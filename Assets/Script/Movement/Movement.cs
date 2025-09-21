@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MovementHans : MonoBehaviour
+public class Movement : MonoBehaviour
 {
     private Rigidbody2D RbD;
     private Animator Animate;
