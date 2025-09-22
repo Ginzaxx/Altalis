@@ -155,7 +155,7 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            if (IsFacingRight && slopeTangent.x < 0 || !IsFacingRight && slopeTangent.x > 0)
+            if (IsFacingRight && SideMove < 0 || !IsFacingRight && SideMove > 0)
             {
                 Vector3 ls = transform.localScale;
                 ls.x *= -1f;
