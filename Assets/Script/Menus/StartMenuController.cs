@@ -10,6 +10,7 @@ public class StartMenuController : MonoBehaviour
 {
     [Header("Canvas")]
     [SerializeField] private GameObject creditsCanvas;
+    [SerializeField] private GameObject settingsCanvas; // 🎮 Panel Settings
     [SerializeField] private CanvasGroup blackScreenGroup;
 
     [Header("Duration")]
@@ -37,6 +38,7 @@ public class StartMenuController : MonoBehaviour
     void Start()
     {
         creditsCanvas.SetActive(false);
+        if (settingsCanvas != null) settingsCanvas.SetActive(false); // 🔒 Tutup settings di awal
         blackScreenGroup.alpha = 0f;
     }
 
@@ -89,12 +91,17 @@ public class StartMenuController : MonoBehaviour
         creditsCanvas.SetActive(!creditsCanvas.activeSelf);
     }
 
+    public void OnSettingsClicked()
+    {
+        settingsCanvas.SetActive(!settingsCanvas.activeSelf);
+    }
+
     public void OnExitClick()
     {
     #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+        UnityEditor.EditorApplication.isPlaying = false;
     #else
-            Application.Quit();
+        Application.Quit();
     #endif
     }
 

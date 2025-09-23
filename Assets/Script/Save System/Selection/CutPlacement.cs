@@ -23,7 +23,7 @@ public class CutPlacement : MonoBehaviour
     {
         if (!isPlacing)
         {
-            if (Input.GetKeyDown(KeyCode.X) && selectionManager.SelectedObjects.Count > 0)
+            if (KeyBindings.GetKeyDown(KeyBindings.CutKey) && selectionManager.SelectedObjects.Count > 0)
             {
                 StartPlacementMode();
             }
@@ -32,7 +32,7 @@ public class CutPlacement : MonoBehaviour
         {
             UpdatePreviewPosition();
 
-            if (Input.GetKeyDown(KeyCode.V)) // Confirm
+            if (Input.GetKeyDown(KeyBindings.ConfirmKey)) // Confirm
             {
                 if (canPlace)
                 {
