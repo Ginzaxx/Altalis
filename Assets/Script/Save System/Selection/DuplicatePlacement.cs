@@ -24,7 +24,7 @@ public class DuplicatePlacement : MonoBehaviour
     {
         if (!isPlacing)
         {
-            if (Input.GetKeyDown(KeyBindings.DuplicateKey) && selectionManager.SelectedObjects.Count > 0)
+            if (KeyBindings.GetKeyDown(KeyBindings.DuplicateKey) && selectionManager.SelectedObjects.Count > 0)
             {
                 StartPlacementMode();
             }

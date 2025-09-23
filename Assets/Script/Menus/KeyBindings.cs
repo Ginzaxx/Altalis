@@ -7,10 +7,11 @@ public static class KeyBindings
     public static KeyCode DuplicateKey = KeyCode.C;
     public static KeyCode ConfirmKey = KeyCode.V;
 
-    public static KeyCode MoveLeftKey;
-    public static KeyCode MoveRightKey;
-    public static KeyCode JumpKey;
-
-    public static KeyCode CameraUpKey = KeyCode.W;
-    public static KeyCode CameraDownKey = KeyCode.S;
+    // 🔥 Helper function buat cek tombol (support keyboard & mouse)
+    public static bool GetKeyDown(KeyCode key)
+    {
+        if (key == KeyCode.Mouse0) return Input.GetMouseButtonDown(0);
+        if (key == KeyCode.Mouse1) return Input.GetMouseButtonDown(1);
+        return Input.GetKeyDown(key);
+    }
 }
