@@ -5,7 +5,11 @@ using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
 {
+    [Header("Panels")]
     public GameObject pauseMenuUI;
+    public GameObject settingPanelUI; // Tambahan
+
+    [Header("Buttons")]
     public Button pauseButton;
     public Button resumeButton;
     public Button settingButton;
@@ -16,9 +20,10 @@ public class PauseMenu : MonoBehaviour
     void Start()
     {
         pauseMenuUI.SetActive(false);
+        settingPanelUI.SetActive(false); // pastikan awalnya mati
 
         resumeButton.onClick.AddListener(Resume);
-        settingButton.onClick.AddListener(Setting);
+        settingButton.onClick.AddListener(OpenSetting);
         quitButton.onClick.AddListener(QuitGame);
     }
 
@@ -26,7 +31,15 @@ public class PauseMenu : MonoBehaviour
     {
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            TogglePause();
+            // Kalau lagi di setting panel, balik ke pause menu
+            if (settingPanelUI.activeSelf)
+            {
+                CloseSetting();
+            }
+            else
+            {
+                TogglePause();
+            }
         }
     }
 
@@ -41,6 +54,7 @@ public class PauseMenu : MonoBehaviour
     public void Resume()
     {
         pauseMenuUI.SetActive(false);
+        settingPanelUI.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
     }
@@ -52,13 +66,19 @@ public class PauseMenu : MonoBehaviour
         isPaused = true;
     }
 
-    public void Setting()
+    public void OpenSetting()
     {
+        settingPanelUI.SetActive(true);
+    }
 
+    public void CloseSetting()
+    {
+        settingPanelUI.SetActive(false);
     }
 
     public void QuitGame()
     {
+        Time.timeScale = 1f; // biar game normal lagi pas keluar
         SceneManager.LoadScene(0);
     }
 }
