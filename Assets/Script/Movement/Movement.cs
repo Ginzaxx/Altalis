@@ -23,13 +23,13 @@ public class Movement : MonoBehaviour
     // private bool IsCrouching = false;
 
     [Header("Ice Slope")]
-    private bool MovementLocked = false;
-    private bool OnIceSlope = false;
     public float IceSlideSpeed = 8f;
+    private bool OnIceSlope = false;
+    private bool MovementLocked = false;
     public float IceAcceleration = 10f; // Kecepatan akselerasi saat masuk ke es
     private Vector2 slopeTangent; // Arah tangen slope untuk sliding
     
-    [Header("Ground Check")]
+    [Header("Groundcheck")]
     public Transform GroundCheckPos;
     // public Vector2 GroundCheckSize = new Vector2(0.9f, 0.1f);
     public float GroundCheckRad = 0.2f;
@@ -40,7 +40,7 @@ public class Movement : MonoBehaviour
         // Get Rigidbody and Animator values
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
-        RbD.constraints = RigidbodyConstraints2D.FreezeRotation; // Make Sure to Freeze Z Rotation
+        RbD.constraints = RigidbodyConstraints2D.FreezeRotation; // Pastikan rotasi terkunci
     }
 
     void Update()
@@ -71,9 +71,8 @@ public class Movement : MonoBehaviour
         }
 
         // Set Animator values
-        Animate.SetFloat("Walking", !OnIceSlope ? (SideMove * SideMove) : 0);
-        Animate.SetBool("Jumping", !IsGrounded);
-        Animate.SetBool("Sliding", OnIceSlope);
+        Animate.SetFloat("SideMove", SideMove * SideMove);
+        Animate.SetBool("Grounded", IsGrounded);
         Flip();
     }
 
@@ -143,8 +142,9 @@ public class Movement : MonoBehaviour
 
     private void Flip()
     {
-        if (OnIceSlope)
+        if (IsFacingRight && SideMove < 0 || !IsFacingRight && SideMove > 0)
         {
+<<<<<<< HEAD
             if (IsFacingRight && slopeTangent.x < 0 || !IsFacingRight && slopeTangent.x > 0)
             {
                 Vector3 ls = transform.localScale;
@@ -162,17 +162,23 @@ public class Movement : MonoBehaviour
                 transform.localScale = ls;
                 IsFacingRight = !IsFacingRight;
             }
+=======
+            Vector3 ls = transform.localScale;
+            ls.x *= -1f;
+            transform.localScale = ls;
+            IsFacingRight = !IsFacingRight;
+>>>>>>> parent of e1385bb (Animation Update 1 (Not Fix))
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D Collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (Collision.collider.CompareTag("Ice"))
+        if (collision.collider.CompareTag("Ice"))
         {
             OnIceSlope = true;
             MovementLocked = false;
             // Hitung arah tangen slope berdasarkan normal kontak
-            Vector2 contactNormal = Collision.GetContact(0).normal;
+            Vector2 contactNormal = collision.GetContact(0).normal;
             slopeTangent = new Vector2(-contactNormal.y, contactNormal.x).normalized;
             // Pastikan tangen mengarah ke bawah (y negatif) dan sesuai arah slope
             if (contactNormal.x > 0) // Rightward slope (normal points right/up, slide down-right)
@@ -189,9 +195,9 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void OnCollisionExit2D(Collision2D Collision)
+    private void OnCollisionExit2D(Collision2D collision)
     {
-        if (Collision.collider.CompareTag("Ice"))
+        if (collision.collider.CompareTag("Ice"))
         {
             OnIceSlope = false;
             Debug.Log("Exit Ice (Collision)");
