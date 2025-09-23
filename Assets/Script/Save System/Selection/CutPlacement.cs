@@ -23,7 +23,7 @@ public class CutPlacement : MonoBehaviour
     {
         if (!isPlacing)
         {
-            if (KeyBindings.GetKeyDown(KeyBindings.CutKey) && selectionManager.SelectedObjects.Count > 0)
+            if (Input.GetKeyDown(KeyBindings.CutKey) && selectionManager.SelectedObjects.Count > 0)
             {
                 StartPlacementMode();
             }
