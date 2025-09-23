@@ -11,6 +11,12 @@ public class CameraFollow2D : MonoBehaviour
     [Header("Smooth Follow")]
     public float smoothSpeed = 0.125f;
 
+    [Header("Manual Camera Control")]
+    public float manualMoveSpeed = 5f; // kecepatan kamera saat W/S ditekan
+    private float manualYOffset = 0f;  // simpan offset manual dari input
+    public float maxUpOffset = 3f;     // batas kamera ke atas relatif terhadap player
+    public float maxDownOffset = -2f;  // batas kamera ke bawah relatif terhadap player
+
     [Header("World Borders (Manual)")]
     public bool useManualBorders = true;
     public Vector2 minPosition; // batas bawah kiri
@@ -39,13 +45,32 @@ public class CameraFollow2D : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (target == null) return;
+
+        // --- Input manual kamera (dengan batas relatif player) ---
+        if (Input.GetKey(KeyCode.W))
+        {
+            manualYOffset += manualMoveSpeed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            manualYOffset -= manualMoveSpeed * Time.deltaTime;
+        }
+
+        // Clamp manualYOffset agar tidak lebih dari batas atas/bawah relatif player
+        manualYOffset = Mathf.Clamp(manualYOffset, maxDownOffset, maxUpOffset);
+    }
+
     void LateUpdate()
     {
         if (target == null) return;
 
-        Vector3 desiredPosition = target.position + offset;
+        // Posisi kamera mengikuti player + offset + manual offset Y
+        Vector3 desiredPosition = target.position + offset + new Vector3(0, manualYOffset, 0);
 
-        // Clamp posisi kamera
+        // Clamp posisi kamera agar tidak keluar world
         float clampX, clampY;
 
         if (useManualBorders)

@@ -4,12 +4,14 @@ using UnityEngine.SceneManagement;
 public class UndoManager : MonoBehaviour
 {
     [Header("Undo Settings")]
-    [Tooltip("Tombol untuk undo (default: Z)")]
-    public KeyCode undoKey = KeyCode.Z;
+    [Tooltip("Tombol default untuk undo jika belum ada di Settings.")]
+    public KeyCode defaultUndoKey = KeyCode.Z;
 
     private void Update()
     {
-        if (Input.GetKeyDown(undoKey))
+        KeyCode currentUndoKey = KeyBindings.UndoKey != KeyCode.None ? KeyBindings.UndoKey : defaultUndoKey;
+
+        if (Input.GetKeyDown(currentUndoKey))
         {
             PerformUndo();
         }
@@ -21,12 +23,10 @@ public class UndoManager : MonoBehaviour
         {
             Debug.Log("↩️ Undo pressed! Restoring last save...");
 
-            // Pastikan data ada sebelum reload scene
             var data = SaveSystem.Instance.Load();
             if (data != null)
             {
-                // Reload scene aktif → RestoreSave() akan dipanggil otomatis 
-                // dari GameModeManager.Start() atau bisa dipanggil manual.
+                // Reload scene → RestoreSave() dipanggil otomatis lewat GameModeManager.Start()
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
             else
