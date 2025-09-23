@@ -68,12 +68,14 @@ public class PauseMenu : MonoBehaviour
 
     public void OpenSetting()
     {
+        pauseMenuUI.SetActive(false);
         settingPanelUI.SetActive(true);
     }
 
     public void CloseSetting()
     {
         settingPanelUI.SetActive(false);
+        pauseMenuUI.SetActive(true);
     }
 
     public void QuitGame()
