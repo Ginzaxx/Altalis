@@ -78,7 +78,7 @@ public class Movement : MonoBehaviour
         }
 
         // --- Animator ---
-        Animate.SetFloat("Walking", Mathf.Abs(SideMove));
+        Animate.SetFloat("Walking", !OnIceSlope ? Mathf.Abs(SideMove) : 0);
         Animate.SetBool("Jumping", !IsGrounded);
         Animate.SetBool("Sliding", OnIceSlope);
 
