@@ -30,7 +30,7 @@ public class SpikeStompActivator : MonoBehaviour
             Vector3 spawnPosition = transform.position + new Vector3(0, 0.4f, 0); // Sesuaikan offset
             spawnedSpike = Instantiate(spikePrefab, spawnPosition, Quaternion.identity);
 
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(0.6f);
             Destroy(spawnedSpike);
 
         }
