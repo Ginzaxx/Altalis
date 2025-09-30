@@ -8,6 +8,7 @@ public class CutPlacement : MonoBehaviour
     [SerializeField] private DragSelection selectionManager;
     [SerializeField] private GridCursor gridCursor;
     [SerializeField] private Tilemap targetTilemap;
+    [SerializeField] private GameObject placeVfxPrefab;
 
     private List<GameObject> previewClones = new List<GameObject>();
     private List<GameObject> originals = new List<GameObject>();
@@ -182,12 +183,28 @@ public class CutPlacement : MonoBehaviour
 
                 obj.tag = "Selectable";
                 placedObjects.Add(obj);
+
+                if (placeVfxPrefab != null)
+                {
+                    Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
+                }
             }
         }
 
         foreach (var orig in originals)
         {
-            if (orig != null) Destroy(orig);
+            if (orig != null)
+            {
+                var dissolve = orig.GetComponent<DissolveOnDestroy>();
+                if (dissolve != null)
+                {
+                    dissolve.StartDissolve();
+                }
+                else
+                {
+                    Destroy(orig);
+                }
+            }
         }
 
         OnObjectsCutPlaced?.Invoke(placedObjects);
