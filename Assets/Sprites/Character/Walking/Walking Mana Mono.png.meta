@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: dbc11c9ff8711fc4cb2d665178256081
+guid: 5f49f41004c9e084fb8d8028240fe335
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sprite Jump Up No Mana_0
+      name: Walking Mana Mono_0
       rect:
         serializedVersion: 2
         x: 0
@@ -111,14 +111,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7f5ec1a28fa669e459bd942096d35df1
-      internalID: -193532365
+      spriteID: 420762b164c5cf44cad373ae11c32582
+      internalID: -1603640545
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Up No Mana_1
+      name: Walking Mana Mono_1
       rect:
         serializedVersion: 2
         x: 640
@@ -132,14 +132,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b2eceeaffcd729142b3b5c0d322b6595
-      internalID: 37707529
+      spriteID: 61055f63344e08844bffaa0f67666f53
+      internalID: 841142751
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Up No Mana_2
+      name: Walking Mana Mono_2
       rect:
         serializedVersion: 2
         x: 1280
@@ -153,14 +153,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7b0297ada5f15ea44b5f4abe3709ce8c
-      internalID: 1746436006
+      spriteID: 631bf04fe0d98f544b8925f61a1ec665
+      internalID: 1027127253
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Up No Mana_3
+      name: Walking Mana Mono_3
       rect:
         serializedVersion: 2
         x: 1920
@@ -174,14 +174,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b966945e529abc041b31ea9897da6f97
-      internalID: -1962375330
+      spriteID: 741bba676e702cd46a081f6e25d1a506
+      internalID: 781754913
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Up No Mana_4
+      name: Walking Mana Mono_4
       rect:
         serializedVersion: 2
         x: 2560
@@ -195,14 +195,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b783518848ba358468bb3955889c61ef
-      internalID: 1961151661
+      spriteID: f93507f535237744b941cd664ab0f614
+      internalID: -1301995845
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Up No Mana_5
+      name: Walking Mana Mono_5
       rect:
         serializedVersion: 2
         x: 3200
@@ -216,8 +216,92 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dfacf6301fc2291438a0eace505b060d
-      internalID: 927718410
+      spriteID: 88c8bb6da38e2ad44a6547b818b404a1
+      internalID: -1550197449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walking Mana Mono_6
+      rect:
+        serializedVersion: 2
+        x: 3840
+        y: 0
+        width: 640
+        height: 640
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7df3a9c6d6adcc54f80205504f83572b
+      internalID: -626879815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walking Mana Mono_7
+      rect:
+        serializedVersion: 2
+        x: 4480
+        y: 0
+        width: 640
+        height: 640
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd06e6ac9661f7f4ab007ef1a4582f34
+      internalID: 1199960254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walking Mana Mono_8
+      rect:
+        serializedVersion: 2
+        x: 5120
+        y: 0
+        width: 640
+        height: 640
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 080fbdc16731a4748baa953d9431542f
+      internalID: -1098595257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Walking Mana Mono_9
+      rect:
+        serializedVersion: 2
+        x: 5760
+        y: 0
+        width: 640
+        height: 640
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4a713e9dda32d34c812a522d7cfca32
+      internalID: 1383603189
       vertices: []
       indices: 
       edges: []
@@ -233,12 +317,16 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Sprite Jump Up No Mana_0: -193532365
-      Sprite Jump Up No Mana_1: 37707529
-      Sprite Jump Up No Mana_2: 1746436006
-      Sprite Jump Up No Mana_3: -1962375330
-      Sprite Jump Up No Mana_4: 1961151661
-      Sprite Jump Up No Mana_5: 927718410
+      Walking Mana Mono_0: -1603640545
+      Walking Mana Mono_1: 841142751
+      Walking Mana Mono_2: 1027127253
+      Walking Mana Mono_3: 781754913
+      Walking Mana Mono_4: -1301995845
+      Walking Mana Mono_5: -1550197449
+      Walking Mana Mono_6: -626879815
+      Walking Mana Mono_7: 1199960254
+      Walking Mana Mono_8: -1098595257
+      Walking Mana Mono_9: 1383603189
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
