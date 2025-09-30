@@ -125,7 +125,7 @@ public class Movement : MonoBehaviour
         {
             OnIceSlope = false;
             Debug.Log("Exit Ice (Collision)");
-            StartCoroutine(LockMovement(1f));
+            StartCoroutine(LockMovement(0.5f));
         }
     }
 
