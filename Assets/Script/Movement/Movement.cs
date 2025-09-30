@@ -87,25 +87,12 @@ public class Movement : MonoBehaviour
 
     private void Flip()
     {
-        if (OnIceSlope)
+        if ((OnIceSlope && IsFacingRight && slopeTangent.x < 0) || (OnIceSlope && !IsFacingRight && slopeTangent.x > 0) || (IsFacingRight && SideMove < 0) || (!IsFacingRight && SideMove > 0))
         {
-            if (IsFacingRight && slopeTangent.x < 0 || !IsFacingRight && slopeTangent.x > 0)
-            {
-                Vector3 ls = transform.localScale;
-                ls.x *= -1f;
-                transform.localScale = ls;
-                IsFacingRight = !IsFacingRight;
-            }
-        }
-        else
-        {
-            if (IsFacingRight && SideMove < 0 || !IsFacingRight && SideMove > 0)
-            {
-                Vector3 ls = transform.localScale;
-                ls.x *= -1f;
-                transform.localScale = ls;
-                IsFacingRight = !IsFacingRight;
-            }
+            Vector3 ls = transform.localScale;
+            ls.x *= -1f;
+            transform.localScale = ls;
+            IsFacingRight = !IsFacingRight;
         }
     }
 
@@ -138,7 +125,7 @@ public class Movement : MonoBehaviour
         {
             OnIceSlope = false;
             Debug.Log("Exit Ice (Collision)");
-            StartCoroutine(LockMovement(2f));
+            StartCoroutine(LockMovement(1f));
         }
     }
 
