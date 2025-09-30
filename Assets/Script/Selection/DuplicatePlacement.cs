@@ -9,6 +9,7 @@ public class DuplicatePlacement : MonoBehaviour
     [SerializeField] private DragSelection selectionManager;
     [SerializeField] private GridCursor gridCursor;
     [SerializeField] private Tilemap targetTilemap;
+    [SerializeField] private GameObject placeVfxPrefab;
 
     private List<GameObject> previewClones = new List<GameObject>();
     private bool isPlacing = false;
@@ -182,6 +183,11 @@ public class DuplicatePlacement : MonoBehaviour
 
                 obj.tag = "Selectable";
                 placedObjects.Add(obj);
+
+                if (placeVfxPrefab != null)
+                {
+                    Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
+                }
             }
         }
 
