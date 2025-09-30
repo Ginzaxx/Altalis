@@ -27,7 +27,7 @@ public class SpikeStompActivator : MonoBehaviour
         if (spawnedSpike == null)
         {
             // Spawn duri di posisi tertentu di atas blok
-            Vector3 spawnPosition = transform.position + new Vector3(0, 0.5f, 0); // Sesuaikan offset
+            Vector3 spawnPosition = transform.position + new Vector3(0, 0.4f, 0); // Sesuaikan offset
             spawnedSpike = Instantiate(spikePrefab, spawnPosition, Quaternion.identity);
 
             yield return new WaitForSeconds(0.3f);
