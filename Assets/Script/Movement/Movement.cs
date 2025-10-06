@@ -21,11 +21,14 @@ public class Movement : MonoBehaviour
     public float IceSlideSpeed = 8f;
     public float IceAcceleration = 10f; // Kecepatan akselerasi saat masuk ke es
     private Vector2 slopeTangent; // Arah tangen slope untuk sliding
-    
+
     [Header("Ground Check")]
     public Transform GroundCheckPos;
     public float GroundCheckRad = 0.2f;
     public LayerMask GroundLayer;
+
+    [Header("Particle System Dust")]
+    public ParticleSystem dustParticle; //reference to dust PrefabParticleSystem ~ Aflah
 
     void Start()
     {
@@ -55,11 +58,18 @@ public class Movement : MonoBehaviour
                 jumpDirection = 0;
 
             RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
+            dustParticle.Play(); //play dust particle ~ Aflah
         }
         else if (Input.GetKeyUp(KeyBindings.JumpKey) && RbD.velocity.y > 0)
         {
             // short hop
             RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
+
+            if (IsGrounded)
+            {
+                //spawn dust only when on ground ~ Aflah
+                dustParticle.Play();
+            }
         }
 
         // --- Apply movement ---
