@@ -8,6 +8,8 @@ public class SpikeStompActivator : MonoBehaviour
     private GameObject spawnedSpike; // Referensi duri yang di-spawn
     private Coroutine spikeCoroutine; // Referensi ke coroutine untuk membatalkan jika perlu
 
+    [SerializeField] private ParticleSystem spikeParticle;
+
     // Deteksi ketika pemain masuk ke collider blok
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -29,8 +31,10 @@ public class SpikeStompActivator : MonoBehaviour
             // Spawn duri di posisi tertentu di atas blok
             Vector3 spawnPosition = transform.position + new Vector3(0, 0.4f, 0); // Sesuaikan offset
             spawnedSpike = Instantiate(spikePrefab, spawnPosition, Quaternion.identity);
+            spikeParticle.Play();
 
             yield return new WaitForSeconds(0.6f);
+
             Destroy(spawnedSpike);
 
         }
