@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 960681575c6446a40933aeba7eaac602
+guid: dbc11c9ff8711fc4cb2d665178256081
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -93,11 +93,37 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sprite Jump Float No Mana_0
+      name: Sprite Jump Up No Mana_0
       rect:
         serializedVersion: 2
         x: 0
@@ -111,14 +137,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fdef84514aa5b274c8c2a5e1ebcfaf7b
-      internalID: 25331557
+      spriteID: 7f5ec1a28fa669e459bd942096d35df1
+      internalID: -193532365
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Float No Mana_1
+      name: Sprite Jump Up No Mana_1
       rect:
         serializedVersion: 2
         x: 640
@@ -132,14 +158,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ee59a6c3cd5f8f449deab46e11f5cd9
-      internalID: 791999523
+      spriteID: b2eceeaffcd729142b3b5c0d322b6595
+      internalID: 37707529
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Float No Mana_2
+      name: Sprite Jump Up No Mana_2
       rect:
         serializedVersion: 2
         x: 1280
@@ -153,14 +179,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1e10689b0d001e346a36ede442847a5a
-      internalID: -1724008041
+      spriteID: 7b0297ada5f15ea44b5f4abe3709ce8c
+      internalID: 1746436006
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Float No Mana_3
+      name: Sprite Jump Up No Mana_3
       rect:
         serializedVersion: 2
         x: 1920
@@ -174,14 +200,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 120ecdaa3ad4c6544afb469c61fe0b54
-      internalID: -889146244
+      spriteID: b966945e529abc041b31ea9897da6f97
+      internalID: -1962375330
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Float No Mana_4
+      name: Sprite Jump Up No Mana_4
       rect:
         serializedVersion: 2
         x: 2560
@@ -195,14 +221,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 544f112c721d3954c99eb4bd136c431e
-      internalID: -492731397
+      spriteID: b783518848ba358468bb3955889c61ef
+      internalID: 1961151661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite Jump Float No Mana_5
+      name: Sprite Jump Up No Mana_5
       rect:
         serializedVersion: 2
         x: 3200
@@ -216,8 +242,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d44480b0e63cdc747be08b8f6cd35e1f
-      internalID: 250818234
+      spriteID: dfacf6301fc2291438a0eace505b060d
+      internalID: 927718410
       vertices: []
       indices: 
       edges: []
@@ -233,12 +259,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Sprite Jump Float No Mana_0: 25331557
-      Sprite Jump Float No Mana_1: 791999523
-      Sprite Jump Float No Mana_2: -1724008041
-      Sprite Jump Float No Mana_3: -889146244
-      Sprite Jump Float No Mana_4: -492731397
-      Sprite Jump Float No Mana_5: 250818234
+      Sprite Jump Up No Mana_0: -193532365
+      Sprite Jump Up No Mana_1: 37707529
+      Sprite Jump Up No Mana_2: 1746436006
+      Sprite Jump Up No Mana_3: -1962375330
+      Sprite Jump Up No Mana_4: 1961151661
+      Sprite Jump Up No Mana_5: 927718410
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
