@@ -17,4 +17,5 @@ public class SaveData
     public float playerX, playerY;
     public int mana;
     public List<PlacedObjectData> placedObjects = new List<PlacedObjectData>();
+    public List<string> triggeredManaBlocks = new List<string>();
 }

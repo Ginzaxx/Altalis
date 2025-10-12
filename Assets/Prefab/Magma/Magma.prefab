@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 1718932952857443506}
   - component: {fileID: 6877386098164101308}
   - component: {fileID: 51923184028595559}
-  - component: {fileID: 308687825068465090}
+  - component: {fileID: 2140900943912657862}
   m_Layer: 0
   m_Name: Magma
-  m_TagString: Untagged
+  m_TagString: Magma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 4
   m_Sprite: {fileID: 1033445189, guid: 2bbab6b084ebaa64795afb09c34ff14a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -98,8 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65755ba8af8c8a1478398affe202e34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!60 &308687825068465090
-PolygonCollider2D:
+--- !u!61 &2140900943912657862
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -130,7 +130,7 @@ PolygonCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.09248172}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -140,9 +140,6 @@ PolygonCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 0, y: 0.5773587}
-      - {x: -0.5, y: -0.28866667}
-      - {x: 0.5, y: -0.28866667}
-  m_UseDelaunayMesh: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.81503654}
+  m_EdgeRadius: 0

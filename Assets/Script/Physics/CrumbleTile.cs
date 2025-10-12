@@ -44,7 +44,7 @@ public class CrumbleTile : MonoBehaviour
     IEnumerator startCrumbleTiles()
     {
         // Shake for 1.0f seconds, then wait 0.2f more before destroying
-        float shakeDuration = 1.0f;
+        float shakeDuration = 0.4f;
         float remainingShakeTime = shakeDuration;
 
         while (remainingShakeTime > 0 && spriteTransform != null)
