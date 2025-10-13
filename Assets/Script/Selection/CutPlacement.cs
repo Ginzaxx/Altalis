@@ -16,7 +16,6 @@ public class CutPlacement : MonoBehaviour
     private bool canPlace = true;
 
     public static event System.Action<List<GameObject>> OnObjectsCutPlaced;
-
     private List<GameObject> lastPlacedObjects = new List<GameObject>();
     public List<GameObject> GetLastPlacedObjects() => lastPlacedObjects;
 
@@ -24,6 +23,7 @@ public class CutPlacement : MonoBehaviour
     {
         if (!isPlacing)
         {
+            // Mulai mode cut
             if (Input.GetKeyDown(KeyBindings.CutKey) && selectionManager.SelectedObjects.Count > 0)
             {
                 StartPlacementMode();
@@ -33,7 +33,8 @@ public class CutPlacement : MonoBehaviour
         {
             UpdatePreviewPosition();
 
-            if (Input.GetKeyDown(KeyBindings.ConfirmKey)) // Confirm
+            // ✅ Confirm (tempatkan)
+            if (Input.GetKeyDown(KeyBindings.ConfirmKey))
             {
                 if (canPlace)
                 {
@@ -52,7 +53,8 @@ public class CutPlacement : MonoBehaviour
                     Debug.Log("❌ Tidak bisa cut-place: objek bertabrakan!");
                 }
             }
-            else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape)) // Cancel
+            // ❌ Cancel
+            else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
                 CancelPlacement();
             }
@@ -73,16 +75,15 @@ public class CutPlacement : MonoBehaviour
             {
                 originals.Add(obj);
 
+                // Buat preview transparan
                 GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
 
-                // Matikan collider & rigidbody
                 var col = clone.GetComponent<Collider2D>();
                 if (col != null) col.enabled = false;
 
                 var rb = clone.GetComponent<Rigidbody2D>();
                 if (rb != null) rb.bodyType = RigidbodyType2D.Static;
 
-                // Bikin transparan
                 foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
                     sr.color = new Color(1f, 1f, 1f, 0.5f);
 
@@ -91,6 +92,7 @@ public class CutPlacement : MonoBehaviour
         }
     }
 
+    // 🔹 Hitung pivot untuk snap grid
     private Vector3 CalcSnapPivot(GameObject obj)
     {
         var renderers = obj.GetComponentsInChildren<SpriteRenderer>();
@@ -106,6 +108,7 @@ public class CutPlacement : MonoBehaviour
         return obj.transform.position;
     }
 
+    // 🔹 Update posisi preview
     void UpdatePreviewPosition()
     {
         if (originals.Count == 0) return;
@@ -127,6 +130,7 @@ public class CutPlacement : MonoBehaviour
             Vector3 newPos = objRefPos + offset;
             previewClones[i].transform.position = newPos;
 
+            // ✅ Cek overlap
             Collider2D col = previewClones[i].GetComponent<Collider2D>();
             if (col != null)
             {
@@ -152,19 +156,23 @@ public class CutPlacement : MonoBehaviour
             }
         }
 
+        // 🔥 Warna preview hijau / merah
         foreach (var obj in previewClones)
         {
             if (obj != null)
             {
                 foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
                 {
-                    sr.color = canPlace ? new Color(0f, 1f, 0f, 0.5f) : new Color(1f, 0f, 0f, 0.5f);
+                    sr.color = canPlace
+                        ? new Color(0f, 1f, 0f, 0.5f) // hijau
+                        : new Color(1f, 0f, 0f, 0.5f); // merah
                 }
             }
         }
     }
 
-  void PlaceCutObjects()
+    // 🔹 Tempatkan hasil cut
+    void PlaceCutObjects()
     {
         List<GameObject> placedObjects = new List<GameObject>();
 
@@ -185,25 +193,20 @@ public class CutPlacement : MonoBehaviour
                 placedObjects.Add(obj);
 
                 if (placeVfxPrefab != null)
-                {
                     Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
-                }
             }
         }
 
+        // 🔥 Hapus original
         foreach (var orig in originals)
         {
             if (orig != null)
             {
                 var dissolve = orig.GetComponent<DissolveOnDestroy>();
                 if (dissolve != null)
-                {
                     dissolve.StartDissolve();
-                }
                 else
-                {
                     Destroy(orig);
-                }
             }
         }
 
@@ -217,11 +220,9 @@ public class CutPlacement : MonoBehaviour
         isPlacing = false;
         selectionManager.IsSelectionEnabled = true;
 
-        // 🔥 Langsung balik ke Movement Mode
+        // Kembali ke Movement mode
         if (GameModeManager.Instance != null)
-        {
             GameModeManager.Instance.SwitchMode(GameMode.Movement);
-        }
     }
 
     void CancelPlacement()
@@ -230,6 +231,7 @@ public class CutPlacement : MonoBehaviour
         {
             if (obj != null) Destroy(obj);
         }
+
         previewClones.Clear();
         originals.Clear();
         isPlacing = false;

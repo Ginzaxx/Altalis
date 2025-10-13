@@ -2,19 +2,21 @@ using UnityEngine;
 
 public class ResourceManager : MonoBehaviour
 {
-    public static ResourceManager Instance; // Singleton sederhana
+    public static ResourceManager Instance;
 
     [Header("Mana Settings")]
     [SerializeField] private int startingMana = 2;
     [SerializeField] private int manaCostPerPlacement = 1;
 
-    private int currentMana;
+    [Header("Selection Settings")]
+    [SerializeField] private int selectLimit = 3;
 
+    private int currentMana;
     public int CurrentMana => currentMana;
+    public int SelectLimit => selectLimit;
 
     private void Awake()
     {
-        // Singleton pattern sederhana
         if (Instance == null)
         {
             Instance = this;
@@ -29,10 +31,7 @@ public class ResourceManager : MonoBehaviour
         currentMana = startingMana;
     }
 
-    public bool TrySpendMana()
-    {
-        return SpendMana(manaCostPerPlacement);
-    }
+    public bool TrySpendMana() => SpendMana(manaCostPerPlacement);
 
     public bool SpendMana(int amount)
     {
