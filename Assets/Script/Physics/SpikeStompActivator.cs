@@ -17,6 +17,7 @@ public class SpikeStompActivator : MonoBehaviour
         {
             // Memulai coroutine untuk mengaktifkan duri setelah jeda
             spikeCoroutine = StartCoroutine(ActivateSpikeWithDelay());
+            SoundManager.PlaySound("TrapStomp", 1f, transform.position);
         }
     }
 

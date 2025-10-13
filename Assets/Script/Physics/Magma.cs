@@ -5,7 +5,10 @@ using UnityEngine.SceneManagement; // untuk reload scene
 
 public class Magma : MonoBehaviour
 {
-    private const string DeathCountKey = "DeathCount";
+    private void Start()
+    {
+     SoundManager.PlayAmbience("Magma", transform.position);
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
