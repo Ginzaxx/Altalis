@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class DragSelection : MonoBehaviour
 {
     [SerializeField] private Camera cam;
-    [SerializeField] public RectTransform selectionBoxUI; // Made public for GameModeManager access
+    [SerializeField] public RectTransform selectionBoxUI;
     public bool IsSelectionEnabled { get; set; } = true;
 
     private Vector2 startPos;
@@ -12,95 +12,118 @@ public class DragSelection : MonoBehaviour
     private bool isDragging = false;
 
     [Header("Slow Motion Settings")]
-    public bool useUnscaledTimeForUI = true; // Makes UI responsive during slow motion
+    public bool useUnscaledTimeForUI = true;
 
     public List<GameObject> SelectedObjects { get; private set; } = new List<GameObject>();
     private List<GameObject> previewSelection = new List<GameObject>();
 
+    // Limit dari ResourceManager
+    private int MaxSelectable => ResourceManager.Instance != null ? ResourceManager.Instance.SelectLimit : 3;
+
     void Update()
     {
-        // Only work if selection is enabled and we're in selection mode
         if (!IsSelectionEnabled || !enabled) return;
-        
-        // Don't process if right mouse button is being used for mode switching
-        if (Input.GetMouseButtonDown(1)) return;
-        
+        if (Input.GetMouseButtonDown(1)) return; // abaikan klik kanan
+
+        // 🔹 TAP (klik cepat tanpa drag)
         if (Input.GetMouseButtonDown(0))
         {
-            StartSelection();
+            startPos = Input.mousePosition;
+            isDragging = true;
+
+            if (selectionBoxUI != null)
+                selectionBoxUI.gameObject.SetActive(false);
         }
 
         if (Input.GetMouseButton(0) && isDragging)
         {
-            UpdateSelection();
+            endPos = Input.mousePosition;
+
+            // Jika jarak drag cukup jauh → drag select
+            if (Vector2.Distance(startPos, endPos) > 15f)
+            {
+                if (selectionBoxUI != null)
+                    selectionBoxUI.gameObject.SetActive(true);
+
+                UpdateSelectionBox();
+                PreviewSelection();
+            }
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            EndSelection();
-        }
-    }
+            // Jika drag kecil (tap)
+            if (Vector2.Distance(startPos, Input.mousePosition) < 15f)
+                HandleTapSelection();
+            else
+                ConfirmSelection();
 
-    void StartSelection()
-    {
-        startPos = Input.mousePosition;
-        isDragging = true;
-        if (selectionBoxUI != null)
-        {
-            selectionBoxUI.gameObject.SetActive(true);
-        }
-    }
-
-    void UpdateSelection()
-    {
-        endPos = Input.mousePosition;
-        DrawSelectionBox();
-        
-        // Update selection preview at a reasonable rate even during slow motion
-        if (useUnscaledTimeForUI)
-        {
-            // Use unscaled time to ensure UI updates smoothly during slow motion
-            PreviewSelection();
-        }
-        else
-        {
-            PreviewSelection();
-        }
-    }
-
-    void EndSelection()
-    {
-        if (isDragging)
-        {
-            ConfirmSelection();
             isDragging = false;
+
             if (selectionBoxUI != null)
-            {
                 selectionBoxUI.gameObject.SetActive(false);
+        }
+    }
+
+    // 🔹 Tap Selection (klik 1 objek tanpa reset)
+    void HandleTapSelection()
+    {
+        Vector2 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
+        Collider2D hit = Physics2D.OverlapPoint(mouseWorld);
+
+        if (hit != null)
+        {
+            GameObject target = hit.gameObject;
+
+            // Naik ke parent jika anak collider
+            if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
+                target = target.transform.parent.gameObject;
+
+            if (target.CompareTag("Selectable"))
+            {
+                // Toggle on/off selection
+                if (SelectedObjects.Contains(target))
+                {
+                    DeselectObject(target);
+                }
+                else
+                {
+                    if (SelectedObjects.Count < MaxSelectable)
+                    {
+                        SelectObject(target);
+                    }
+                    else
+                    {
+                        Debug.Log($"⚠️ Sudah mencapai batas seleksi: {MaxSelectable}");
+                    }
+                }
+
+                return; // Jangan reset selection
             }
         }
+
+        // 🔹 Jika klik area kosong → reset semua
+        ClearSelection();
     }
 
-    void DrawSelectionBox()
+    // 🔹 Drag box update
+    void UpdateSelectionBox()
     {
         if (selectionBoxUI == null) return;
 
         Canvas parentCanvas = selectionBoxUI.GetComponentInParent<Canvas>();
         RectTransform canvasRect = parentCanvas.transform as RectTransform;
 
-        Vector2 localStartPos;
-        Vector2 localEndPos;
-
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvasRect, startPos,
             parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : cam,
-            out localStartPos
+            out Vector2 localStartPos
         );
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvasRect, endPos,
             parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : cam,
-            out localEndPos
+            out Vector2 localEndPos
         );
 
         Vector2 boxCenter = (localStartPos + localEndPos) / 2f;
@@ -110,16 +133,14 @@ public class DragSelection : MonoBehaviour
         selectionBoxUI.sizeDelta = boxSize;
     }
 
+    // 🔹 Preview selection saat drag
     void PreviewSelection()
     {
-        // Clear previous preview highlighting
+        // Reset warna preview sebelumnya
         foreach (var obj in previewSelection)
         {
             if (obj != null && !SelectedObjects.Contains(obj))
-            {
-                var sr = obj.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.color = Color.white;
-            }
+                SetColor(obj, Color.white);
         }
         previewSelection.Clear();
 
@@ -136,97 +157,90 @@ public class DragSelection : MonoBehaviour
         foreach (Collider2D hit in hits)
         {
             GameObject target = hit.gameObject;
-
-            // 🔥 Kalau collider anak tapi parent selectable → naik ke parent
             if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
-            {
                 target = target.transform.parent.gameObject;
-            }
 
             if (target.CompareTag("Selectable") && !previewSelection.Contains(target))
             {
                 previewSelection.Add(target);
-
-                // 🔥 Warnai semua child renderer jadi cyan
-                foreach (var sr in target.GetComponentsInChildren<SpriteRenderer>())
-                {
-                    sr.color = Color.cyan;
-                }
+                SetColor(target, Color.cyan);
             }
         }
     }
 
+    // 🔹 Konfirmasi drag selection
     void ConfirmSelection()
     {
-        foreach (var obj in SelectedObjects)
-            {
-                if (obj != null)
-                {
-                    // 🔥 Reset warna semua child juga
-                    foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
-                    {
-                        sr.color = Color.white;
-                    }
-                }
-            }
-
-        SelectedObjects.Clear();
-
-        // Apply new selection
         foreach (var obj in previewSelection)
         {
-            if (obj != null)
-            {
-                SelectedObjects.Add(obj);
+            if (obj == null) continue;
 
-                // 🔥 Warnai semua child saat parent terseleksi
-                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
-                {
-                    sr.color = Color.yellow;
-                }
+            if (!SelectedObjects.Contains(obj))
+            {
+                if (SelectedObjects.Count < MaxSelectable)
+                    SelectObject(obj);
             }
         }
 
+        // Reset warna preview
+        foreach (var obj in previewSelection)
+        {
+            if (obj != null && !SelectedObjects.Contains(obj))
+                SetColor(obj, Color.white);
+        }
         previewSelection.Clear();
 
-        Debug.Log("Selected " + SelectedObjects.Count + " objects");
+        Debug.Log($"Selected {SelectedObjects.Count} objects");
     }
 
-    // Method to clear all selections (useful when switching modes)
+    // 🔹 Tambah ke daftar selection
+    void SelectObject(GameObject obj)
+    {
+        if (!SelectedObjects.Contains(obj))
+        {
+            SelectedObjects.Add(obj);
+            SetColor(obj, Color.yellow);
+        }
+    }
+
+    // 🔹 Hapus dari daftar selection
+    void DeselectObject(GameObject obj)
+    {
+        if (SelectedObjects.Contains(obj))
+        {
+            SelectedObjects.Remove(obj);
+            SetColor(obj, Color.white);
+        }
+    }
+
+    // 🔹 Set warna semua renderer anak
+    void SetColor(GameObject obj, Color color)
+    {
+        foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+            sr.color = color;
+    }
+
+    // 🔹 Bersihkan semua seleksi
     public void ClearSelection()
     {
         foreach (var obj in SelectedObjects)
         {
             if (obj != null)
-            {
-                // 🔥 Reset semua anak juga
-                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
-                {
-                    sr.color = Color.white;
-                }
-            }
+                SetColor(obj, Color.white);
         }
         SelectedObjects.Clear();
-        
+
         foreach (var obj in previewSelection)
         {
             if (obj != null)
-            {
-                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
-                {
-                    sr.color = Color.white;
-                }
-            }
+                SetColor(obj, Color.white);
         }
         previewSelection.Clear();
-        
+
         if (selectionBoxUI != null)
-        {
             selectionBoxUI.gameObject.SetActive(false);
-        }
     }
 
-    // Called when the script is disabled
     void OnDisable()
     {
         ClearSelection();

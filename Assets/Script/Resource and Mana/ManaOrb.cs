@@ -4,6 +4,8 @@ public class ManaOrb : MonoBehaviour
 {
     [SerializeField] private GameObject orbVisual; // child visual (sprite / particle)
     private Collider2D orbCollider;
+    [SerializeField] private ParticleSystem ManaOrbPieces;
+
 
     private void Awake()
     {
@@ -23,6 +25,8 @@ public class ManaOrb : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+
+
             if (ResourceManager.Instance != null)
             {
                 // 🔥 Cek apakah mana sudah penuh
@@ -34,7 +38,10 @@ public class ManaOrb : MonoBehaviour
 
                 // Tambahkan mana
                 ResourceManager.Instance.AddMana(1);
-                
+                // Instantiate the Particle System let the object handle it self.
+                ParticleSystem dd = Instantiate(ManaOrbPieces, transform.position, Quaternion.identity);
+
+                dd.gameObject.SetActive(true);
                 Destroy(gameObject);
             }
         }

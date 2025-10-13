@@ -9,6 +9,7 @@ TagManager:
   - ManaOrb
   - Ice
   - Ground
+  - Magma
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - Player
   - Ground
   - Background
-  - 
+  - ManaItem
   - 
   - 
   - 
@@ -69,4 +70,7 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 2230984715
+    locked: 0
+  - name: ManaItem
+    uniqueID: 1882183731
     locked: 0
