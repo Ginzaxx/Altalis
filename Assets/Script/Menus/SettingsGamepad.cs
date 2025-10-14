@@ -6,7 +6,7 @@ using TMPro;
 public class SettingsGamepad : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private PlayerInput playerInput;
+    [SerializeField] private InputActionAsset inputActions;
 
     [Header("Gamepad Labels")]
     [SerializeField] private Button undoKeyButton;
@@ -39,22 +39,25 @@ public class SettingsGamepad : MonoBehaviour
 
     private void Start()
     {
-                // Load saved overrides
-        foreach (var action in playerInput.actions)
-            RebindManager.LoadRebinds(action);
+        // Load saved overrides
+        foreach (var map in inputActions.actionMaps)
+        {
+            foreach (var action in map.actions)
+                RebindManager.LoadRebinds(action);
+        }
 
         // Setup listeners
-        undoKeyButton.onClick.AddListener(()        => StartRebind("Undo", undoKeyLabel));
-        cutKeyButton.onClick.AddListener(()         => StartRebind("Cut", cutKeyLabel));
-        copyKeyButton.onClick.AddListener(()        => StartRebind("Copy", copyKeyLabel));
-        pasteKeyButton.onClick.AddListener(()       => StartRebind("Paste", pasteKeyLabel));
-        
-        jumpKeyButton.onClick.AddListener(()        => StartRebind("Jump", jumpKeyLabel));
-        moveLeftKeyButton.onClick.AddListener(()    => StartRebind("MoveLeft", moveLeftKeyLabel));
-        moveRightKeyButton.onClick.AddListener(()   => StartRebind("MoveRight", moveRightKeyLabel));
-        
-        cameraUpKeyButton.onClick.AddListener(()    => StartRebind("CameraUp", cameraUpKeyLabel));
-        cameraDownKeyButton.onClick.AddListener(()  => StartRebind("CameraDown", cameraDownKeyLabel));
+        undoKeyButton.onClick.AddListener(()        => StartRebind("Undo", null, undoKeyLabel));
+        cutKeyButton.onClick.AddListener(()         => StartRebind("Cut", null, cutKeyLabel));
+        copyKeyButton.onClick.AddListener(()        => StartRebind("Copy", null, copyKeyLabel));
+        pasteKeyButton.onClick.AddListener(()       => StartRebind("Paste", null, pasteKeyLabel));
+
+        jumpKeyButton.onClick.AddListener(()        => StartRebind("Jump", null, jumpKeyLabel));
+        moveLeftKeyButton.onClick.AddListener(()    => StartRebind("Move", "left", moveLeftKeyLabel));
+        moveRightKeyButton.onClick.AddListener(()   => StartRebind("Move", "right", moveRightKeyLabel));
+
+        cameraUpKeyButton.onClick.AddListener(()    => StartRebind("Camera", "up", cameraUpKeyLabel));
+        cameraDownKeyButton.onClick.AddListener(()  => StartRebind("Camera", "down", cameraDownKeyLabel));
 
         if (closeButton != null)
             closeButton.onClick.AddListener(ClosePanel);
@@ -65,18 +68,6 @@ public class SettingsGamepad : MonoBehaviour
         UpdateLabels();
     }
 
-    public void StartRebind(string actionName, TMP_Text label)
-    {
-        InputAction action = playerInput.actions[actionName];
-
-        label.text = "Press any Button...";
-
-        RebindManager.StartRebind(action, scheme, () =>
-        {
-            label.text = action.GetBindingDisplayString();
-        });
-    }
-
     private void UpdateLabels()
     {
         undoKeyLabel.text       = GetBindingDisplay("Undo");
@@ -85,22 +76,53 @@ public class SettingsGamepad : MonoBehaviour
         pasteKeyLabel.text      = GetBindingDisplay("Paste");
         
         jumpKeyLabel.text       = GetBindingDisplay("Jump");
-        moveLeftKeyLabel.text   = GetBindingDisplay("MoveLeft");
-        moveRightKeyLabel.text  = GetBindingDisplay("MoveRight");
+        moveLeftKeyLabel.text   = GetBindingDisplay("Move", "Left");
+        moveRightKeyLabel.text  = GetBindingDisplay("Move", "Right");
         
-        cameraUpKeyLabel.text   = GetBindingDisplay("CameraUp");
-        cameraDownKeyLabel.text = GetBindingDisplay("CameraDown");
+        cameraUpKeyLabel.text   = GetBindingDisplay("Camera", "Up");
+        cameraDownKeyLabel.text = GetBindingDisplay("Camera", "Down");
     }
 
-    private string GetBindingDisplay(string actionName)
+    public void StartRebind(string actionName, string bindingName, TMP_Text label)
     {
-        InputAction action = playerInput.actions[actionName];
+        var action = inputActions.FindAction(actionName, true);
+        int index = GetBindingIndex(action, bindingName);
+
+        if (index == -1)
+        {
+            Debug.LogWarning($"No binding found for {actionName} ({bindingName ?? "default"}) in {scheme}");
+            return;
+        }
+
+        label.text = "Press any Button...";
+
+        RebindManager.StartRebind(action, index, () =>
+        {
+            label.text = action.GetBindingDisplayString();
+        });
+    }
+
+    private int GetBindingIndex(InputAction action, string bindingName = null)
+    {
         for (int i = 0; i < action.bindings.Count; i++)
         {
-            if (action.bindings[i].groups.Contains(scheme))
-                return action.GetBindingDisplayString(i);
+            var binding = action.bindings[i];
+            if (!binding.groups.Contains(scheme)) continue;
+
+            if (string.IsNullOrEmpty(bindingName) && !binding.isPartOfComposite)
+                return i;
+
+            if (!string.IsNullOrEmpty(bindingName) && binding.isPartOfComposite && binding.name == bindingName)
+                return i;
         }
-        return "<Not Bound>";
+        return -1;
+    }
+
+    private string GetBindingDisplay(string actionName, string bindingName = null)
+    {
+        var action = inputActions.FindAction(actionName, true);
+        int index = GetBindingIndex(action, bindingName);
+        return index != -1 ? action.GetBindingDisplayString(index) : "<Not Bound>";
     }
 
     private void ClosePanel()

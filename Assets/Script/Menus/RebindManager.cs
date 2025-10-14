@@ -4,7 +4,7 @@ using System;
 
 public static class RebindManager
 {
-    public static void StartRebind(InputAction action, string scheme, Action onComplete)
+    public static void StartRebind(InputAction action, int bindingIndex, Action onComplete)
     {
         if (action == null)
         {
@@ -12,25 +12,25 @@ public static class RebindManager
             return;
         }
 
-        // Find the binding index for the control scheme
-        int bindingIndex = -1;
-        for (int i = 0; i < action.bindings.Count; i++)
+        if (bindingIndex < 0 || bindingIndex >= action.bindings.Count)
         {
-            if (action.bindings[i].groups.Contains(scheme))
-            {
-                bindingIndex = i;
-                break;
-            }
-        }
-
-        if (bindingIndex == -1)
-        {
-            Debug.LogWarning($"No binding found for {action.name} in {scheme}");
+            Debug.LogError("Invalid binding index");
             return;
         }
 
-        // Perform rebinding
+        var binding = action.bindings[bindingIndex];
+
+        // Don’t allow rebinding the composite itself
+        if (binding.isComposite)
+        {
+            Debug.LogWarning("Cannot rebind a composite directly. Must rebind its parts.");
+            return;
+        }
+
+        // Perform Interactive Rebind
         action.PerformInteractiveRebinding(bindingIndex)
+            .WithControlsExcluding("<Mouse>/position")
+            .WithControlsExcluding("<Mouse>/delta")
             .WithCancelingThrough("<Keyboard>/escape") // ESC Cancels
             .OnComplete(operation =>
             {
