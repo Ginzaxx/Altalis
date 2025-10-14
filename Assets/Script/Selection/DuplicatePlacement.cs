@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine.Tilemaps;
 
 public class DuplicatePlacement : MonoBehaviour
@@ -18,9 +17,8 @@ public class DuplicatePlacement : MonoBehaviour
     private bool isPlacing = false;
     private bool canPlace = true;
 
-    // Event: bisa digunakan oleh sistem lain jika butuh tahu kapan objek baru ditempatkan
+    // Event: Tell Other Systems when a New Object was placed
     public static event System.Action<List<GameObject>> OnObjectsPlaced;
-
     private List<GameObject> lastPlacedObjects = new List<GameObject>();
     public List<GameObject> GetLastPlacedObjects() => lastPlacedObjects;
 
@@ -38,7 +36,7 @@ public class DuplicatePlacement : MonoBehaviour
         {
             UpdatePreviewPosition();
 
-            // Konfirmasi penempatan
+            // ✅ Confirm
             if (Input.GetKeyDown(KeyBindings.ConfirmKey))
             {
                 if (canPlace)
@@ -49,17 +47,16 @@ public class DuplicatePlacement : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("❌ Tidak bisa place: Mana habis!");
+                        Debug.Log("❌ Unable to Place: Out of Mana!");
                         CancelPlacement();
                     }
                 }
                 else
                 {
-                    Debug.Log("❌ Tidak bisa place: Objek bertabrakan!");
+                    Debug.Log("❌ Unable to Place: Object Obstructed!");
                 }
             }
-
-            // Cancel dengan klik kanan atau Esc
+            // ❌ Cancel
             else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
                 CancelPlacement();
@@ -72,6 +69,7 @@ public class DuplicatePlacement : MonoBehaviour
     {
         isPlacing = true;
         selectionManager.IsSelectionEnabled = false;
+
         previewClones.Clear();
 
         foreach (var obj in selectionManager.SelectedObjects)
@@ -80,14 +78,12 @@ public class DuplicatePlacement : MonoBehaviour
 
             GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
 
-            // Nonaktifkan physics
             var col = clone.GetComponent<Collider2D>();
             if (col != null) col.enabled = false;
 
             var rb = clone.GetComponent<Rigidbody2D>();
             if (rb != null) rb.bodyType = RigidbodyType2D.Static;
 
-            // Jadikan transparan
             foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
                 sr.color = new Color(1f, 1f, 1f, 0.5f);
 
@@ -108,7 +104,6 @@ public class DuplicatePlacement : MonoBehaviour
             Vector3Int cell = targetTilemap.WorldToCell(center);
             return targetTilemap.GetCellCenterWorld(cell);
         }
-
         return obj.transform.position;
     }
 
@@ -159,7 +154,7 @@ public class DuplicatePlacement : MonoBehaviour
             }
         }
 
-        // Update warna preview (hijau = bisa, merah = tidak)
+        // 🔥 Warna Preview Hijau / Merah
         foreach (var obj in previewClones)
         {
             if (obj == null) continue;
@@ -178,7 +173,6 @@ public class DuplicatePlacement : MonoBehaviour
         {
             if (obj == null) continue;
 
-            // Reset warna
             foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
                 sr.color = Color.white;
 

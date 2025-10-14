@@ -32,6 +32,7 @@ public static class RebindManager
             .WithControlsExcluding("<Mouse>/position")
             .WithControlsExcluding("<Mouse>/delta")
             .WithCancelingThrough("<Keyboard>/escape") // ESC Cancels
+            .WithCancelingThrough("<Gamepad>/rightTrigger") // Right Trigger Cancels
             .OnComplete(operation =>
             {
                 operation.Dispose();

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour
 {
@@ -19,8 +20,8 @@ public class Movement : MonoBehaviour
     private bool MovementLocked = false;
     private bool OnIceSlope = false;
     public float IceSlideSpeed = 8f;
-    public float IceAcceleration = 10f; // Kecepatan akselerasi saat masuk ke es
-    private Vector2 slopeTangent; // Arah tangen slope untuk sliding
+    public float IceAcceleration = 10f;
+    private Vector2 slopeTangent;
 
     [Header("Ground Check")]
     public Transform GroundCheckPos;
@@ -28,7 +29,7 @@ public class Movement : MonoBehaviour
     public LayerMask GroundLayer;
 
     [Header("Particle System Dust")]
-    public ParticleSystem dustParticle; //reference to dust PrefabParticleSystem ~ Aflah
+    public ParticleSystem dustParticle; // Reference to dust PrefabParticleSystem ~ Aflah
 
     void Start()
     {
@@ -39,40 +40,10 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        // Cek tanah
+        // Check if Player is on Ground
         IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
 
-        // --- Movement pakai keybinding ---
-        if (Input.GetKey(KeyBindings.MoveLeftKey))
-            SideMove = -1;
-        else if (Input.GetKey(KeyBindings.MoveRightKey))
-            SideMove = 1;
-        else
-            SideMove = 0;
-
-        // --- Jump pakai keybinding ---
-        if (Input.GetKeyDown(KeyBindings.JumpKey) && IsGrounded)
-        {
-            float jumpDirection = SideMove;
-            if (OnIceSlope && jumpDirection < 0)
-                jumpDirection = 0;
-
-            RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
-            dustParticle.Play(); //play dust particle ~ Aflah
-        }
-        else if (Input.GetKeyUp(KeyBindings.JumpKey) && RbD.velocity.y > 0)
-        {
-            // short hop
-            RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
-
-            if (IsGrounded)
-            {
-                //spawn dust only when on ground ~ Aflah
-                dustParticle.Play();
-            }
-        }
-
-        // --- Apply movement ---
+        // --- Ice Movement ---
         if (!OnIceSlope)
         {
             float moveX = (MovementLocked ? Mathf.Max(0, SideMove) : SideMove) * SideSpeed;
@@ -93,6 +64,37 @@ public class Movement : MonoBehaviour
         Animate.SetBool("Sliding", OnIceSlope);
 
         Flip();
+    }
+
+    public void Move(InputAction.CallbackContext context)
+    {
+        SideMove = context.ReadValue<Vector2>().x;
+    }
+
+    public void Jump(InputAction.CallbackContext context)
+    {
+        // Convert Player Inputs into Jump values
+        if (context.performed)
+        {
+            if (IsGrounded) // Check if Player is on Ground to Jump
+            {
+                float jumpDirection = SideMove;
+
+                if (OnIceSlope && jumpDirection < 0) // Ignore if Player is on Ice Slope
+                    jumpDirection = 0;
+
+                // Hold Down on Jump Button = Big Jump
+                RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
+
+                // Play Dust Particles ~ Aflah
+                dustParticle.Play();
+            }
+        }
+        else if (context.canceled && RbD.velocity.y >= 0)
+        {
+            // Light Tap on Jump Button = Small Jump
+            RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
+        }
     }
 
     private void Flip()

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraFollow2D : MonoBehaviour
 {
@@ -47,16 +48,6 @@ public class CameraFollow2D : MonoBehaviour
     {
         if (target == null) return;
 
-        // --- Input manual kamera dengan keybinding ---
-        if (Input.GetKey(KeyBindings.CameraUpKey))
-        {
-            manualYOffset += manualMoveSpeed * Time.deltaTime;
-        }
-        if (Input.GetKey(KeyBindings.CameraDownKey))
-        {
-            manualYOffset -= manualMoveSpeed * Time.deltaTime;
-        }
-
         // Clamp manualYOffset
         manualYOffset = Mathf.Clamp(manualYOffset, maxDownOffset, maxUpOffset);
     }
@@ -83,5 +74,10 @@ public class CameraFollow2D : MonoBehaviour
 
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, clampedPosition, smoothSpeed);
         transform.position = smoothedPosition;
+    }
+
+    public void MoveCamera(InputAction.CallbackContext context)
+    {
+        manualYOffset = context.ReadValue<Vector2>().y * manualMoveSpeed * Time.deltaTime;
     }
 }
