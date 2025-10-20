@@ -85,6 +85,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Selection",
+                    "type": "Value",
+                    "id": "ffefa494-ffc0-48ca-9983-a454268ba182",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -354,17 +363,6 @@
                 },
                 {
                     "name": "",
-                    "id": "b42fba85-438d-42a5-9f71-1f88819ddf55",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "f63e4d77-2373-4a45-8832-dc02b316cea4",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
@@ -382,6 +380,50 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b42fba85-438d-42a5-9f71-1f88819ddf55",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "012b3334-24b4-4b01-8c2f-f7d25ce6b505",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bf158b66-fdc7-443d-aa84-a7724f0a44b3",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Selection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5fb02d22-efb2-48a0-ba0d-97deb1e79ce5",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Selection",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -14,157 +14,187 @@ public class CutPlacementNew : MonoBehaviour
     [Header("VFX")]
     [SerializeField] private GameObject placeVfxPrefab;
 
+    [Header("Mouse & Gamepad Cursor")]
+    [SerializeField] private float cursorMoveSpeed = 5f;
+    private Vector3 cursorPosition;
+    private Vector2 cursorMoveInput;
+
     private List<GameObject> previewClones = new List<GameObject>();
     private List<GameObject> originals = new List<GameObject>();
     private bool isPlacing = false;
     private bool canPlace = true;
 
+    // Event: Tell Other Systems when a New Object was placed
     public static event System.Action<List<GameObject>> OnObjectsCutPlaced;
-    private List<GameObject> lastPlacedObjects = new List<GameObject>();
     public List<GameObject> GetLastPlacedObjects() => lastPlacedObjects;
+    private List<GameObject> lastPlacedObjects = new List<GameObject>();
 
     void Update()
     {
         if (isPlacing) UpdatePreviewPosition();
     }
 
+    // Start Cut Process
     public void StartPlacement(InputAction.CallbackContext CutKey)
     {
         if (CutKey.performed && !isPlacing && selectionManager.SelectedObjects.Count > 0)
         {
             isPlacing = true;
-        selectionManager.IsSelectionEnabled = false;
-
-        previewClones.Clear();
-        originals.Clear();
-
-            foreach (var obj in selectionManager.SelectedObjects)
-            {
-                if (obj != null)
-                {
-                    originals.Add(obj);
-
-                    GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
-
-                    var col = clone.GetComponent<Collider2D>();
-                    if (col != null) col.enabled = false;
-
-                    var rb = clone.GetComponent<Rigidbody2D>();
-                    if (rb != null) rb.bodyType = RigidbodyType2D.Static;
-
-                    foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
-                        sr.color = new Color(1f, 1f, 1f, 0.5f);
-
-                    previewClones.Add(clone);
-                }
-            }
-        }
-    }
-
-    // 🔹 Tempatkan hasil cut
-    public void PlaceCutObjects(InputAction.CallbackContext PasteKey)
-    {
-        if (PasteKey.performed && isPlacing && ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
-        {
-            if (canPlace)
-            {
-                List<GameObject> placedObjects = new List<GameObject>();
-
-                foreach (var obj in previewClones)
-                {
-                    if (obj != null)
-                    {
-                        foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
-                            sr.color = Color.white;
-
-                        var col = obj.GetComponent<Collider2D>();
-                        if (col != null) col.enabled = true;
-
-                        var rb = obj.GetComponent<Rigidbody2D>();
-                        if (rb != null) rb.bodyType = RigidbodyType2D.Dynamic;
-
-                        obj.tag = "Selectable";
-                        placedObjects.Add(obj);
-
-                        if (placeVfxPrefab != null)
-                            Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
-                    }
-                }
-
-                // 🔥 Hapus original
-                foreach (var orig in originals)
-                {
-                    if (orig != null)
-                    {
-                        var dissolve = orig.GetComponent<DissolveOnDestroy>();
-                        if (dissolve != null)
-                            dissolve.StartDissolve();
-                        else
-                            Destroy(orig);
-                    }
-                }
-
-                OnObjectsCutPlaced?.Invoke(placedObjects);
-                Debug.Log($"✂️ Cut-placed {placedObjects.Count} objects. Originals deleted.");
-
-                lastPlacedObjects = placedObjects;
-
-                previewClones.Clear();
-                originals.Clear();
-                isPlacing = false;
-                selectionManager.IsSelectionEnabled = true;
-
-                // Kembali ke Movement mode
-                if (GameModeManager.Instance != null)
-                    GameModeManager.Instance.SwitchMode(GameMode.Movement);
-            }
-            else Debug.Log("❌ Tidak bisa cut-place: objek bertabrakan!");
-        }
-    }
-
-    void CancelPlacement(InputAction.CallbackContext PasteKey, InputAction.CallbackContext CancelKey)
-    {
-        if (CancelKey.performed || (PasteKey.performed && isPlacing && canPlace && !(ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())))
-        {
-            if (!(ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana()))
-                Debug.Log("❌ Tidak bisa cut-place: Mana habis!");
-            
-            foreach (var obj in previewClones)
-                if (obj != null) Destroy(obj);
+            selectionManager.IsSelectionEnabled = false;
 
             previewClones.Clear();
             originals.Clear();
-            isPlacing = false;
-            selectionManager.IsSelectionEnabled = true;
+
+            foreach (var obj in selectionManager.SelectedObjects)
+            {
+                if (obj == null) continue;
+
+                originals.Add(obj);
+
+                GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
+
+                var col = clone.GetComponent<Collider2D>();
+                if (col != null) col.enabled = false;
+
+                var rb = clone.GetComponent<Rigidbody2D>();
+                if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+
+                foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
+                    sr.color = new Color(1f, 1f, 1f, 0.5f);
+
+                previewClones.Add(clone);
+            }
         }
     }
 
-    // 🔹 Hitung pivot untuk snap grid
+    // Paste Cut Objects
+    public void PlaceCutObjects(InputAction.CallbackContext PasteKey)
+    {
+        if (PasteKey.performed && isPlacing)
+        {
+            if (canPlace)
+            {
+                if (ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
+                {
+                    List<GameObject> placedObjects = new List<GameObject>();
+
+                    // Paste New Objects
+                    foreach (var obj in previewClones)
+                    {
+                        if (obj != null)
+                        {
+                            foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+                                sr.color = Color.white;
+
+                            var col = obj.GetComponent<Collider2D>();
+                            if (col != null) col.enabled = true;
+
+                            var rb = obj.GetComponent<Rigidbody2D>();
+                            if (rb != null) rb.bodyType = RigidbodyType2D.Dynamic;
+
+                            obj.tag = "Selectable";
+                            placedObjects.Add(obj);
+
+                            if (placeVfxPrefab != null)
+                                Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
+                        }
+                    }
+
+                    // Delete Originals
+                    foreach (var orig in originals)
+                    {
+                        if (orig != null)
+                        {
+                            var dissolve = orig.GetComponent<DissolveOnDestroy>();
+                            if (dissolve != null)
+                                dissolve.StartDissolve();
+                            else
+                                Destroy(orig);
+                        }
+                    }
+
+                    // Feedback
+                    OnObjectsCutPlaced?.Invoke(placedObjects);
+                    Debug.Log($"✂️ Cut-Placed {placedObjects.Count} objects. Originals deleted.");
+
+                    lastPlacedObjects = placedObjects;
+
+                    previewClones.Clear();
+                    originals.Clear();
+                    isPlacing = false;
+                    selectionManager.IsSelectionEnabled = true;
+
+                    // Return to Movement Mode
+                    if (GameModeManager.Instance != null)
+                        GameModeManager.Instance.SwitchMode(GameMode.Movement);
+                }
+                else
+                {
+                    Debug.Log("❌ Unable to Cut-Place: Not enough Mana!");
+                    CancelPlacement();
+                }
+            }
+            else Debug.Log("❌ Unable to Cut-Place: Object obstructed!");
+        }
+    }
+
+    public void CancelCutObjects(InputAction.CallbackContext CancelKey)
+    {
+        if (CancelKey.performed) CancelPlacement();
+    }
+
+    // Cancel Cut Process
+    public void CancelPlacement()
+    {
+        foreach (var obj in previewClones)
+            if (obj != null) Destroy(obj);
+
+        previewClones.Clear();
+        originals.Clear();
+        isPlacing = false;
+        selectionManager.IsSelectionEnabled = true;
+    }
+
+    public void OnMoveCursor(InputAction.CallbackContext ctx)
+    {
+        cursorMoveInput = ctx.ReadValue<Vector2>();
+    }
+
+    // Calculate Snap to Grid Pivot
     private Vector3 CalcSnapPivot(GameObject obj)
     {
         var renderers = obj.GetComponentsInChildren<SpriteRenderer>();
-        if (renderers.Length > 0)
-        {
-            Bounds b = renderers[0].bounds;
-            foreach (var r in renderers) b.Encapsulate(r.bounds);
-            Vector3 center = b.center;
+        if (renderers == null || renderers.Length == 0)
+            return obj.transform.position;
 
-            Vector3Int cell = targetTilemap.WorldToCell(center);
-            return targetTilemap.GetCellCenterWorld(cell);
-        }
-        return obj.transform.position;
+        Bounds b = renderers[0].bounds;
+        foreach (var r in renderers) b.Encapsulate(r.bounds);
+        Vector3 center = b.center;
+
+        Vector3Int cell = targetTilemap.WorldToCell(center);
+        return targetTilemap.GetCellCenterWorld(cell);
     }
-    
-    // 🔹 Update posisi preview
+
+    // Update Preview Position
     void UpdatePreviewPosition()
     {
         if (originals.Count == 0) return;
 
-        Vector3 mouseCellCenter = gridCursor.CurrentCellCenter;
-        mouseCellCenter.z = 0f;
+        // 1. Mouse-Driven Cursor
+        if (Mouse.current != null && Mouse.current.delta.ReadValue() != Vector2.zero)
+            cursorPosition = gridCursor.CurrentCellCenter;
+        // 2. Gamepad-Driven Cursor
+        else if (cursorMoveInput.sqrMagnitude > 0.01f)
+            cursorPosition += new Vector3(cursorMoveInput.x, cursorMoveInput.y, 0f) * cursorMoveSpeed * Time.deltaTime;
 
+        // 3. Snap Cursor to Grid Cell
+        Vector3Int cell = targetTilemap.WorldToCell(cursorPosition);
+        Vector3 snappedPos = targetTilemap.GetCellCenterWorld(cell);
+        cursorPosition = snappedPos;
+
+        // Calculate Relative Offset with First Object
         Vector3 referencePos = CalcSnapPivot(originals[0]);
-        Vector3 offset = mouseCellCenter - referencePos;
+        Vector3 offset = snappedPos - referencePos;
 
         canPlace = true;
 
@@ -177,12 +207,15 @@ public class CutPlacementNew : MonoBehaviour
             Vector3 newPos = objRefPos + offset;
             previewClones[i].transform.position = newPos;
 
-            // ✅ Cek overlap
+            // Check Overlaps
             Collider2D col = previewClones[i].GetComponent<Collider2D>();
             if (col != null)
             {
                 Bounds previewBounds = col.bounds;
-                Collider2D[] hits = Physics2D.OverlapBoxAll(previewBounds.center, previewBounds.size * 0.95f, 0f);
+                Collider2D[] hits = Physics2D.OverlapBoxAll(
+                    previewBounds.center,
+                    previewBounds.size * 0.95f,
+                    0f);
 
                 foreach (var hit in hits)
                 {
@@ -203,7 +236,7 @@ public class CutPlacementNew : MonoBehaviour
             }
         }
 
-        // 🔥 Warna preview hijau / merah
+        // Preview Colors
         foreach (var obj in previewClones)
         {
             if (obj != null)
@@ -211,10 +244,14 @@ public class CutPlacementNew : MonoBehaviour
                 foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
                 {
                     sr.color = canPlace
-                        ? new Color(0f, 1f, 0f, 0.5f) // hijau
-                        : new Color(1f, 0f, 0f, 0.5f); // merah
+                        ? new Color(0f, 1f, 0f, 0.5f) // Green
+                        : new Color(1f, 0f, 0f, 0.5f); // Red
                 }
             }
         }
+
+        // (Optional) Update Position Visuals for Gamepad Users
+        if (gridCursor != null)
+            gridCursor.transform.position = cursorPosition;
     }
 }
