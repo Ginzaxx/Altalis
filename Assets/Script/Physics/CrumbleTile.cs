@@ -30,6 +30,7 @@ public class CrumbleTile : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             // start the timer
+            SoundManager.PlaySound("Crumble", 1f, transform.position);
             StartCoroutine(startCrumbleTiles());
         }
     }

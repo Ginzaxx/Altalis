@@ -59,6 +59,12 @@ public class GameModeManager : MonoBehaviour
                 movementScript.transform.position.z
             );
         }
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            NextSceneTrigger.SetPlayerSpawnPoint(player);
+        }
     }
     
     void Update()

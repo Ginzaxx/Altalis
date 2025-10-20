@@ -37,6 +37,7 @@ public class ManaOrb : MonoBehaviour
                 }
 
                 // Tambahkan mana
+                SoundManager.PlaySound("ManaOrb", 0.8f);
                 ResourceManager.Instance.AddMana(1);
                 // Instantiate the Particle System let the object handle it self.
                 ParticleSystem dd = Instantiate(ManaOrbPieces, transform.position, Quaternion.identity);
