@@ -34,9 +34,9 @@ public class DuplicatePlacement : MonoBehaviour
     }
 
     // Start Copy Process
-    public void StartPlacementMode(InputAction.CallbackContext CopyKey)
+    public void StartPlacementMode(InputAction.CallbackContext context)
     {
-        if (CopyKey.performed && !isPlacing && selectionManager.SelectedObjects.Count > 0)
+        if (context.performed && !isPlacing && selectionManager.SelectedObjects.Count > 0)
         {
             isPlacing = true;
             selectionManager.IsSelectionEnabled = false;
@@ -64,9 +64,9 @@ public class DuplicatePlacement : MonoBehaviour
     }
 
     // Paste Copy Objects
-    public void PlaceCopyObjects(InputAction.CallbackContext PasteKey)
+    public void PlaceCopyObjects(InputAction.CallbackContext context)
     {
-        if (PasteKey.performed && isPlacing)
+        if (context.performed && isPlacing)
         {
             if (canPlace)
             {
@@ -110,9 +110,9 @@ public class DuplicatePlacement : MonoBehaviour
         }
     }
 
-    public void CancelCutObjects(InputAction.CallbackContext CancelKey)
+    public void CancelCutObjects(InputAction.CallbackContext context)
     {
-        if (CancelKey.performed) CancelPlacement();
+        if (context.performed) CancelPlacement();
     }
 
     // Cancel Placement
@@ -124,6 +124,11 @@ public class DuplicatePlacement : MonoBehaviour
         previewClones.Clear();
         isPlacing = false;
         selectionManager.IsSelectionEnabled = true;
+    }
+
+    public void OnMoveCursor(InputAction.CallbackContext ctx)
+    {
+        cursorMoveInput = ctx.ReadValue<Vector2>();
     }
 
     // Calculate Snap to Grip Pivot

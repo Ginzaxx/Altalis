@@ -35,9 +35,9 @@ public class CutPlacement : MonoBehaviour
     }
 
     // Start Cut Process
-    public void StartPlacement(InputAction.CallbackContext CutKey)
+    public void StartPlacement(InputAction.CallbackContext context)
     {
-        if (CutKey.performed && !isPlacing && selectionManager.SelectedObjects.Count > 0)
+        if (context.performed && !isPlacing && selectionManager.SelectedObjects.Count > 0)
         {
             isPlacing = true;
             selectionManager.IsSelectionEnabled = false;
@@ -68,9 +68,9 @@ public class CutPlacement : MonoBehaviour
     }
 
     // Paste Cut Objects
-    public void PlaceCutObjects(InputAction.CallbackContext PasteKey)
+    public void PlaceCutObjects(InputAction.CallbackContext context)
     {
-        if (PasteKey.performed && isPlacing)
+        if (context.performed && isPlacing)
         {
             if (canPlace)
             {
@@ -138,9 +138,9 @@ public class CutPlacement : MonoBehaviour
         }
     }
 
-    public void CancelCutObjects(InputAction.CallbackContext CancelKey)
+    public void CancelCutObjects(InputAction.CallbackContext context)
     {
-        if (CancelKey.performed) CancelPlacement();
+        if (context.performed) CancelPlacement();
     }
 
     // Cancel Cut Process
