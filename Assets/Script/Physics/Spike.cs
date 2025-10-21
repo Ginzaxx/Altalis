@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class Spike : MonoBehaviour
 {
-    private const string DeathCountKey = "DeathCount";
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Cek apakah objek yang menabrak adalah Player atau Selectable
@@ -24,6 +22,7 @@ public class Spike : MonoBehaviour
     private IEnumerator ReloadSceneWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+        ResourceManager.Instance?.FullRestoreMana();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

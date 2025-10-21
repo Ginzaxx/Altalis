@@ -35,11 +35,13 @@ private void Start()
             hasTriggered = true;
             SaveSystem.Instance?.SetManaBlockTriggered(blockID); // ✅ tandai di global memori
 
-            if (ResourceManager.Instance != null && SaveSystem.Instance != null)
-            {
-                SaveSystem.Instance.SaveSpecial(blockID, player.position, ResourceManager.Instance.CurrentMana);
-                Debug.Log($"💾 ManaBlock '{blockID}' saved player & scene state!");
-            }
+        if (ResourceManager.Instance != null && SaveSystem.Instance != null)
+        {
+            Transform p = collision.collider.transform;
+            SaveSystem.Instance.SaveSpecial(blockID, p.position, ResourceManager.Instance.CurrentMana);
+            Debug.Log($"💾 ManaBlock '{blockID}' saved player & scene state!");
+        }
+
             ResourceManager.Instance?.FullRestoreMana();
         }
     }

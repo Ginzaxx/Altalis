@@ -84,9 +84,6 @@ public class GameModeManager : MonoBehaviour
         {
             Time.timeScale = targetTimeScale;
         }
-        
-        // Ensure fixed timestep scales with time scale for consistent physics
-        Time.fixedDeltaTime = 0.02f * Time.timeScale;
     }
     
     public void ToggleMode()
