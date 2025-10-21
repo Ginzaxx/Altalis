@@ -37,32 +37,37 @@ public class CutPlacement : MonoBehaviour
     // Start Cut Process
     public void StartPlacement(InputAction.CallbackContext CutKey)
     {
-        if (CutKey.performed && !isPlacing && selectionManager.SelectedObjects.Count > 0)
+        if (CutKey.performed)
         {
-            isPlacing = true;
-            selectionManager.IsSelectionEnabled = false;
-
-            previewClones.Clear();
-            originals.Clear();
-
-            foreach (var obj in selectionManager.SelectedObjects)
+            Debug.Log("Pressing Cut");
+            if (!isPlacing && selectionManager.SelectedObjects.Count > 0)
             {
-                if (obj == null) continue;
+                Debug.Log("Starting Cut");
+                isPlacing = true;
+                selectionManager.IsSelectionEnabled = false;
 
-                originals.Add(obj);
+                previewClones.Clear();
+                originals.Clear();
 
-                GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
+                foreach (var obj in selectionManager.SelectedObjects)
+                {
+                    if (obj == null) continue;
 
-                var col = clone.GetComponent<Collider2D>();
-                if (col != null) col.enabled = false;
+                    originals.Add(obj);
 
-                var rb = clone.GetComponent<Rigidbody2D>();
-                if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+                    GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
 
-                foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
-                    sr.color = new Color(1f, 1f, 1f, 0.5f);
+                    var col = clone.GetComponent<Collider2D>();
+                    if (col != null) col.enabled = false;
 
-                previewClones.Add(clone);
+                    var rb = clone.GetComponent<Rigidbody2D>();
+                    if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+
+                    foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
+                        sr.color = new Color(1f, 1f, 1f, 0.5f);
+
+                    previewClones.Add(clone);
+                }
             }
         }
     }
@@ -70,81 +75,89 @@ public class CutPlacement : MonoBehaviour
     // Paste Cut Objects
     public void PlaceCutObjects(InputAction.CallbackContext PasteKey)
     {
-        if (PasteKey.performed && isPlacing)
+        if (PasteKey.performed)
         {
-            if (canPlace)
+            Debug.Log("Pressing Paste");
+            if (isPlacing)
             {
-                if (ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
+                if (canPlace)
                 {
-                    List<GameObject> placedObjects = new List<GameObject>();
-
-                    // Paste New Objects
-                    foreach (var obj in previewClones)
+                    if (ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
                     {
-                        if (obj != null)
+                        List<GameObject> placedObjects = new List<GameObject>();
+
+                        // Paste New Objects
+                        foreach (var obj in previewClones)
                         {
-                            foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
-                                sr.color = Color.white;
+                            if (obj != null)
+                            {
+                                foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+                                    sr.color = Color.white;
 
-                            var col = obj.GetComponent<Collider2D>();
-                            if (col != null) col.enabled = true;
+                                var col = obj.GetComponent<Collider2D>();
+                                if (col != null) col.enabled = true;
 
-                            var rb = obj.GetComponent<Rigidbody2D>();
-                            if (rb != null) rb.bodyType = RigidbodyType2D.Dynamic;
+                                var rb = obj.GetComponent<Rigidbody2D>();
+                                if (rb != null) rb.bodyType = RigidbodyType2D.Dynamic;
 
-                            obj.tag = "Selectable";
-                            placedObjects.Add(obj);
+                                obj.tag = "Selectable";
+                                placedObjects.Add(obj);
 
-                            if (placeVfxPrefab != null)
-                                Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
+                                if (placeVfxPrefab != null)
+                                    Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
+                            }
                         }
-                    }
 
-                    // Delete Originals
-                    foreach (var orig in originals)
+                        // Delete Originals
+                        foreach (var orig in originals)
+                        {
+                            if (orig != null)
+                            {
+                                var dissolve = orig.GetComponent<DissolveOnDestroy>();
+                                if (dissolve != null)
+                                    dissolve.StartDissolve();
+                                else
+                                    Destroy(orig);
+                            }
+                        }
+
+                        // Feedback
+                        OnObjectsCutPlaced?.Invoke(placedObjects);
+                        Debug.Log($"✂️ Cut-Placed {placedObjects.Count} objects. Originals deleted.");
+
+                        lastPlacedObjects = placedObjects;
+
+                        previewClones.Clear();
+                        originals.Clear();
+                        isPlacing = false;
+                        selectionManager.IsSelectionEnabled = true;
+
+                        // Return to Movement Mode
+                        if (GameModeManager.Instance != null)
+                            GameModeManager.Instance.SwitchMode(GameMode.Movement);
+                    }
+                    else
                     {
-                        if (orig != null)
-                        {
-                            var dissolve = orig.GetComponent<DissolveOnDestroy>();
-                            if (dissolve != null)
-                                dissolve.StartDissolve();
-                            else
-                                Destroy(orig);
-                        }
+                        Debug.Log("❌ Unable to Cut-Place: Not enough Mana!");
+                        CancelPlacement();
                     }
-
-                    // Feedback
-                    OnObjectsCutPlaced?.Invoke(placedObjects);
-                    Debug.Log($"✂️ Cut-Placed {placedObjects.Count} objects. Originals deleted.");
-
-                    lastPlacedObjects = placedObjects;
-
-                    previewClones.Clear();
-                    originals.Clear();
-                    isPlacing = false;
-                    selectionManager.IsSelectionEnabled = true;
-
-                    // Return to Movement Mode
-                    if (GameModeManager.Instance != null)
-                        GameModeManager.Instance.SwitchMode(GameMode.Movement);
                 }
-                else
-                {
-                    Debug.Log("❌ Unable to Cut-Place: Not enough Mana!");
-                    CancelPlacement();
-                }
+                else Debug.Log("❌ Unable to Cut-Place: Object obstructed!");
             }
-            else Debug.Log("❌ Unable to Cut-Place: Object obstructed!");
         }
     }
 
     public void CancelCutObjects(InputAction.CallbackContext CancelKey)
     {
-        if (CancelKey.performed) CancelPlacement();
+        if (CancelKey.performed)
+        {
+            Debug.Log("Pressing Cancel");
+            CancelPlacement();
+        }
     }
 
     // Cancel Cut Process
-    public void CancelPlacement()
+    void CancelPlacement()
     {
         foreach (var obj in previewClones)
             if (obj != null) Destroy(obj);
@@ -157,6 +170,7 @@ public class CutPlacement : MonoBehaviour
 
     public void OnMoveCursor(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Moving Cursor");
         cursorMoveInput = ctx.ReadValue<Vector2>();
     }
 

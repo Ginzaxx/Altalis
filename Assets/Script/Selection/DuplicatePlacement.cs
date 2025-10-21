@@ -36,29 +36,34 @@ public class DuplicatePlacement : MonoBehaviour
     // Start Copy Process
     public void StartPlacementMode(InputAction.CallbackContext CopyKey)
     {
-        if (CopyKey.performed && !isPlacing && selectionManager.SelectedObjects.Count > 0)
+        if (CopyKey.performed)
         {
-            isPlacing = true;
-            selectionManager.IsSelectionEnabled = false;
-
-            previewClones.Clear();
-
-            foreach (var obj in selectionManager.SelectedObjects)
+            Debug.Log("Pressing Copy");
+            if (!isPlacing && selectionManager.SelectedObjects.Count > 0)
             {
-                if (obj == null) continue;
+                Debug.Log("Starting Copy");
+                isPlacing = true;
+                selectionManager.IsSelectionEnabled = false;
 
-                GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
+                previewClones.Clear();
 
-                var col = clone.GetComponent<Collider2D>();
-                if (col != null) col.enabled = false;
+                foreach (var obj in selectionManager.SelectedObjects)
+                {
+                    if (obj == null) continue;
 
-                var rb = clone.GetComponent<Rigidbody2D>();
-                if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+                    GameObject clone = Instantiate(obj, obj.transform.position, Quaternion.identity);
 
-                foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
-                    sr.color = new Color(1f, 1f, 1f, 0.5f);
+                    var col = clone.GetComponent<Collider2D>();
+                    if (col != null) col.enabled = false;
 
-                previewClones.Add(clone);
+                    var rb = clone.GetComponent<Rigidbody2D>();
+                    if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+
+                    foreach (var sr in clone.GetComponentsInChildren<SpriteRenderer>())
+                        sr.color = new Color(1f, 1f, 1f, 0.5f);
+
+                    previewClones.Add(clone);
+                }
             }
         }
     }
@@ -66,53 +71,61 @@ public class DuplicatePlacement : MonoBehaviour
     // Paste Copy Objects
     public void PlaceCopyObjects(InputAction.CallbackContext PasteKey)
     {
-        if (PasteKey.performed && isPlacing)
+        if (PasteKey.performed)
         {
-            if (canPlace)
+            Debug.Log("Pressing Paste");
+            if (isPlacing)
             {
-                if (ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
+                if (canPlace)
                 {
-                    List<GameObject> placedObjects = new List<GameObject>();
-
-                    foreach (var obj in previewClones)
+                    if (ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
                     {
-                        if (obj == null) continue;
+                        List<GameObject> placedObjects = new List<GameObject>();
 
-                        foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
-                            sr.color = Color.white;
+                        foreach (var obj in previewClones)
+                        {
+                            if (obj == null) continue;
 
-                        obj.tag = "Selectable";
-                        placedObjects.Add(obj);
+                            foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
+                                sr.color = Color.white;
 
-                        if (placeVfxPrefab != null)
-                            Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
+                            obj.tag = "Selectable";
+                            placedObjects.Add(obj);
+
+                            if (placeVfxPrefab != null)
+                                Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
+                        }
+
+                        OnObjectsPlaced?.Invoke(placedObjects);
+                        Debug.Log($"✅ Placed {placedObjects.Count} Duplicated objects.");
+
+                        lastPlacedObjects = placedObjects;
+                        previewClones.Clear();
+                        isPlacing = false;
+                        selectionManager.IsSelectionEnabled = true;
+
+                        // Return to Movement Mode
+                        if (GameModeManager.Instance != null)
+                            GameModeManager.Instance.SwitchMode(GameMode.Movement);
                     }
-
-                    OnObjectsPlaced?.Invoke(placedObjects);
-                    Debug.Log($"✅ Placed {placedObjects.Count} Duplicated objects.");
-
-                    lastPlacedObjects = placedObjects;
-                    previewClones.Clear();
-                    isPlacing = false;
-                    selectionManager.IsSelectionEnabled = true;
-
-                    // Return to Movement Mode
-                    if (GameModeManager.Instance != null)
-                        GameModeManager.Instance.SwitchMode(GameMode.Movement);
+                    else
+                    {
+                        Debug.Log("❌ Unable to Place: Not enough Mana!");
+                        CancelPlacement();
+                    }
                 }
-                else
-                {
-                    Debug.Log("❌ Unable to Place: Not enough Mana!");
-                    CancelPlacement();
-                }
+                else Debug.Log("❌ Unable to Place: Object Obstructed!");
             }
-            else Debug.Log("❌ Unable to Place: Object Obstructed!");
         }
     }
 
     public void CancelCutObjects(InputAction.CallbackContext CancelKey)
     {
-        if (CancelKey.performed) CancelPlacement();
+        if (CancelKey.performed)
+        {
+            Debug.Log("Pressing Cancel");
+            CancelPlacement();
+        }
     }
 
     // Cancel Placement
@@ -124,6 +137,11 @@ public class DuplicatePlacement : MonoBehaviour
         previewClones.Clear();
         isPlacing = false;
         selectionManager.IsSelectionEnabled = true;
+    }
+
+    public void OnMoveCursor(InputAction.CallbackContext ctx)
+    {
+        cursorMoveInput = ctx.ReadValue<Vector2>();
     }
 
     // Calculate Snap to Grip Pivot
