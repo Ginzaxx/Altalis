@@ -24,8 +24,8 @@ public class Movement : MonoBehaviour
     private Vector2 slopeTangent;
 
     [Header("Ground Check")]
-    public Transform GroundCheckPos;
     public float GroundCheckRad = 0.2f;
+    public Transform GroundCheckPos;
     public LayerMask GroundLayer;
 
     [Header("Particle System Dust")]
@@ -60,6 +60,7 @@ public class Movement : MonoBehaviour
 
         // --- Animator ---
         Animate.SetFloat("Walking", !OnIceSlope ? Mathf.Abs(SideMove) : 0);
+        Animate.SetFloat("YVelocity", RbD.velocity.y);
         Animate.SetBool("Jumping", !IsGrounded);
         Animate.SetBool("Sliding", OnIceSlope);
 
@@ -68,6 +69,7 @@ public class Movement : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
+        Debug.Log("Pressing Move");
         SideMove = context.ReadValue<Vector2>().x;
     }
 
@@ -76,15 +78,11 @@ public class Movement : MonoBehaviour
         // Convert Player Inputs into Jump values
         if (context.performed)
         {
+            Debug.Log("Pressing Jump");
             if (IsGrounded) // Check if Player is on Ground to Jump
             {
-                float jumpDirection = SideMove;
-
-                if (OnIceSlope && jumpDirection < 0) // Ignore if Player is on Ice Slope
-                    jumpDirection = 0;
-
                 // Hold Down on Jump Button = Big Jump
-                RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
+                RbD.velocity = new Vector2(SideMove * SideSpeed, JumpPower);
 
                 // Play Dust Particles ~ Aflah
                 dustParticle.Play();

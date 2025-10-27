@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class PhysicsCombiner : MonoBehaviour
 {
-    [SerializeField] private DuplicatePlacement duplicatePlacement;
+    [SerializeField] private CopyPlacement duplicatePlacement;
 
     void Update()
     {

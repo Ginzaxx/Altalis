@@ -46,6 +46,11 @@ public class SettingsKeyboard : MonoBehaviour
                 RebindManager.LoadRebinds(action);
         }
 
+        foreach (var binding in inputActions.FindAction("Camera").bindings)
+        {
+            Debug.Log($"{binding.name}: groups = '{binding.groups}'");
+        }
+
         // Setup listeners
         undoKeyButton.onClick.AddListener(()        => StartRebind("Undo", null, undoKeyLabel));
         cutKeyButton.onClick.AddListener(()         => StartRebind("Cut", null, cutKeyLabel));
@@ -53,11 +58,11 @@ public class SettingsKeyboard : MonoBehaviour
         pasteKeyButton.onClick.AddListener(()       => StartRebind("Paste", null, pasteKeyLabel));
 
         jumpKeyButton.onClick.AddListener(()        => StartRebind("Jump", null, jumpKeyLabel));
-        moveLeftKeyButton.onClick.AddListener(()    => StartRebind("Move", "left", moveLeftKeyLabel));
-        moveRightKeyButton.onClick.AddListener(()   => StartRebind("Move", "right", moveRightKeyLabel));
+        moveLeftKeyButton.onClick.AddListener(()    => StartRebind("Move", "Left", moveLeftKeyLabel));
+        moveRightKeyButton.onClick.AddListener(()   => StartRebind("Move", "Right", moveRightKeyLabel));
 
-        cameraUpKeyButton.onClick.AddListener(()    => StartRebind("Camera", "up", cameraUpKeyLabel));
-        cameraDownKeyButton.onClick.AddListener(()  => StartRebind("Camera", "down", cameraDownKeyLabel));
+        cameraUpKeyButton.onClick.AddListener(()    => StartRebind("Camera", "Up", cameraUpKeyLabel));
+        cameraDownKeyButton.onClick.AddListener(()  => StartRebind("Camera", "Down", cameraDownKeyLabel));
 
         if (closeButton != null)
             closeButton.onClick.AddListener(ClosePanel);
@@ -107,14 +112,14 @@ public class SettingsKeyboard : MonoBehaviour
         for (int i = 0; i < action.bindings.Count; i++)
         {
             var binding = action.bindings[i];
-            if (!binding.groups.Contains(scheme)) continue;
 
-            if (string.IsNullOrEmpty(bindingName) && !binding.isPartOfComposite)
-                return i;
+            if (!string.IsNullOrEmpty(binding.groups) && !binding.groups.Contains(scheme)) continue;
 
-            if (!string.IsNullOrEmpty(bindingName) && binding.isPartOfComposite && binding.name == bindingName)
-                return i;
+            if (string.IsNullOrEmpty(bindingName) && !binding.isPartOfComposite) return i;
+
+            if (!string.IsNullOrEmpty(bindingName) && binding.isPartOfComposite && binding.name == bindingName) return i;
         }
+        Debug.LogWarning($"Binding not found for {action.name} ({bindingName ?? "default"}) in Keyboard schemes");
         return -1;
     }
 

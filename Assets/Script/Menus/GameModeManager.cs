@@ -15,7 +15,7 @@ public class GameModeManager : MonoBehaviour
     
     [Header("References")]
     public Movement movementScript;
-    public DragSelection dragSelectionScript;
+    public GridSelection gridSelection;
     
     [Header("UI Indicators")]
     public GameObject movementModeUI;
@@ -117,17 +117,17 @@ public class GameModeManager : MonoBehaviour
             movementScript.enabled = true;
         }
 
-        if (dragSelectionScript != null)
+        if (gridSelection != null)
         {
-            dragSelectionScript.enabled = false;
-            dragSelectionScript.IsSelectionEnabled = false;
+            gridSelection.enabled = false;
+            gridSelection.IsSelectionEnabled = false;
 
             // 🔥 Clear selection saat keluar dari Selection Mode
-            dragSelectionScript.ClearSelection();
+            gridSelection.ClearSelection();
 
-            if (dragSelectionScript.selectionBoxUI != null)
+            if (gridSelection.selectionBoxUI != null)
             {
-                dragSelectionScript.selectionBoxUI.gameObject.SetActive(false);
+                gridSelection.selectionBoxUI.gameObject.SetActive(false);
             }
         }
 
@@ -141,13 +141,13 @@ public class GameModeManager : MonoBehaviour
             movementScript.enabled = false;
         }
 
-        if (dragSelectionScript != null)
+        if (gridSelection != null)
         {
-            dragSelectionScript.enabled = true;
-            dragSelectionScript.IsSelectionEnabled = true;
+            gridSelection.enabled = true;
+            gridSelection.IsSelectionEnabled = true;
 
             // 🔥 Clear selection saat masuk Selection Mode baru
-            dragSelectionScript.ClearSelection();
+            gridSelection.ClearSelection();
         }
 
         targetTimeScale = slowMotionTimeScale;
