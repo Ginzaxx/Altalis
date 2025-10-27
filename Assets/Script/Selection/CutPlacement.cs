@@ -7,7 +7,7 @@ public class CutPlacement : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera cam;
-    [SerializeField] private DragSelection selectionManager;
+    [SerializeField] private GridSelection gridSelection;
     [SerializeField] private GridCursor gridCursor;
     [SerializeField] private Tilemap targetTilemap;
 
@@ -40,16 +40,16 @@ public class CutPlacement : MonoBehaviour
         if (CutKey.performed)
         {
             Debug.Log("Pressing Cut");
-            if (!isPlacing && selectionManager.SelectedObjects.Count > 0)
+            if (!isPlacing && gridSelection.SelectedObjects.Count > 0)
             {
                 Debug.Log("Starting Cut");
                 isPlacing = true;
-                selectionManager.IsSelectionEnabled = false;
+                gridSelection.IsSelectionEnabled = false;
 
                 previewClones.Clear();
                 originals.Clear();
 
-                foreach (var obj in selectionManager.SelectedObjects)
+                foreach (var obj in gridSelection.SelectedObjects)
                 {
                     if (obj == null) continue;
 
@@ -123,14 +123,14 @@ public class CutPlacement : MonoBehaviour
 
                         // Feedback
                         OnObjectsCutPlaced?.Invoke(placedObjects);
-                        Debug.Log($"✂️ Cut-Placed {placedObjects.Count} objects. Originals deleted.");
+                        Debug.Log($"Cut-Placed {placedObjects.Count} objects. Originals deleted.");
 
                         lastPlacedObjects = placedObjects;
 
                         previewClones.Clear();
                         originals.Clear();
                         isPlacing = false;
-                        selectionManager.IsSelectionEnabled = true;
+                        gridSelection.IsSelectionEnabled = true;
 
                         // Return to Movement Mode
                         if (GameModeManager.Instance != null)
@@ -138,11 +138,11 @@ public class CutPlacement : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("❌ Unable to Cut-Place: Not enough Mana!");
+                        Debug.Log("Unable to Cut-Place: Not enough Mana!");
                         CancelPlacement();
                     }
                 }
-                else Debug.Log("❌ Unable to Cut-Place: Object obstructed!");
+                else Debug.Log("Unable to Cut-Place: Object obstructed!");
             }
         }
     }
@@ -156,6 +156,11 @@ public class CutPlacement : MonoBehaviour
         }
     }
 
+    public void OnMoveCursor(InputAction.CallbackContext Cursor)
+    {
+        cursorMoveInput = Cursor.ReadValue<Vector2>();
+    }
+
     // Cancel Cut Process
     void CancelPlacement()
     {
@@ -165,13 +170,7 @@ public class CutPlacement : MonoBehaviour
         previewClones.Clear();
         originals.Clear();
         isPlacing = false;
-        selectionManager.IsSelectionEnabled = true;
-    }
-
-    public void OnMoveCursor(InputAction.CallbackContext ctx)
-    {
-        Debug.Log("Moving Cursor");
-        cursorMoveInput = ctx.ReadValue<Vector2>();
+        gridSelection.IsSelectionEnabled = true;
     }
 
     // Calculate Snap to Grid Pivot

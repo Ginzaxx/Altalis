@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DeleteSelection : MonoBehaviour
 {
-    [SerializeField] private DragSelection selectionManager;
+    [SerializeField] private GridSelection gridSelection;
 
     void Update()
     {
@@ -14,7 +14,7 @@ public class DeleteSelection : MonoBehaviour
 
     void DeleteSelectedObjects()
     {
-        if (selectionManager.SelectedObjects.Count == 0)
+        if (gridSelection.SelectedObjects.Count == 0)
         {
             Debug.Log("No objects selected to delete.");
             return;
@@ -30,7 +30,7 @@ public class DeleteSelection : MonoBehaviour
         // 🔥 Kurangi 1 mana
         ResourceManager.Instance.SpendMana(1);
 
-        foreach (var obj in selectionManager.SelectedObjects)
+        foreach (var obj in gridSelection.SelectedObjects)
         {
             if (obj != null)
             {
@@ -38,7 +38,7 @@ public class DeleteSelection : MonoBehaviour
             }
         }
 
-        selectionManager.SelectedObjects.Clear();
+        gridSelection.SelectedObjects.Clear();
         Debug.Log("Deleted selected objects (cost 1 mana)");
     }
 }

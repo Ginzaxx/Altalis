@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ManaBlock : MonoBehaviour
 {
@@ -33,7 +34,7 @@ private void Start()
         if (collision.collider.CompareTag("Player"))
         {
             hasTriggered = true;
-            SaveSystem.Instance?.SetManaBlockTriggered(blockID); // ✅ tandai di global memori
+            SaveSystem.Instance?.SetManaBlockTriggered(blockID);
 
         if (ResourceManager.Instance != null && SaveSystem.Instance != null)
         {
@@ -67,9 +68,9 @@ private void Start()
         }
     }
 
-    private void Update()
+    public void Interact(InputAction.CallbackContext context)
     {
-        if (playerInRange && Input.GetKeyDown(interactKey))
+        if (context.performed && playerInRange)
         {
             StartCoroutine(RestoreFromManaBlock());
         }

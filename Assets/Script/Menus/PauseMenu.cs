@@ -7,7 +7,7 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("Panels")]
     public GameObject pauseMenuUI;
-    public GameObject settingPanelUI; // Tambahan
+    public GameObject settingPanelUI;
 
     [Header("Buttons")]
     public Button pauseButton;
@@ -33,13 +33,9 @@ public class PauseMenu : MonoBehaviour
         {
             // Kalau lagi di setting panel, balik ke pause menu
             if (settingPanelUI.activeSelf)
-            {
                 CloseSetting();
-            }
             else
-            {
                 TogglePause();
-            }
         }
     }
 

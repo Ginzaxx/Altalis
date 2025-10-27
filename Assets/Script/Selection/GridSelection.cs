@@ -1,21 +1,23 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class DragSelection : MonoBehaviour
+public class GridSelection : MonoBehaviour
 {
     [SerializeField] private Camera cam;
+    [SerializeField] public Grid grid;
     [SerializeField] public RectTransform selectionBoxUI;
     public bool IsSelectionEnabled { get; set; } = true;
 
     private Vector2 startPos;
     private Vector2 endPos;
-    private bool isDragging = false;
+    private bool IsDragging = false;
 
     [Header("Slow Motion Settings")]
     public bool useUnscaledTimeForUI = true;
 
     public List<GameObject> SelectedObjects { get; private set; } = new List<GameObject>();
-    private List<GameObject> previewSelection = new List<GameObject>();
+    private List<GameObject> SelectionPreview = new List<GameObject>();
 
     // Limit dari ResourceManager
     private int MaxSelectable => ResourceManager.Instance != null ? ResourceManager.Instance.SelectLimit : 3;
@@ -23,23 +25,23 @@ public class DragSelection : MonoBehaviour
     void Update()
     {
         if (!IsSelectionEnabled || !enabled) return;
-        if (Input.GetMouseButtonDown(1)) return; // abaikan klik kanan
+        if (Input.GetMouseButtonDown(1)) return; // Ignore Right Click
 
-        // 🔹 TAP (klik cepat tanpa drag)
+        // Tap (Click without Drag)
         if (Input.GetMouseButtonDown(0))
         {
             startPos = Input.mousePosition;
-            isDragging = true;
+            IsDragging = true;
 
             if (selectionBoxUI != null)
                 selectionBoxUI.gameObject.SetActive(false);
         }
 
-        if (Input.GetMouseButton(0) && isDragging)
+        if (Input.GetMouseButton(0) && IsDragging)
         {
             endPos = Input.mousePosition;
 
-            // Jika jarak drag cukup jauh → drag select
+            // If Big Drag → Drag Select
             if (Vector2.Distance(startPos, endPos) > 15f)
             {
                 if (selectionBoxUI != null)
@@ -52,20 +54,60 @@ public class DragSelection : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            // Jika drag kecil (tap)
+            // If Small Drag
             if (Vector2.Distance(startPos, Input.mousePosition) < 15f)
                 HandleTapSelection();
             else
                 ConfirmSelection();
 
-            isDragging = false;
+            IsDragging = false;
 
             if (selectionBoxUI != null)
                 selectionBoxUI.gameObject.SetActive(false);
         }
     }
 
-    // 🔹 Tap Selection (klik 1 objek tanpa reset)
+    public void OnSelect(InputAction.CallbackContext context)
+    {
+        if (!IsSelectionEnabled || !enabled) return;
+        if (!context.performed) return;
+
+        // If using Gamepad: Pick Object under GridCursor
+        if (Gamepad.current != null)
+            HandleCursorSelection();
+        // Mouse click will still be handled in Update()
+    }
+
+    public void OnDeselectAll(InputAction.CallbackContext context)
+    {
+        if (context.performed) ClearSelection();
+    }
+
+    void HandleCursorSelection()
+    {
+        // Use current GridCursor position to select objects
+        GridCursor cursor = FindObjectOfType<GridCursor>();
+        if (cursor == null || grid == null) return;
+
+        Vector3 worldPos = cursor.CurrentCellCenter;
+        Collider2D hit = Physics2D.OverlapPoint(worldPos);
+
+        if (hit != null)
+        {
+            GameObject target = hit.gameObject;
+            if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
+                target = target.transform.parent.gameObject;
+
+            if (target.CompareTag("Selectable"))
+            {
+                if (SelectedObjects.Contains(target)) DeselectObject(target);
+                else if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+            }
+        }
+        else ClearSelection();
+    }
+
+    // Tap Selection (Click 1 Object without Reset)
     void HandleTapSelection()
     {
         Vector2 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
@@ -82,31 +124,20 @@ public class DragSelection : MonoBehaviour
             if (target.CompareTag("Selectable"))
             {
                 // Toggle on/off selection
-                if (SelectedObjects.Contains(target))
-                {
-                    DeselectObject(target);
-                }
+                if (SelectedObjects.Contains(target)) DeselectObject(target);
                 else
                 {
-                    if (SelectedObjects.Count < MaxSelectable)
-                    {
-                        SelectObject(target);
-                    }
-                    else
-                    {
-                        Debug.Log($"⚠️ Sudah mencapai batas seleksi: {MaxSelectable}");
-                    }
+                    if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+                    else Debug.Log($"Sudah mencapai batas seleksi: {MaxSelectable}");
                 }
 
                 return; // Jangan reset selection
             }
         }
-
-        // 🔹 Jika klik area kosong → reset semua
+        // If Empty → Reset All
         ClearSelection();
     }
 
-    // 🔹 Drag box update
     void UpdateSelectionBox()
     {
         if (selectionBoxUI == null) return;
@@ -114,13 +145,15 @@ public class DragSelection : MonoBehaviour
         Canvas parentCanvas = selectionBoxUI.GetComponentInParent<Canvas>();
         RectTransform canvasRect = parentCanvas.transform as RectTransform;
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+        RectTransformUtility.ScreenPointToLocalPointInRectangle
+        (
             canvasRect, startPos,
             parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : cam,
             out Vector2 localStartPos
         );
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+        RectTransformUtility.ScreenPointToLocalPointInRectangle
+        (
             canvasRect, endPos,
             parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : cam,
             out Vector2 localEndPos
@@ -133,16 +166,15 @@ public class DragSelection : MonoBehaviour
         selectionBoxUI.sizeDelta = boxSize;
     }
 
-    // 🔹 Preview selection saat drag
     void PreviewSelection()
     {
-        // Reset warna preview sebelumnya
-        foreach (var obj in previewSelection)
+        // Reset Previous Preview Color
+        foreach (var obj in SelectionPreview)
         {
             if (obj != null && !SelectedObjects.Contains(obj))
                 SetColor(obj, Color.white);
         }
-        previewSelection.Clear();
+        SelectionPreview.Clear();
 
         Vector3 p1 = cam.ScreenToWorldPoint(startPos);
         Vector3 p2 = cam.ScreenToWorldPoint(endPos);
@@ -160,40 +192,36 @@ public class DragSelection : MonoBehaviour
             if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
                 target = target.transform.parent.gameObject;
 
-            if (target.CompareTag("Selectable") && !previewSelection.Contains(target))
+            if (target.CompareTag("Selectable") && !SelectionPreview.Contains(target))
             {
-                previewSelection.Add(target);
+                SelectionPreview.Add(target);
                 SetColor(target, Color.cyan);
             }
         }
     }
 
-    // 🔹 Konfirmasi drag selection
     void ConfirmSelection()
     {
-        foreach (var obj in previewSelection)
+        foreach (var obj in SelectionPreview)
         {
             if (obj == null) continue;
 
             if (!SelectedObjects.Contains(obj))
-            {
-                if (SelectedObjects.Count < MaxSelectable)
-                    SelectObject(obj);
-            }
+                if (SelectedObjects.Count < MaxSelectable) SelectObject(obj);
         }
 
-        // Reset warna preview
-        foreach (var obj in previewSelection)
+        // Reset Preview Color
+        foreach (var obj in SelectionPreview)
         {
             if (obj != null && !SelectedObjects.Contains(obj))
                 SetColor(obj, Color.white);
         }
-        previewSelection.Clear();
+        SelectionPreview.Clear();
 
         Debug.Log($"Selected {SelectedObjects.Count} objects");
     }
 
-    // 🔹 Tambah ke daftar selection
+    // Add to Selection List
     void SelectObject(GameObject obj)
     {
         if (!SelectedObjects.Contains(obj))
@@ -203,7 +231,7 @@ public class DragSelection : MonoBehaviour
         }
     }
 
-    // 🔹 Hapus dari daftar selection
+    // Remove from Selection List
     void DeselectObject(GameObject obj)
     {
         if (SelectedObjects.Contains(obj))
@@ -213,29 +241,25 @@ public class DragSelection : MonoBehaviour
         }
     }
 
-    // 🔹 Set warna semua renderer anak
+    // Set Color for all Child Renders
     void SetColor(GameObject obj, Color color)
     {
         foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
             sr.color = color;
     }
 
-    // 🔹 Bersihkan semua seleksi
+    // Clear All Selection
     public void ClearSelection()
     {
         foreach (var obj in SelectedObjects)
-        {
             if (obj != null)
                 SetColor(obj, Color.white);
-        }
         SelectedObjects.Clear();
 
-        foreach (var obj in previewSelection)
-        {
+        foreach (var obj in SelectionPreview)
             if (obj != null)
                 SetColor(obj, Color.white);
-        }
-        previewSelection.Clear();
+        SelectionPreview.Clear();
 
         if (selectionBoxUI != null)
             selectionBoxUI.gameObject.SetActive(false);
@@ -244,6 +268,6 @@ public class DragSelection : MonoBehaviour
     void OnDisable()
     {
         ClearSelection();
-        isDragging = false;
+        IsDragging = false;
     }
 }

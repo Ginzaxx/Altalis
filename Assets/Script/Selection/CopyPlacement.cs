@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.InputSystem;
 
-public class DuplicatePlacement : MonoBehaviour
+public class CopyPlacement : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera cam;
-    [SerializeField] private DragSelection selectionManager;
+    [SerializeField] private GridSelection gridSelection;
     [SerializeField] private GridCursor gridCursor;
     [SerializeField] private Tilemap targetTilemap;
 
@@ -39,15 +39,15 @@ public class DuplicatePlacement : MonoBehaviour
         if (CopyKey.performed)
         {
             Debug.Log("Pressing Copy");
-            if (!isPlacing && selectionManager.SelectedObjects.Count > 0)
+            if (!isPlacing && gridSelection.SelectedObjects.Count > 0)
             {
                 Debug.Log("Starting Copy");
                 isPlacing = true;
-                selectionManager.IsSelectionEnabled = false;
+                gridSelection.IsSelectionEnabled = false;
 
                 previewClones.Clear();
 
-                foreach (var obj in selectionManager.SelectedObjects)
+                foreach (var obj in gridSelection.SelectedObjects)
                 {
                     if (obj == null) continue;
 
@@ -97,12 +97,12 @@ public class DuplicatePlacement : MonoBehaviour
                         }
 
                         OnObjectsPlaced?.Invoke(placedObjects);
-                        Debug.Log($"✅ Placed {placedObjects.Count} Duplicated objects.");
+                        Debug.Log($"Placed {placedObjects.Count} Duplicated objects.");
 
                         lastPlacedObjects = placedObjects;
                         previewClones.Clear();
                         isPlacing = false;
-                        selectionManager.IsSelectionEnabled = true;
+                        gridSelection.IsSelectionEnabled = true;
 
                         // Return to Movement Mode
                         if (GameModeManager.Instance != null)
@@ -110,11 +110,11 @@ public class DuplicatePlacement : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("❌ Unable to Place: Not enough Mana!");
+                        Debug.Log("Unable to Place: Not enough Mana!");
                         CancelPlacement();
                     }
                 }
-                else Debug.Log("❌ Unable to Place: Object Obstructed!");
+                else Debug.Log("Unable to Place: Object Obstructed!");
             }
         }
     }
@@ -128,6 +128,11 @@ public class DuplicatePlacement : MonoBehaviour
         }
     }
 
+    public void OnMoveCursor(InputAction.CallbackContext context)
+    {
+        cursorMoveInput = context.ReadValue<Vector2>();
+    }
+
     // Cancel Placement
     void CancelPlacement()
     {
@@ -136,12 +141,7 @@ public class DuplicatePlacement : MonoBehaviour
 
         previewClones.Clear();
         isPlacing = false;
-        selectionManager.IsSelectionEnabled = true;
-    }
-
-    public void OnMoveCursor(InputAction.CallbackContext ctx)
-    {
-        cursorMoveInput = ctx.ReadValue<Vector2>();
+        gridSelection.IsSelectionEnabled = true;
     }
 
     // Calculate Snap to Grip Pivot
@@ -162,7 +162,7 @@ public class DuplicatePlacement : MonoBehaviour
     // Update Preview Position
     void UpdatePreviewPosition()
     {
-        if (selectionManager.SelectedObjects.Count == 0) return;
+        if (gridSelection.SelectedObjects.Count == 0) return;
 
         // 1. Mouse-Driven Cursor
         if (Mouse.current != null && Mouse.current.delta.ReadValue() != Vector2.zero)
@@ -177,17 +177,17 @@ public class DuplicatePlacement : MonoBehaviour
         cursorPosition = snappedPos;
 
         // Calculate Relative Offset with First Object
-        Vector3 referencePos = CalcSnapPivot(selectionManager.SelectedObjects[0]);
+        Vector3 referencePos = CalcSnapPivot(gridSelection.SelectedObjects[0]);
         Vector3 offset = snappedPos - referencePos;
 
         canPlace = true;
 
-        int count = Mathf.Min(previewClones.Count, selectionManager.SelectedObjects.Count);
+        int count = Mathf.Min(previewClones.Count, gridSelection.SelectedObjects.Count);
         for (int i = 0; i < count; i++)
         {
-            if (previewClones[i] == null || selectionManager.SelectedObjects[i] == null) continue;
+            if (previewClones[i] == null || gridSelection.SelectedObjects[i] == null) continue;
 
-            Vector3 objRefPos = CalcSnapPivot(selectionManager.SelectedObjects[i]);
+            Vector3 objRefPos = CalcSnapPivot(gridSelection.SelectedObjects[i]);
             Vector3 newPos = objRefPos + offset;
             previewClones[i].transform.position = newPos;
 

@@ -20,7 +20,6 @@ public static class RebindManager
 
         var binding = action.bindings[bindingIndex];
 
-        // Don’t allow rebinding the composite itself
         if (binding.isComposite)
         {
             Debug.LogWarning("Cannot rebind a composite directly. Must rebind its parts.");
@@ -33,8 +32,8 @@ public static class RebindManager
             .WithControlsExcluding("<Mouse>/delta")
             .WithCancelingThrough("<Keyboard>/escape") // ESC Cancels
             .WithCancelingThrough("<Gamepad>/rightTrigger") // Right Trigger Cancels
-            .OnComplete(operation =>
-            {
+            .OnComplete
+            (operation => {
                 operation.Dispose();
 
                 SaveRebinds(action);
