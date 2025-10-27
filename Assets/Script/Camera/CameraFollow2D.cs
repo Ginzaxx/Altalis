@@ -12,10 +12,11 @@ public class CameraFollow2D : MonoBehaviour
     public float smoothSpeed = 0.125f;
 
     [Header("Manual Camera Control")]
-    public float manualMoveSpeed = 5f; 
-    private float manualYOffset = 0f;  
-    public float maxUpOffset = 3f;     
-    public float maxDownOffset = -2f;  
+    public float manualMoveSpeed = 5f;
+    private float manualYOffset = 0f;
+    public float maxUpOffset = 3f;
+    public float maxDownOffset = -2f;
+    public float returnSpeed = 3f; // kecepatan kamera kembali ke posisi semula
 
     [Header("World Borders (Manual)")]
     public bool useManualBorders = true;
@@ -23,7 +24,7 @@ public class CameraFollow2D : MonoBehaviour
     public Vector2 maxPosition;
 
     [Header("World Borders (Collider)")]
-    public BoxCollider2D bounds; 
+    public BoxCollider2D bounds;
 
     private Vector3 minBounds;
     private Vector3 maxBounds;
@@ -47,17 +48,25 @@ public class CameraFollow2D : MonoBehaviour
     {
         if (target == null) return;
 
-        // --- Input manual kamera dengan keybinding ---
-        if (Input.GetKey(KeyBindings.CameraUpKey))
+        bool holdingUp = Input.GetKey(KeyBindings.CameraUpKey);
+        bool holdingDown = Input.GetKey(KeyBindings.CameraDownKey);
+
+        // Jika sedang menahan tombol W/S
+        if (holdingUp)
         {
             manualYOffset += manualMoveSpeed * Time.deltaTime;
         }
-        if (Input.GetKey(KeyBindings.CameraDownKey))
+        else if (holdingDown)
         {
             manualYOffset -= manualMoveSpeed * Time.deltaTime;
         }
+        else
+        {
+            // Jika dilepas, smooth kembali ke posisi 0
+            manualYOffset = Mathf.Lerp(manualYOffset, 0f, Time.deltaTime * returnSpeed);
+        }
 
-        // Clamp manualYOffset
+        // Clamp manualYOffset agar tidak melebihi batas
         manualYOffset = Mathf.Clamp(manualYOffset, maxDownOffset, maxUpOffset);
     }
 

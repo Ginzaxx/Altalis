@@ -27,6 +27,7 @@ public class UndoManager : MonoBehaviour
             if (data != null)
             {
                 // Reload scene → RestoreSave() dipanggil otomatis lewat GameModeManager.Start()
+                ResourceManager.Instance?.FullRestoreMana();
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
             else
