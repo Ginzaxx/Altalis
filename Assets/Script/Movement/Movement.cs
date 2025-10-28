@@ -26,6 +26,7 @@ public class Movement : MonoBehaviour
     public Transform GroundCheckPos;
     public float GroundCheckRad = 0.2f;
     public LayerMask GroundLayer;
+    public bool isOnFly = false;
 
     [Header("Particle System Dust")]
     public ParticleSystem dustParticle; //reference to dust PrefabParticleSystem ~ Aflah
@@ -37,10 +38,19 @@ public class Movement : MonoBehaviour
         RbD.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
+    private bool wasGroundedLastFrame = false;
     void Update()
     {
         // Cek tanah
         IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
+
+
+
+        if (IsGrounded == true && !wasGroundedLastFrame)
+        {
+            isOnFly = false;
+            dustParticle.Play();
+        }
 
         // --- Movement pakai keybinding ---
         if (Input.GetKey(KeyBindings.MoveLeftKey))
@@ -58,13 +68,14 @@ public class Movement : MonoBehaviour
                 jumpDirection = 0;
 
             RbD.velocity = new Vector2(jumpDirection * SideSpeed, JumpPower);
+            isOnFly = true;
             dustParticle.Play(); //play dust particle ~ Aflah
         }
         else if (Input.GetKeyUp(KeyBindings.JumpKey) && RbD.velocity.y > 0)
         {
             // short hop
             RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
-
+            isOnFly = true;
             if (IsGrounded)
             {
                 //spawn dust only when on ground ~ Aflah
@@ -93,6 +104,9 @@ public class Movement : MonoBehaviour
         Animate.SetBool("Sliding", OnIceSlope);
 
         Flip();
+
+        // Save current grounded state for next frame
+        wasGroundedLastFrame = IsGrounded;
     }
 
     private void Flip()

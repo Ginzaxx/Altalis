@@ -180,6 +180,7 @@ public class CutPlacement : MonoBehaviour
         {
             if (obj != null)
             {
+                obj.GetComponent<ExpandOnSpawn>().StartExpand();
                 foreach (var sr in obj.GetComponentsInChildren<SpriteRenderer>())
                     sr.color = Color.white;
 
@@ -193,21 +194,28 @@ public class CutPlacement : MonoBehaviour
                 placedObjects.Add(obj);
 
                 if (placeVfxPrefab != null)
+                {
                     Instantiate(placeVfxPrefab, obj.transform.position, Quaternion.identity);
+                }
             }
         }
 
         // 🔥 Hapus original
         foreach (var orig in originals)
         {
-            if (orig != null)
-            {
-                var dissolve = orig.GetComponent<DissolveOnDestroy>();
-                if (dissolve != null)
-                    dissolve.StartDissolve();
-                else
-                    Destroy(orig);
-            }
+            // if (orig != null)
+            // {
+            //     var dissolve = orig.GetComponent<DissolveOnDestroy>();
+            //     if (dissolve != null)
+            //         dissolve.StartDissolve();
+            //     else
+            //         Destroy(orig);
+            // }
+            var shrink = orig.GetComponent<ShrinkOnDestroy>();
+            if (shrink != null)
+                shrink.StartShrink();
+            else
+                Destroy(orig);
         }
 
         OnObjectsCutPlaced?.Invoke(placedObjects);
