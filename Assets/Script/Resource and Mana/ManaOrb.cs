@@ -4,11 +4,20 @@ public class ManaOrb : MonoBehaviour
 {
     [SerializeField] private GameObject orbVisual; // child visual (sprite / particle)
     private Collider2D orbCollider;
-    [SerializeField] private ParticleSystem ManaOrbPieces;
+    private ParticleSystem ManaOrbPieces;
 
 
     private void Awake()
     {
+        Transform parentTransform = GameObject.Find("DontActivate").transform;
+
+        if (parentTransform != null)
+        {
+            Transform childParent = parentTransform.GetChild(0);
+            ManaOrbPieces = childParent.GetComponent<ParticleSystem>();
+        }
+
+
         orbCollider = GetComponent<Collider2D>();
 
         if (orbCollider == null)
