@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -43,12 +43,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 42
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -72,7 +72,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -95,7 +95,469 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 378
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24c02fabdb8e4094eb6330c30bda1407
+      internalID: -1395680783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_1
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 378
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19e3bdf1e442a404f91b4a7159292a05
+      internalID: 1650020317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_2
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 378
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43db8547564d6cc4b9aa87bd1e97e2d0
+      internalID: 1294276671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 252
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 097d404c116c46b4e9a356b4193f9f90
+      internalID: -329055962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_4
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 252
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d35d581193111e84b8d746808f88b731
+      internalID: -24012585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_5
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 252
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46c0ce527e66e8247bf95e70775df055
+      internalID: -190561385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_6
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 252
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a156ff1ebd8a7174a960b51bb594b16c
+      internalID: 1374209272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_7
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 252
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0288455377d4f6f47800d48d10f2abc1
+      internalID: 1702520317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_8
+      rect:
+        serializedVersion: 2
+        x: 630
+        y: 252
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53c460604ba01144b9f9b27525c9bc01
+      internalID: -1991084224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a681fb5c8c4db54da1f90509ba60e36
+      internalID: -1886166697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_10
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 481f5a8b8d00c854184d915f7bdabeaa
+      internalID: 1907039726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_11
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f685f30bef0a95d429332e538155d21b
+      internalID: -1389563209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_12
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5e22ad0500b09c46bcc5025dba0fadf
+      internalID: 1119474217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_13
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c6ef4cba309b9945abcd47e43b6e283
+      internalID: 1664917407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_14
+      rect:
+        serializedVersion: 2
+        x: 630
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4085c4a9c050efb48b62f0bc2c4aaa2c
+      internalID: -318828766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_15
+      rect:
+        serializedVersion: 2
+        x: 756
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b65e3627015bf604693b1b7917ee7b6e
+      internalID: 2050485840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_16
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2482495abf7729240a873bc368a51b7f
+      internalID: -1638500177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_17
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 539d55a999ca87844851e30ab6a15b17
+      internalID: 1816718071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_18
+      rect:
+        serializedVersion: 2
+        x: 1134
+        y: 126
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87ca8e9621d7ab8408318544a6a6d6db
+      internalID: -1395177872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_19
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 397531e15f270ec41ba6c383b73d879e
+      internalID: 588118356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_20
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 0
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b83a5506cf81c734d9b75d3cc0470603
+      internalID: -995554226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Idle No Staff_21
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 0
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 700be130dfd4eed4380f061601036c84
+      internalID: 168208921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +568,29 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Sprite Idle No Staff_0: -1395680783
+      Sprite Idle No Staff_1: 1650020317
+      Sprite Idle No Staff_10: 1907039726
+      Sprite Idle No Staff_11: -1389563209
+      Sprite Idle No Staff_12: 1119474217
+      Sprite Idle No Staff_13: 1664917407
+      Sprite Idle No Staff_14: -318828766
+      Sprite Idle No Staff_15: 2050485840
+      Sprite Idle No Staff_16: -1638500177
+      Sprite Idle No Staff_17: 1816718071
+      Sprite Idle No Staff_18: -1395177872
+      Sprite Idle No Staff_19: 588118356
+      Sprite Idle No Staff_2: 1294276671
+      Sprite Idle No Staff_20: -995554226
+      Sprite Idle No Staff_21: 168208921
+      Sprite Idle No Staff_3: -329055962
+      Sprite Idle No Staff_4: -24012585
+      Sprite Idle No Staff_5: -190561385
+      Sprite Idle No Staff_6: 1374209272
+      Sprite Idle No Staff_7: 1702520317
+      Sprite Idle No Staff_8: -1991084224
+      Sprite Idle No Staff_9: -1886166697
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
