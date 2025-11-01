@@ -123,7 +123,7 @@ public class CopyPlacement : MonoBehaviour
     {
         if (CancelKey.performed)
         {
-            Debug.Log("Pressing Cancel");
+            // Debug.Log("Pressing Cancel");
             CancelPlacement();
         }
     }

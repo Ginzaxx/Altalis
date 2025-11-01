@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 
 public class GridSelection : MonoBehaviour
 {
-    [SerializeField] private Camera cam;
+    [Header("References")]
+    [SerializeField] public Camera cam;
     [SerializeField] public Grid grid;
     [SerializeField] public RectTransform selectionBoxUI;
     public bool IsSelectionEnabled { get; set; } = true;
@@ -69,20 +70,20 @@ public class GridSelection : MonoBehaviour
 
     public void OnSelect(InputAction.CallbackContext context)
     {
-        if (!IsSelectionEnabled || !enabled) return;
-        
-        if (Gamepad.current != null)
+        if (context.performed)
         {
-            // Use current GridCursor position to select objects
-            GridCursor Cursor = FindObjectOfType<GridCursor>();
-            if (Cursor == null || grid == null) return;
+            if (!IsSelectionEnabled || !enabled) return;
 
-            Vector3 worldPos = Cursor.CurrentCellCenter;
-            Collider2D hit = Physics2D.OverlapPoint(worldPos);
+                GridCursor cursor = FindObjectOfType<GridCursor>();
+                if (cursor == null || grid == null) return;
 
-            if (context.performed && hit != null)
+                Vector3 worldPos = cursor.CurrentCellCenter;
+                Collider2D hit = Physics2D.OverlapPoint(worldPos);
+
+            if (hit != null)
             {
                 GameObject target = hit.gameObject;
+
                 if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
                     target = target.transform.parent.gameObject;
 
@@ -90,6 +91,9 @@ public class GridSelection : MonoBehaviour
                 {
                     if (SelectedObjects.Contains(target)) DeselectObject(target);
                     else if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+                    else Debug.Log($"Sudah mencapai batas seleksi: {MaxSelectable}");
+
+                    return;
                 }
             }
             else ClearSelection();
@@ -106,7 +110,6 @@ public class GridSelection : MonoBehaviour
         {
             GameObject target = hit.gameObject;
 
-            // Naik ke parent jika anak collider
             if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
                 target = target.transform.parent.gameObject;
 
@@ -114,11 +117,8 @@ public class GridSelection : MonoBehaviour
             {
                 // Toggle on/off selection
                 if (SelectedObjects.Contains(target)) DeselectObject(target);
-                else
-                {
-                    if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
-                    else Debug.Log($"Sudah mencapai batas seleksi: {MaxSelectable}");
-                }
+                else if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+                else Debug.Log($"Sudah mencapai batas seleksi: {MaxSelectable}");
 
                 return; // Jangan reset selection
             }
