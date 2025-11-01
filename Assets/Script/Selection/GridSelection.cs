@@ -70,41 +70,30 @@ public class GridSelection : MonoBehaviour
     public void OnSelect(InputAction.CallbackContext context)
     {
         if (!IsSelectionEnabled || !enabled) return;
-        if (!context.performed) return;
-
-        // If using Gamepad: Pick Object under GridCursor
+        
         if (Gamepad.current != null)
-            HandleCursorSelection();
-        // Mouse click will still be handled in Update()
-    }
-
-    public void OnDeselectAll(InputAction.CallbackContext context)
-    {
-        if (context.performed) ClearSelection();
-    }
-
-    void HandleCursorSelection()
-    {
-        // Use current GridCursor position to select objects
-        GridCursor cursor = FindObjectOfType<GridCursor>();
-        if (cursor == null || grid == null) return;
-
-        Vector3 worldPos = cursor.CurrentCellCenter;
-        Collider2D hit = Physics2D.OverlapPoint(worldPos);
-
-        if (hit != null)
         {
-            GameObject target = hit.gameObject;
-            if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
-                target = target.transform.parent.gameObject;
+            // Use current GridCursor position to select objects
+            GridCursor Cursor = FindObjectOfType<GridCursor>();
+            if (Cursor == null || grid == null) return;
 
-            if (target.CompareTag("Selectable"))
+            Vector3 worldPos = Cursor.CurrentCellCenter;
+            Collider2D hit = Physics2D.OverlapPoint(worldPos);
+
+            if (context.performed && hit != null)
             {
-                if (SelectedObjects.Contains(target)) DeselectObject(target);
-                else if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+                GameObject target = hit.gameObject;
+                if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
+                    target = target.transform.parent.gameObject;
+
+                if (target.CompareTag("Selectable"))
+                {
+                    if (SelectedObjects.Contains(target)) DeselectObject(target);
+                    else if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+                }
             }
+            else ClearSelection();
         }
-        else ClearSelection();
     }
 
     // Tap Selection (Click 1 Object without Reset)
