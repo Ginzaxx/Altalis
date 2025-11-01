@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum GameMode
 {
@@ -69,27 +70,21 @@ public class GameModeManager : MonoBehaviour
     
     void Update()
     {
-        // Check for right mouse click to toggle modes
-        if (Input.GetMouseButtonDown(1))
-        {
-            ToggleMode();
-        }
-        
         // Smooth time scale transition
         if (Mathf.Abs(Time.timeScale - targetTimeScale) > 0.01f)
-        {
             Time.timeScale = Mathf.Lerp(Time.timeScale, targetTimeScale, transitionSpeed * Time.unscaledDeltaTime);
-        }
         else
-        {
             Time.timeScale = targetTimeScale;
-        }
     }
     
-    public void ToggleMode()
+    public void ToggleMode(InputAction.CallbackContext context)
     {
-        currentMode = (currentMode == GameMode.Movement) ? GameMode.Selection : GameMode.Movement;
-        SwitchMode(currentMode);
+        if (context.performed)
+        {
+            currentMode = (currentMode == GameMode.Movement) ? GameMode.Selection : GameMode.Movement;
+            SwitchMode(currentMode);
+            gridSelection.ClearSelection();
+        }
     }
     
     public void SwitchMode(GameMode newMode)

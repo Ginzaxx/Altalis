@@ -80,7 +80,7 @@ public class Movement : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
-        Debug.Log("Pressing Move");
+        // Debug.Log("Pressing Move");
         SideMove = context.ReadValue<Vector2>().x;
     }
 
