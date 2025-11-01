@@ -69,6 +69,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Cancel",
+                    "type": "Button",
+                    "id": "a75f7c81-5b5c-4977-8dc2-efd3ffa93cd1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Interact",
                     "type": "Button",
                     "id": "6914cf04-0938-4ad4-bebf-0e3bf3276726",
@@ -78,9 +87,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Cancel",
+                    "name": "Game Mode",
                     "type": "Button",
-                    "id": "a75f7c81-5b5c-4977-8dc2-efd3ffa93cd1",
+                    "id": "8485d751-18ce-4684-b68b-eb72a1d81542",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Select",
+                    "type": "Button",
+                    "id": "1777204a-8b1d-4f3b-9791-81fc5f62d2ae",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -94,24 +112,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "GP Select",
-                    "type": "Button",
-                    "id": "1777204a-8b1d-4f3b-9791-81fc5f62d2ae",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "GP Deselect",
-                    "type": "Button",
-                    "id": "8485d751-18ce-4684-b68b-eb72a1d81542",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -195,7 +195,7 @@
                 {
                     "name": "",
                     "id": "b0053936-84d7-48d7-82da-7367a27ded18",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -283,7 +283,7 @@
                 {
                     "name": "",
                     "id": "ae561ace-4826-4a74-863b-431152377697",
-                    "path": "<Gamepad>/dpad/right",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -305,7 +305,7 @@
                 {
                     "name": "",
                     "id": "ee147c03-e287-4bcb-bd55-d865e2fe389b",
-                    "path": "<Gamepad>/dpad/left",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -327,7 +327,7 @@
                 {
                     "name": "",
                     "id": "ee4f1ddc-fc5f-49d4-b0a0-dfc4d454aefc",
-                    "path": "<Gamepad>/dpad/up",
+                    "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -349,7 +349,7 @@
                 {
                     "name": "",
                     "id": "27098983-bfdd-4f50-b43d-e8c56646df3e",
-                    "path": "<Gamepad>/dpad/down",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -381,28 +381,6 @@
                 },
                 {
                     "name": "",
-                    "id": "b42fba85-438d-42a5-9f71-1f88819ddf55",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "012b3334-24b4-4b01-8c2f-f7d25ce6b505",
-                    "path": "<Gamepad>/leftStickPress",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "bf158b66-fdc7-443d-aa84-a7724f0a44b3",
                     "path": "<Mouse>/delta",
                     "interactions": "",
@@ -415,7 +393,7 @@
                 {
                     "name": "",
                     "id": "5fb02d22-efb2-48a0-ba0d-97deb1e79ce5",
-                    "path": "<Gamepad>/leftStick",
+                    "path": "<Gamepad>/rightStick",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -437,7 +415,7 @@
                 {
                     "name": "",
                     "id": "f8594b1f-28f0-4180-a13e-7b1ad36990f0",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -448,22 +426,33 @@
                 {
                     "name": "",
                     "id": "b75df652-f12f-4768-8993-849e711fcd92",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "GP Select",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b2fe2d4f-a8a0-4d37-b124-03c31d9a41ed",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Game Mode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "165ad0aa-41fa-4a9e-b00f-ffe4eca3a9a2",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "GP Deselect",
+                    "action": "Game Mode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

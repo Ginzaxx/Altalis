@@ -5,11 +5,10 @@ using UnityEngine.InputSystem;
 public class Movement : MonoBehaviour
 {
     private Rigidbody2D RbD;
-    private Animator Animate;
 
     [Header("Movement")]
     public float SideSpeed = 8f;
-    private float SideMove;
+    public float SideMove;
     private bool IsFacingRight = true;
 
     [Header("Jumping & Gliding")]
@@ -30,19 +29,17 @@ public class Movement : MonoBehaviour
     public bool isOnFly = false;
 
     [Header("Particle System Dust")]
-    public ParticleSystem dustParticle; // Reference to dust PrefabParticleSystem ~ Aflah
+    public ParticleSystem dustParticle;
 
     void Start()
     {
         RbD = GetComponent<Rigidbody2D>();
-        Animate = GetComponent<Animator>();
-        RbD.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
     private bool wasGroundedLastFrame = false;
     void Update()
     {
-        // Check if Player is on Ground
+        // --- Ground Check ---
         IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
 
         if (IsGrounded == true && !wasGroundedLastFrame)
@@ -65,12 +62,6 @@ public class Movement : MonoBehaviour
             Vector2 newVelocity = Vector2.Lerp(currentVelocity, targetVelocity, IceAcceleration * Time.deltaTime);
             RbD.velocity = newVelocity;
         }
-
-        // --- Animator ---
-        Animate.SetFloat("Walking", !OnIceSlope ? Mathf.Abs(SideMove) : 0);
-        Animate.SetFloat("YVelocity", RbD.velocity.y);
-        Animate.SetBool("Jumping", !IsGrounded);
-        Animate.SetBool("Sliding", OnIceSlope);
 
         Flip();
 
