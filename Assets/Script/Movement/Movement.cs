@@ -165,4 +165,9 @@ public class Movement : MonoBehaviour
         if (GroundCheckPos != null)
             Gizmos.DrawSphere(GroundCheckPos.position, GroundCheckRad);
     }
+
+    public bool GetIsFacingRight()
+    {
+        return IsFacingRight;
+    }
 }

@@ -145,6 +145,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneAsset: {fileID: 102900000, guid: 67a0ddd5b669a6a438a8d786693a8ded, type: 3}
   nextSceneName: Lvl1
+  portalID: 
+  targetPortalID: 
   delayBeforeLoad: 0.1
   fadeCanvas: {fileID: 0}
   fadeDuration: 1
+  moveDirection: 0
+  moveDistance: 8
+  moveSpeed: 12
+  jumpInstead: 0
+  jumpForce: 7
