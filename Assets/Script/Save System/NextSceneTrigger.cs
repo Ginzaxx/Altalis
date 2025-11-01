@@ -75,7 +75,49 @@ public class NextSceneTrigger : MonoBehaviour
         PlayerPrefs.SetString("SpawnFromPortal", targetPortalID);
         PlayerPrefs.Save();
 
-        // Fade out saja (tidak ada animasi jalan sebelum pindah)
+        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+        Animator anim = player.GetComponent<Animator>();
+        PlayerInput input = player.GetComponent<PlayerInput>();
+        Movement move = player.GetComponent<Movement>();
+        SpriteRenderer sr = player.GetComponent<SpriteRenderer>();
+
+        // 🔸 Tunggu 1 detik sebelum mematikan physics
+        yield return new WaitForSeconds(0.3f);
+
+        // 🔸 Nonaktifkan kontrol & physics agar tidak jatuh
+        if (input != null) input.enabled = false;
+        if (move != null) move.enabled = false;
+
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.gravityScale = 0f;
+            rb.simulated = false; // 🔒 langsung matikan physics
+        }
+
+        // 🔸 Jika portal arah ke atas → tarik player ke atas manual (efek disedot)
+        if (moveDirection == MoveDirection.Up)
+        {
+            float liftDuration = 0.6f;
+            float liftHeight = 2f;
+            Vector3 start = player.transform.position;
+            Vector3 end = start + Vector3.up * liftHeight;
+
+            float t = 0f;
+            while (t < liftDuration)
+            {
+                t += Time.deltaTime;
+                player.transform.position = Vector3.Lerp(start, end, t / liftDuration);
+                yield return null;
+            }
+
+            // 🔸 Sembunyikan player setelah tersedot (opsional)
+            if (sr != null)
+                sr.enabled = false;
+        }
+
+        // 🔸 Fade out setelah player berhenti
         if (fadeCanvas != null)
         {
             float t = 0f;
@@ -88,9 +130,10 @@ public class NextSceneTrigger : MonoBehaviour
             fadeCanvas.alpha = 1f;
         }
 
+        // 🔸 Tunggu delay tambahan sebelum pindah scene
         yield return new WaitForSeconds(delayBeforeLoad);
 
-        // Save data sebelum pindah scene
+        // 🔸 Save data sebelum pindah scene
         if (SaveSystem.Instance != null)
         {
             var resourceManager = ResourceManager.Instance;
@@ -99,6 +142,7 @@ public class NextSceneTrigger : MonoBehaviour
             Debug.Log($"💾 Auto-saved before switching to scene '{nextSceneName}' via portal '{portalID}'");
         }
 
+        // 🔸 Pindah scene
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);
@@ -185,11 +229,26 @@ public class NextSceneTrigger : MonoBehaviour
         }
 
         // 🔸 Jalankan animasi jalan/lompat keluar portal
-        if (jumpInstead && (moveDirection == MoveDirection.Left || moveDirection == MoveDirection.Right || moveDirection == MoveDirection.Up))
+        if (jumpInstead && (moveDirection == MoveDirection.Left || moveDirection == MoveDirection.Right))
         {
-            rb.velocity = new Vector2(dir.x * moveSpeed, jumpForce);
+            // Tentukan arah horizontal
+            float horizontalDir = (moveDirection == MoveDirection.Left) ? -1f : 1f;
+
+            // Reset kecepatan sebelumnya agar hasilnya konsisten
+            rb.velocity = Vector2.zero;
+            yield return null; // Tunggu 1 frame supaya velocity reset
+
+            // 🎯 Gunakan AddForce dengan ForceMode2D.Impulse untuk hasil lebih kuat
+            // Ini akan menghasilkan lompatan miring yang jelas ke kiri/kanan
+            Vector2 jumpVelocity = new Vector2(horizontalDir * moveSpeed, jumpForce);
+            rb.AddForce(jumpVelocity, ForceMode2D.Impulse);
+
+            // Aktifkan animasi lompat
             anim?.SetBool("Jumping", true);
-            yield return new WaitForSeconds(0.6f);
+
+            // Tunggu sampai player mendarat atau waktu maksimal
+            yield return new WaitForSeconds(0.8f);
+
             anim?.SetBool("Jumping", false);
         }
         else if (dir != Vector2.zero)
