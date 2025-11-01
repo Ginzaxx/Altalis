@@ -18,4 +18,7 @@ public class SaveData
     public int mana;
     public List<PlacedObjectData> placedObjects = new List<PlacedObjectData>();
     public List<string> triggeredManaBlocks = new List<string>();
+    public int maxMana;
+    public int selectionLimit;
+    public int gold;
 }
