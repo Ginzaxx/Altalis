@@ -10,11 +10,12 @@ public class Coin : MonoBehaviour
         {
             if (GoldManager.Instance != null)
             {
-                SoundManager.PlaySound("CoinCollect", 1f);
                 GoldManager.Instance.AddGold(goldValue);
             }
+            SoundManager.PlaySound("CoinCollect", 1f, this.transform.position);
 
             Destroy(gameObject);
         }
     }
+
 }

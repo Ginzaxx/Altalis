@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,6 +7,9 @@ public class Movement : MonoBehaviour
 {
     private Rigidbody2D RbD;
     private Animator Animate;
+
+    [Header("AudioSource")]
+    private AudioSource audioWalk;
 
     [Header("Movement")]
     public float SideSpeed = 8f;
@@ -29,6 +33,7 @@ public class Movement : MonoBehaviour
     public LayerMask GroundLayer;
     public bool isOnFly = false;
 
+
     [Header("Particle System Dust")]
     public ParticleSystem dustParticle; // Reference to dust PrefabParticleSystem ~ Aflah
 
@@ -36,6 +41,8 @@ public class Movement : MonoBehaviour
     {
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
+        audioWalk = GetComponent<AudioSource>();
+        audioWalk.pitch = 2;
         RbD.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
@@ -49,6 +56,19 @@ public class Movement : MonoBehaviour
         {
             isOnFly = false;
             dustParticle.Play();
+            // fall from jump (landing sound)
+            SoundManager.PlaySound("JumpLanding", 1, null, 1);
+        }
+
+        if (IsGrounded && Mathf.Abs(SideMove) != 0.0f)
+        {
+            // play walking sound
+            audioWalk.enabled = true;
+        }
+        else
+        {
+            // play walking sound
+            audioWalk.enabled = false;
         }
 
         // --- Ice Movement ---
@@ -90,6 +110,7 @@ public class Movement : MonoBehaviour
         if (context.performed)
         {
             Debug.Log("Pressing Jump");
+            SoundManager.PlaySound("Jump", 1, null, 1);
             if (IsGrounded) // Check if Player is on Ground to Jump
             {
                 isOnFly = true;

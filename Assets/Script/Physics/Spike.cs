@@ -11,7 +11,7 @@ public class Spike : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             Destroy(other.gameObject);
-            StartCoroutine(ReloadSceneWithDelay(0.1f));
+            StartCoroutine(ReloadSceneWithDelay(1f, other.gameObject));
         }
         else if (other.gameObject.CompareTag("Selectable"))
         {
@@ -19,8 +19,10 @@ public class Spike : MonoBehaviour
         }
     }
 
-    private IEnumerator ReloadSceneWithDelay(float delay)
+    private IEnumerator ReloadSceneWithDelay(float delay, GameObject target)
     {
+        // give audio death
+        SoundManager.PlaySound("Death", 1, target.transform.position);
         yield return new WaitForSeconds(delay);
         ResourceManager.Instance?.FullRestoreMana();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
