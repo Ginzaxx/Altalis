@@ -6,17 +6,17 @@ public class ActivatingRB : MonoBehaviour
     private void OnEnable()
     {
         // ✅ Subscribe to the event when this object is enabled/activated
-        DuplicatePlacement.OnObjectsPlaced += HandleObjectsPlaced;
+        CopyPlacement.OnObjectsPlaced += HandleObjectsPlaced;
     }
 
     private void OnDisable()
     {
         // ❌ Always unsubscribe to prevent errors and memory leaks
-        DuplicatePlacement.OnObjectsPlaced -= HandleObjectsPlaced;
+        CopyPlacement.OnObjectsPlaced -= HandleObjectsPlaced;
     }
 
     /// <summary>
-    /// This method is called by the OnObjectsPlaced event from DuplicatePlacement.
+    /// This method is called by the OnObjectsPlaced event from CopyPlacement.
     /// </summary>
     /// <param name="placedObjects">The list of objects that were just created.</param>
     private void HandleObjectsPlaced(List<GameObject> placedObjects)

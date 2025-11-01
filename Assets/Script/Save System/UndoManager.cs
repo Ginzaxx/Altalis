@@ -1,43 +1,33 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class UndoManager : MonoBehaviour
 {
-    [Header("Undo Settings")]
-    [Tooltip("Tombol default untuk undo jika belum ada di Settings.")]
-    public KeyCode defaultUndoKey = KeyCode.Z;
-
-    private void Update()
+    public void PerformUndo(InputAction.CallbackContext context)
     {
-        KeyCode currentUndoKey = KeyBindings.UndoKey != KeyCode.None ? KeyBindings.UndoKey : defaultUndoKey;
-
-        if (Input.GetKeyDown(currentUndoKey))
+        if (context.performed)
         {
-            PerformUndo();
-        }
-    }
-
-    private void PerformUndo()
-    {
-        if (SaveSystem.Instance != null)
-        {
-            Debug.Log("↩️ Undo pressed! Restoring last save...");
-
-            var data = SaveSystem.Instance.Load();
-            if (data != null)
+            if (SaveSystem.Instance != null)
             {
-                // Reload scene → RestoreSave() dipanggil otomatis lewat GameModeManager.Start()
-                ResourceManager.Instance?.FullRestoreMana();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                Debug.Log("↩️ Undo pressed! Restoring last save...");
+
+                var data = SaveSystem.Instance.Load();
+                if (data != null)
+                {
+                    // Reload scene → RestoreSave() dipanggil otomatis lewat GameModeManager.Start()
+                    ResourceManager.Instance?.FullRestoreMana();
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                }
+                else
+                {
+                    Debug.LogWarning("⚠️ No Saves to Undo!");
+                }
             }
             else
             {
-                Debug.LogWarning("⚠️ Tidak ada save untuk di-undo!");
+                Debug.LogWarning("⚠️ Save System instance not found!");
             }
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ SaveSystem instance not found!");
         }
     }
 }

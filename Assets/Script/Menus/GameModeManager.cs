@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum GameMode
 {
@@ -15,7 +16,7 @@ public class GameModeManager : MonoBehaviour
     
     [Header("References")]
     public Movement movementScript;
-    public DragSelection dragSelectionScript;
+    public GridSelection gridSelection;
     
     [Header("UI Indicators")]
     public GameObject movementModeUI;
@@ -69,27 +70,21 @@ public class GameModeManager : MonoBehaviour
     
     void Update()
     {
-        // Check for right mouse click to toggle modes
-        if (Input.GetMouseButtonDown(1))
-        {
-            ToggleMode();
-        }
-        
         // Smooth time scale transition
         if (Mathf.Abs(Time.timeScale - targetTimeScale) > 0.01f)
-        {
             Time.timeScale = Mathf.Lerp(Time.timeScale, targetTimeScale, transitionSpeed * Time.unscaledDeltaTime);
-        }
         else
-        {
             Time.timeScale = targetTimeScale;
-        }
     }
     
-    public void ToggleMode()
+    public void ToggleMode(InputAction.CallbackContext context)
     {
-        currentMode = (currentMode == GameMode.Movement) ? GameMode.Selection : GameMode.Movement;
-        SwitchMode(currentMode);
+        if (context.performed)
+        {
+            currentMode = (currentMode == GameMode.Movement) ? GameMode.Selection : GameMode.Movement;
+            SwitchMode(currentMode);
+            gridSelection.ClearSelection();
+        }
     }
     
     public void SwitchMode(GameMode newMode)
@@ -117,17 +112,17 @@ public class GameModeManager : MonoBehaviour
             movementScript.enabled = true;
         }
 
-        if (dragSelectionScript != null)
+        if (gridSelection != null)
         {
-            dragSelectionScript.enabled = false;
-            dragSelectionScript.IsSelectionEnabled = false;
+            gridSelection.enabled = false;
+            gridSelection.IsSelectionEnabled = false;
 
             // 🔥 Clear selection saat keluar dari Selection Mode
-            dragSelectionScript.ClearSelection();
+            gridSelection.ClearSelection();
 
-            if (dragSelectionScript.selectionBoxUI != null)
+            if (gridSelection.selectionBoxUI != null)
             {
-                dragSelectionScript.selectionBoxUI.gameObject.SetActive(false);
+                gridSelection.selectionBoxUI.gameObject.SetActive(false);
             }
         }
 
@@ -141,13 +136,13 @@ public class GameModeManager : MonoBehaviour
             movementScript.enabled = false;
         }
 
-        if (dragSelectionScript != null)
+        if (gridSelection != null)
         {
-            dragSelectionScript.enabled = true;
-            dragSelectionScript.IsSelectionEnabled = true;
+            gridSelection.enabled = true;
+            gridSelection.IsSelectionEnabled = true;
 
             // 🔥 Clear selection saat masuk Selection Mode baru
-            dragSelectionScript.ClearSelection();
+            gridSelection.ClearSelection();
         }
 
         targetTimeScale = slowMotionTimeScale;

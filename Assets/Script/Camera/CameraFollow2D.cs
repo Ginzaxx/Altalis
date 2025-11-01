@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraFollow2D : MonoBehaviour
 {
@@ -16,7 +17,8 @@ public class CameraFollow2D : MonoBehaviour
     private float manualYOffset = 0f;
     public float maxUpOffset = 3f;
     public float maxDownOffset = -2f;
-    public float returnSpeed = 3f; // kecepatan kamera kembali ke posisi semula
+    public float returnSpeed = 3f;
+    public float currentInputY = 0f;
 
     [Header("World Borders (Manual)")]
     public bool useManualBorders = true;
@@ -25,7 +27,6 @@ public class CameraFollow2D : MonoBehaviour
 
     [Header("World Borders (Collider)")]
     public BoxCollider2D bounds;
-
     private Vector3 minBounds;
     private Vector3 maxBounds;
     private float camHalfHeight;
@@ -48,21 +49,15 @@ public class CameraFollow2D : MonoBehaviour
     {
         if (target == null) return;
 
-        bool holdingUp = Input.GetKey(KeyBindings.CameraUpKey);
-        bool holdingDown = Input.GetKey(KeyBindings.CameraDownKey);
-
-        // Jika sedang menahan tombol W/S
-        if (holdingUp)
+        // Jika ada input manual (W/S)
+        if (Mathf.Abs(currentInputY) > 0.01f)
         {
-            manualYOffset += manualMoveSpeed * Time.deltaTime;
-        }
-        else if (holdingDown)
-        {
-            manualYOffset -= manualMoveSpeed * Time.deltaTime;
+            // Gerakkan kamera secara manual
+            manualYOffset += currentInputY * manualMoveSpeed * Time.deltaTime;
         }
         else
         {
-            // Jika dilepas, smooth kembali ke posisi 0
+            // Jika tidak ada input, smooth kembali ke posisi 0
             manualYOffset = Mathf.Lerp(manualYOffset, 0f, Time.deltaTime * returnSpeed);
         }
 
@@ -92,5 +87,12 @@ public class CameraFollow2D : MonoBehaviour
 
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, clampedPosition, smoothSpeed);
         transform.position = smoothedPosition;
+    }
+
+    // Dipanggil saat tombol W/S ditekan atau dilepas
+    public void MoveCamera(InputAction.CallbackContext context)
+    {
+        // Baca nilai input (-1 untuk S, +1 untuk W, 0 saat dilepas)
+        currentInputY = context.ReadValue<Vector2>().y;
     }
 }
