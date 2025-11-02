@@ -1,53 +1,77 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Mengaktifkan Rigidbody2D & Collider2D pada object yang baru ditempatkan oleh CopyPlacement.
+/// Aman digunakan bersama sistem seleksi & peluncuran (tidak merusak velocity/constraints).
+/// </summary>
 public class ActivatingRB : MonoBehaviour
 {
     private void OnEnable()
     {
-        // ✅ Subscribe to the event when this object is enabled/activated
+        // ✅ Subscribe to event dari CopyPlacement
         CopyPlacement.OnObjectsPlaced += HandleObjectsPlaced;
     }
 
     private void OnDisable()
     {
-        // ❌ Always unsubscribe to prevent errors and memory leaks
+        // ❌ Unsubscribe saat disable agar tidak leak
         CopyPlacement.OnObjectsPlaced -= HandleObjectsPlaced;
     }
 
-    /// <summary>
-    /// This method is called by the OnObjectsPlaced event from CopyPlacement.
-    /// </summary>
-    /// <param name="placedObjects">The list of objects that were just created.</param>
     private void HandleObjectsPlaced(List<GameObject> placedObjects)
     {
-        Debug.Log($"ActivatingRB received event for {placedObjects.Count} objects.");
+        if (placedObjects == null || placedObjects.Count == 0)
+            return;
+
+        Debug.Log($"[ActivatingRB] Received event for {placedObjects.Count} objects at frame {Time.frameCount}");
 
         foreach (GameObject obj in placedObjects)
         {
             if (obj == null) continue;
 
-            // 🔥 Cek dulu collider ada atau tidak
-            BoxCollider2D col = obj.GetComponent<BoxCollider2D>();
+            // --- Collider2D ---
+            Collider2D col = obj.GetComponent<Collider2D>();
             if (col != null)
             {
-                col.enabled = true;
+                if (!col.enabled)
+                {
+                    col.enabled = true;
+                    Debug.Log($"[ActivatingRB] Enabled collider on {obj.name}");
+                }
             }
             else
             {
-                Debug.LogWarning($"⚠️ Object {obj.name} has no BoxCollider2D.");
+                Debug.LogWarning($"⚠️ {obj.name} has no Collider2D!");
             }
 
-            // Cek Rigidbody2D
+            // --- Rigidbody2D ---
             Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.bodyType = RigidbodyType2D.Dynamic;
-                Debug.Log($"✅ Activated Rigidbody2D on {obj.name}");
+                // Simpan velocity & constraint sebelum ubah tipe
+                Vector2 oldVel = rb.velocity;
+                RigidbodyConstraints2D oldConstraints = rb.constraints;
+
+                // Hanya ubah bodyType jika belum Dynamic
+                if (rb.bodyType != RigidbodyType2D.Dynamic)
+                {
+                    rb.bodyType = RigidbodyType2D.Dynamic;
+                    Debug.Log($"[ActivatingRB] Activated Rigidbody2D on {obj.name}");
+                }
+
+                // Pastikan tetap aktif
+                rb.simulated = true;
+                rb.isKinematic = false;
+                rb.gravityScale = rb.gravityScale; // tetap pakai nilai lama
+
+                // Pulihkan velocity & constraints agar tidak “membekukan” object
+                rb.velocity = oldVel;
+                rb.constraints = oldConstraints;
             }
             else
             {
-                Debug.LogWarning($"⚠️ Object {obj.name} was placed but has no Rigidbody2D.");
+                Debug.LogWarning($"⚠️ {obj.name} has no Rigidbody2D!");
             }
         }
     }
