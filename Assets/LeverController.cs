@@ -60,4 +60,14 @@ public class LeverController : MonoBehaviour
                 interactIcon.SetActive(false);
         }
     }
+
+    public void ApplySavedState()
+    {
+        // dan kontrol gate langsung jika ingin sinkron
+        if (gate != null)
+        {
+            if (isActivated) gate.OpenGate();
+            else gate.CloseGate();
+        }
+    }
 }

@@ -13,6 +13,9 @@ public class GateController : MonoBehaviour
     {
         closedPosition = transform.position;
         openPosition = closedPosition + Vector3.up * openHeight;
+
+        // 🔹 Pastikan posisi awal sesuai state (terutama setelah load)
+        ApplySavedState();
     }
 
     void Update()
@@ -30,5 +33,11 @@ public class GateController : MonoBehaviour
     public void CloseGate()
     {
         isOpen = false;
+    }
+
+    // 🔹 Dipanggil setelah restore save untuk menyesuaikan posisi gate
+    public void ApplySavedState()
+    {
+        transform.position = isOpen ? openPosition : closedPosition;
     }
 }
