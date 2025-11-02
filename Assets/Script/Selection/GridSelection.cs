@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 
 public class GridSelection : MonoBehaviour
 {
-    [SerializeField] private Camera cam;
+    [Header("References")]
+    [SerializeField] public Camera cam;
     [SerializeField] public Grid grid;
     [SerializeField] public RectTransform selectionBoxUI;
     public bool IsSelectionEnabled { get; set; } = true;
@@ -69,42 +70,34 @@ public class GridSelection : MonoBehaviour
 
     public void OnSelect(InputAction.CallbackContext context)
     {
-        if (!IsSelectionEnabled || !enabled) return;
-        if (!context.performed) return;
-
-        // If using Gamepad: Pick Object under GridCursor
-        if (Gamepad.current != null)
-            HandleCursorSelection();
-        // Mouse click will still be handled in Update()
-    }
-
-    public void OnDeselectAll(InputAction.CallbackContext context)
-    {
-        if (context.performed) ClearSelection();
-    }
-
-    void HandleCursorSelection()
-    {
-        // Use current GridCursor position to select objects
-        GridCursor cursor = FindObjectOfType<GridCursor>();
-        if (cursor == null || grid == null) return;
-
-        Vector3 worldPos = cursor.CurrentCellCenter;
-        Collider2D hit = Physics2D.OverlapPoint(worldPos);
-
-        if (hit != null)
+        if (context.performed)
         {
-            GameObject target = hit.gameObject;
-            if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
-                target = target.transform.parent.gameObject;
+            if (!IsSelectionEnabled || !enabled) return;
 
-            if (target.CompareTag("Selectable"))
+                GridCursor cursor = FindObjectOfType<GridCursor>();
+                if (cursor == null || grid == null) return;
+
+                Vector3 worldPos = cursor.CurrentCellCenter;
+                Collider2D hit = Physics2D.OverlapPoint(worldPos);
+
+            if (hit != null)
             {
-                if (SelectedObjects.Contains(target)) DeselectObject(target);
-                else if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+                GameObject target = hit.gameObject;
+
+                if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
+                    target = target.transform.parent.gameObject;
+
+                if (target.CompareTag("Selectable"))
+                {
+                    if (SelectedObjects.Contains(target)) DeselectObject(target);
+                    else if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+                    else Debug.Log($"Sudah mencapai batas seleksi: {MaxSelectable}");
+
+                    return;
+                }
             }
+            else ClearSelection();
         }
-        else ClearSelection();
     }
 
     // Tap Selection (Click 1 Object without Reset)
@@ -117,7 +110,6 @@ public class GridSelection : MonoBehaviour
         {
             GameObject target = hit.gameObject;
 
-            // Naik ke parent jika anak collider
             if (target.transform.parent != null && target.transform.parent.CompareTag("Selectable"))
                 target = target.transform.parent.gameObject;
 
@@ -125,11 +117,8 @@ public class GridSelection : MonoBehaviour
             {
                 // Toggle on/off selection
                 if (SelectedObjects.Contains(target)) DeselectObject(target);
-                else
-                {
-                    if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
-                    else Debug.Log($"Sudah mencapai batas seleksi: {MaxSelectable}");
-                }
+                else if (SelectedObjects.Count < MaxSelectable) SelectObject(target);
+                else Debug.Log($"Sudah mencapai batas seleksi: {MaxSelectable}");
 
                 return; // Jangan reset selection
             }

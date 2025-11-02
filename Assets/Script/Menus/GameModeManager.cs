@@ -17,16 +17,19 @@ public class GameModeManager : MonoBehaviour
     [Header("References")]
     public Movement movementScript;
     public GridSelection gridSelection;
-    
+    public GridCursor gridCursor;
+    public GameObject cursor;
+    public GameObject player;
+
     [Header("UI Indicators")]
     public GameObject movementModeUI;
     public GameObject selectionModeUI;
     
     [Header("Slow Motion Settings")]
-    [Range(0.01f, 1f)]
-    public float slowMotionTimeScale = 0.3f;
     [Range(0.01f, 5f)]
     public float transitionSpeed = 5f;
+    [Range(0.01f, 1f)]
+    public float slowMotionTimeScale = 0.3f;
     
     private float targetTimeScale = 1f;
     private float normalTimeScale = 1f;
@@ -35,13 +38,9 @@ public class GameModeManager : MonoBehaviour
     {
         // Singleton pattern
         if (Instance == null)
-        {
             Instance = this;
-        }
         else
-        {
             Destroy(gameObject);
-        }
     }
     
     void Start()
@@ -63,9 +62,7 @@ public class GameModeManager : MonoBehaviour
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
-        {
             NextSceneTrigger.SetPlayerSpawnPoint(player);
-        }
     }
     
     void Update()
@@ -105,49 +102,6 @@ public class GameModeManager : MonoBehaviour
         Debug.Log("Switched to " + currentMode + " Mode");
     }
     
-    void EnableMovementMode()
-    {
-        if (movementScript != null)
-        {
-            movementScript.enabled = true;
-        }
-
-        if (gridSelection != null)
-        {
-            gridSelection.enabled = false;
-            gridSelection.IsSelectionEnabled = false;
-
-            // 🔥 Clear selection saat keluar dari Selection Mode
-            gridSelection.ClearSelection();
-
-            if (gridSelection.selectionBoxUI != null)
-            {
-                gridSelection.selectionBoxUI.gameObject.SetActive(false);
-            }
-        }
-
-        targetTimeScale = normalTimeScale;
-    }
-    
-    void EnableSelectionMode()
-    {
-        if (movementScript != null)
-        {
-            movementScript.enabled = false;
-        }
-
-        if (gridSelection != null)
-        {
-            gridSelection.enabled = true;
-            gridSelection.IsSelectionEnabled = true;
-
-            // 🔥 Clear selection saat masuk Selection Mode baru
-            gridSelection.ClearSelection();
-        }
-
-        targetTimeScale = slowMotionTimeScale;
-    }
-
     void UpdateUI()
     {
         // Update UI indicators
@@ -159,6 +113,53 @@ public class GameModeManager : MonoBehaviour
     }
     
     // Public getter for other scripts to check current mode
+    void EnableMovementMode()
+    {
+        if (movementScript != null)
+            movementScript.enabled = true;
+
+        if (gridCursor != null)
+            gridCursor.gameObject.SetActive(false);
+
+        if (gridSelection != null)
+        {
+            gridSelection.enabled = false;
+            gridSelection.IsSelectionEnabled = false;
+
+            // Clear selection when exiting Selection Mode
+            gridSelection.ClearSelection();
+
+            if (gridSelection.selectionBoxUI != null)
+                gridSelection.selectionBoxUI.gameObject.SetActive(false);
+
+        }
+
+        targetTimeScale = normalTimeScale;
+    }
+    
+    void EnableSelectionMode()
+    {
+        if (movementScript != null)
+            movementScript.enabled = false;
+
+        if (gridCursor != null)
+        {
+            gridCursor.gameObject.SetActive(true);
+            cursor.transform.position = player.transform.position;
+        }
+
+        if (gridSelection != null)
+        {
+            gridSelection.enabled = true;
+            gridSelection.IsSelectionEnabled = true;
+
+            // Clear selection when entering Selection Mode
+            gridSelection.ClearSelection();
+        }
+
+        targetTimeScale = slowMotionTimeScale;
+    }
+
     public bool IsMovementMode()
     {
         return currentMode == GameMode.Movement;
@@ -174,9 +175,7 @@ public class GameModeManager : MonoBehaviour
     {
         slowMotionTimeScale = Mathf.Clamp(newTimeScale, 0.01f, 1f);
         if (currentMode == GameMode.Selection)
-        {
             targetTimeScale = slowMotionTimeScale;
-        }
     }
     
     public void SetTransitionSpeed(float newSpeed)
@@ -188,8 +187,8 @@ public class GameModeManager : MonoBehaviour
     [System.Obsolete("Use only for debugging purposes")]
     public void ResetTimeScale()
     {
-        Time.timeScale = 1f;
         targetTimeScale = 1f;
+        Time.timeScale = 1f;
         Time.fixedDeltaTime = 0.02f;
     }
     
@@ -204,8 +203,6 @@ public class GameModeManager : MonoBehaviour
     {
         // Reset time scale when application is paused/unpaused
         if (!pauseStatus && currentMode == GameMode.Movement)
-        {
             Time.timeScale = normalTimeScale;
-        }
     }
 }

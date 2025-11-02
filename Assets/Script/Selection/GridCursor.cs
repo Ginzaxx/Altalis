@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 public class GridCursor : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Camera cam;
+    [SerializeField] public Camera cam;
     [SerializeField] public Grid grid;
+    public bool IsSelectionEnabled { get; set; } = true;
 
     [Header("Options")]
     [SerializeField] private bool LockZ = true;
@@ -29,18 +30,10 @@ public class GridCursor : MonoBehaviour
         grid = FindObjectOfType<Grid>();
     }
 
-    // 🔹 Called by Input System when using stick or arrow keys
-    public void OnMoveCursor(InputAction.CallbackContext context)
-    {
-        MoveInput = context.ReadValue<Vector2>();
-
-        // When input detected, enable gamepad mode
-        if (MoveInput.sqrMagnitude > StickDeadzone * StickDeadzone)
-            UseGamepadCursor = true;
-    }
-
     void Update()
     {
+        if (!IsSelectionEnabled || !enabled) return;
+
         // (Opsional) jangan gerak kalau mouse lagi di atas UI
         if (EventSystem.current && EventSystem.current.IsPointerOverGameObject()) return;
         if (cam == null || grid == null) return;
@@ -80,6 +73,18 @@ public class GridCursor : MonoBehaviour
         else target.z = transform.position.z;
 
         transform.position = target;
+    }
+
+    // Called by Input System when using stick or arrow keys
+    public void OnMoveCursor(InputAction.CallbackContext context)
+    {
+        if (!IsSelectionEnabled || !enabled) return;
+
+        MoveInput = context.ReadValue<Vector2>();
+
+        // When input detected, enable gamepad mode
+        if (MoveInput.sqrMagnitude > StickDeadzone * StickDeadzone)
+            UseGamepadCursor = true;
     }
 
     // (Opsional) Biar kelihatan di editor posisi cell
