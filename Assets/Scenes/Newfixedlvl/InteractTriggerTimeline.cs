@@ -6,11 +6,8 @@ public class InteractTriggerTimeline : MonoBehaviour
     [Header("References")]
     public PlayableDirector timeline;               // Timeline yang akan dijalankan
     public SpriteRenderer interactIcon;             // Sprite "Press E"
+    public MonoBehaviour scriptToActivate;          // Script yang akan diaktifkan setelah timeline selesai
     public string playerTag = "Player";             // Tag untuk mendeteksi pemain
-
-    [Header("Scripts to Activate After Timeline")]
-    public MonoBehaviour gameModeManagerScript;     // Komponen GameModeManager
-    public MonoBehaviour gridSelectionScript;       // Komponen GridSelection
 
     [Header("Sprites to Switch")]
     public GameObject spriteBeforeInteraction;      // Sprite/objek sebelum interaksi
@@ -24,25 +21,18 @@ public class InteractTriggerTimeline : MonoBehaviour
 
     private void Start()
     {
-        // Nonaktifkan ikon interaksi
         if (interactIcon != null)
             interactIcon.enabled = false;
 
-        // Nonaktifkan script target di awal
-        if (gameModeManagerScript != null)
-            gameModeManagerScript.enabled = false;
+        if (scriptToActivate != null)
+            scriptToActivate.enabled = false;
 
-        if (gridSelectionScript != null)
-            gridSelectionScript.enabled = false;
-
-        // Atur sprite awal
         if (spriteBeforeInteraction != null)
             spriteBeforeInteraction.SetActive(true);
 
         if (spriteAfterInteraction != null)
             spriteAfterInteraction.SetActive(false);
 
-        // Daftarkan event timeline selesai
         if (timeline != null)
             timeline.stopped += OnTimelineFinished;
     }
@@ -78,11 +68,10 @@ public class InteractTriggerTimeline : MonoBehaviour
     private void TriggerInteraction()
     {
         hasInteracted = true;
-
         if (interactIcon != null)
             interactIcon.enabled = false;
 
-        // Jalankan timeline
+        // Mulai timeline
         if (timeline != null)
             timeline.Play();
         else
@@ -98,12 +87,9 @@ public class InteractTriggerTimeline : MonoBehaviour
         if (spriteAfterInteraction != null)
             spriteAfterInteraction.SetActive(true);
 
-        // ✅ Aktifkan komponen script setelah timeline selesai
-        if (gameModeManagerScript != null)
-            gameModeManagerScript.enabled = true;
-
-        if (gridSelectionScript != null)
-            gridSelectionScript.enabled = true;
+        // Aktifkan script tambahan (kalau ada)
+        if (scriptToActivate != null)
+            scriptToActivate.enabled = true;
     }
 
     private void OnDestroy()
