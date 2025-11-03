@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5013182650726654075}
   - component: {fileID: 3727160779499435040}
   - component: {fileID: 9196287392265534016}
-  - component: {fileID: 3943982636740471585}
   m_Layer: 0
   m_Name: Chest
   m_TagString: Untagged
@@ -77,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 838469383, guid: 91ed791d4abc0574397b1f30b636de1b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 782e988b83e6ff645b049a0719181993, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -105,6 +104,8 @@ MonoBehaviour:
   coinForce: 3
   canReopen: 0
   coinPickupDelay: 0.5
+  closedSprite: {fileID: 21300000, guid: 782e988b83e6ff645b049a0719181993, type: 3}
+  openSprite: {fileID: 21300000, guid: feab194b2b45a3a43af49ab2f0f64993, type: 3}
   interactIcon: {fileID: 7949195905186944038}
 --- !u!58 &9196287392265534016
 CircleCollider2D:
@@ -141,27 +142,6 @@ CircleCollider2D:
   m_Offset: {x: -0.0374784, y: 0.72460634}
   serializedVersion: 2
   m_Radius: 3.4273584
---- !u!95 &3943982636740471585
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 505840607153241258}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 85e3470356b87cc4bab9dd528a36aabb, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7949195905186944038
 GameObject:
   m_ObjectHideFlags: 0

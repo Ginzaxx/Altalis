@@ -75,7 +75,7 @@ public class SoundManager : MonoBehaviour
     }
 
     // 🔊 Play Sound (SFX)
-    public static void PlaySound(string groupName, float volume = 1f, Vector3? position = null, int speedSound = 1)
+    public static void PlaySound(string groupName, float volume = 1f, Vector3? position = null)
     {
         if (instance == null) return;
 
@@ -93,8 +93,6 @@ public class SoundManager : MonoBehaviour
         AudioSource src = temp.AddComponent<AudioSource>();
         src.clip = clip;
         src.volume = volume * instance.sfxVolume;
-        src.pitch = speedSound;
-
 
         if (instance.use3DSound)
         {
@@ -220,27 +218,27 @@ public class SoundManager : MonoBehaviour
     }
 }
 
-// 🧩 Contoh Pemakaian
-/*
-    // 🔊 Play 3D SFX di posisi tertentu
-    SoundManager.PlaySound("Explosion", 1f, transform.position);
+    // 🧩 Contoh Pemakaian
+    /*
+        // 🔊 Play 3D SFX di posisi tertentu
+        SoundManager.PlaySound("Explosion", 1f, transform.position);
 
-    // 🔊 Play 2D SFX (UI, button, dsb)
-    SoundManager.PlaySound("ButtonClick", 0.8f);
+        // 🔊 Play 2D SFX (UI, button, dsb)
+        SoundManager.PlaySound("ButtonClick", 0.8f);
 
-    // 🎵 Play / Stop BGM
-    SoundManager.PlayBGM("MainTheme");
-    SoundManager.StopBGM();
+        // 🎵 Play / Stop BGM
+        SoundManager.PlayBGM("MainTheme");
+        SoundManager.StopBGM();
 
-    // 🌫️ Play ambience 3D yang looping di posisi tertentu
-    SoundManager.PlayAmbience("Rain", transform.position);
+        // 🌫️ Play ambience 3D yang looping di posisi tertentu
+        SoundManager.PlayAmbience("Rain", transform.position);
 
-    // 🌫️ Play ambience di sekitar kamera (2D feel)
-    SoundManager.PlayAmbience("Wind");
+        // 🌫️ Play ambience di sekitar kamera (2D feel)
+        SoundManager.PlayAmbience("Wind");
 
-    // ❌ Hentikan satu ambience
-    SoundManager.StopAmbience("Rain");
+        // ❌ Hentikan satu ambience
+        SoundManager.StopAmbience("Rain");
 
-    // ❌ Hentikan semua ambience
-    SoundManager.StopAllAmbience();
-*/
+        // ❌ Hentikan semua ambience
+        SoundManager.StopAllAmbience();
+    */

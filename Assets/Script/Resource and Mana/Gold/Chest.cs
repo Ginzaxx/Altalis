@@ -10,9 +10,9 @@ public class Chest : MonoBehaviour
     public bool canReopen = false;       // apakah chest bisa dibuka lebih dari sekali
     public float coinPickupDelay = 0.5f; // waktu sebelum coin bisa diambil
 
-    [Header("Animation")]
-    private Animator ChestAnimation;
-
+    [Header("Sprites")]
+    public Sprite closedSprite;
+    public Sprite openSprite;
 
     [Header("UI Prompt")]
     public GameObject interactIcon;      // ikon/sprite “Press E” yang muncul di dekat player
@@ -24,7 +24,9 @@ public class Chest : MonoBehaviour
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        ChestAnimation = GetComponent<Animator>();
+
+        if (spriteRenderer != null && closedSprite != null)
+            spriteRenderer.sprite = closedSprite;
 
         if (interactIcon != null)
             interactIcon.SetActive(false);
@@ -43,10 +45,8 @@ public class Chest : MonoBehaviour
         isOpened = true;
 
         // Ganti sprite jadi open
-        ChestAnimation.SetTrigger("openChest");
-
-        //play sound box open
-        SoundManager.PlaySound("BoxOpen", 1, this.transform.position);
+        if (spriteRenderer != null && openSprite != null)
+            spriteRenderer.sprite = openSprite;
 
         // Spawn coins
         StartCoroutine(SpawnCoins());
@@ -55,7 +55,11 @@ public class Chest : MonoBehaviour
         if (interactIcon != null)
             interactIcon.SetActive(false);
 
-
+        // Jika chest bisa dibuka lagi, reset setelah beberapa detik
+        if (canReopen)
+        {
+            Invoke(nameof(ResetChest), 3f);
+        }
     }
 
     IEnumerator SpawnCoins()
@@ -93,8 +97,8 @@ public class Chest : MonoBehaviour
     void ResetChest()
     {
         isOpened = false;
-        // if (spriteRenderer != null && closedSprite != null)
-        //     spriteRenderer.sprite = closedSprite;
+        if (spriteRenderer != null && closedSprite != null)
+            spriteRenderer.sprite = closedSprite;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -7,26 +7,23 @@ public class Magma : MonoBehaviour
 {
     private void Start()
     {
-        SoundManager.PlayAmbience("Magma", transform.position);
+     SoundManager.PlayAmbience("Magma", transform.position);
     }
 
-    private void OnTriggerEnter2D(Collider2D target)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (target.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player"))
         {
             // Hancurkan player
-            Destroy(target.gameObject);
-
+            Destroy(other.gameObject);
 
             // Reload scene setelah 0.5 detik (bisa langsung kalau mau instant)
-            StartCoroutine(ReloadSceneWithDelay(1f, target.gameObject));
+            StartCoroutine(ReloadSceneWithDelay(0.1f));
         }
     }
 
-    private IEnumerator ReloadSceneWithDelay(float delay, GameObject target)
+    private IEnumerator ReloadSceneWithDelay(float delay)
     {
-        // give audio death
-        SoundManager.PlaySound("Death", 1, target.transform.position);
         yield return new WaitForSeconds(delay);
         ResourceManager.Instance?.FullRestoreMana();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
