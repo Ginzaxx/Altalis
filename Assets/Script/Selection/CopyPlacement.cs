@@ -10,6 +10,7 @@ public class CopyPlacement : MonoBehaviour
     [SerializeField] private GridSelection gridSelection;
     [SerializeField] private GridCursor gridCursor;
     [SerializeField] private Tilemap targetTilemap;
+    [SerializeField] private GameModeManager gameModeManager;
 
     [Header("VFX")]
     [SerializeField] private GameObject placeVfxPrefab;
@@ -128,8 +129,11 @@ public class CopyPlacement : MonoBehaviour
     {
         if (CancelKey.performed)
         {
-            // Debug.Log("Pressing Cancel");
-            CancelPlacement();
+            Debug.Log("Pressing Cancel");
+            if (isPlacing)
+                CancelPlacement();
+            else
+                Debug.Log("Not Placing");
         }
     }
 
