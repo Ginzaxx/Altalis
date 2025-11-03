@@ -43,6 +43,9 @@ public class CopyPlacement : MonoBehaviour
             if (!isPlacing && gridSelection.SelectedObjects.Count > 0)
             {
                 Debug.Log("Starting Copy");
+                //doing sound effect copy here.
+                SoundManager.PlaySound("Copy", 0.7f, null, 1);
+                //
                 isPlacing = true;
                 gridSelection.IsSelectionEnabled = false;
 
@@ -81,6 +84,8 @@ public class CopyPlacement : MonoBehaviour
                 {
                     if (ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
                     {
+                        // after validating paste is valid for copy then do sfx.
+                        SoundManager.PlaySound("Paste", 0.7f, null, 2);
                         List<GameObject> placedObjects = new List<GameObject>();
 
                         foreach (var obj in previewClones)
