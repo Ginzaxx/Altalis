@@ -43,6 +43,8 @@ public class CutPlacement : MonoBehaviour
             if (!isPlacing && gridSelection.SelectedObjects.Count > 0)
             {
                 Debug.Log("Starting Cut");
+                //doing sound effect copy here.
+                SoundManager.PlaySound("Cut", 0.7f, null, 1);
                 isPlacing = true;
                 gridSelection.IsSelectionEnabled = false;
 
@@ -84,6 +86,8 @@ public class CutPlacement : MonoBehaviour
                 {
                     if (ResourceManager.Instance != null && ResourceManager.Instance.TrySpendMana())
                     {
+                        // after validating paste is valid for copy then do sfx.
+                        SoundManager.PlaySound("Paste", 0.7f, null, 2);
                         List<GameObject> placedObjects = new List<GameObject>();
 
                         // Paste New Objects

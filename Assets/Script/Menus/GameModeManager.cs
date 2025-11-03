@@ -24,7 +24,7 @@ public class GameModeManager : MonoBehaviour
     [Header("UI Indicators")]
     public GameObject movementModeUI;
     public GameObject selectionModeUI;
-    
+
     [Header("Slow Motion Settings")]
     [Range(0.01f, 5f)]
     public float transitionSpeed = 5f;
@@ -33,7 +33,7 @@ public class GameModeManager : MonoBehaviour
     
     private float targetTimeScale = 1f;
     private float normalTimeScale = 1f;
-    
+
     void Awake()
     {
         // Singleton pattern
@@ -42,7 +42,7 @@ public class GameModeManager : MonoBehaviour
         else
             Destroy(gameObject);
     }
-    
+
     void Start()
     {
         SwitchMode(currentMode);
@@ -64,7 +64,7 @@ public class GameModeManager : MonoBehaviour
         if (player != null)
             NextSceneTrigger.SetPlayerSpawnPoint(player);
     }
-    
+
     void Update()
     {
         // Smooth time scale transition
@@ -87,11 +87,11 @@ public class GameModeManager : MonoBehaviour
             gridSelection.ClearSelection();
         }
     }
-    
+
     public void SwitchMode(GameMode newMode)
     {
         currentMode = newMode;
-        
+
         switch (currentMode)
         {
             case GameMode.Movement:
@@ -101,7 +101,7 @@ public class GameModeManager : MonoBehaviour
                 EnableSelectionMode();
                 break;
         }
-        
+
         UpdateUI();
         Debug.Log("Switched to " + currentMode + " Mode");
     }
@@ -111,14 +111,16 @@ public class GameModeManager : MonoBehaviour
         // Update UI indicators
         if (movementModeUI != null)
             movementModeUI.SetActive(currentMode == GameMode.Movement);
-            
+
         if (selectionModeUI != null)
             selectionModeUI.SetActive(currentMode == GameMode.Selection);
     }
-    
+
     // Public getter for other scripts to check current mode
     void EnableMovementMode()
     {
+        SoundManager.PlaySound("ManaOff", 1);
+        
         if (movementScript != null)
             movementScript.enabled = true;
 
@@ -143,6 +145,8 @@ public class GameModeManager : MonoBehaviour
     
     void EnableSelectionMode()
     {
+        SoundManager.PlaySound("ManaOn", 1);
+
         if (movementScript != null)
             movementScript.enabled = false;
 
@@ -168,12 +172,12 @@ public class GameModeManager : MonoBehaviour
     {
         return currentMode == GameMode.Movement;
     }
-    
+
     public bool IsSelectionMode()
     {
         return currentMode == GameMode.Selection;
     }
-    
+
     // Method to set custom time scales
     public void SetSlowMotionTimeScale(float newTimeScale)
     {
@@ -181,12 +185,12 @@ public class GameModeManager : MonoBehaviour
         if (currentMode == GameMode.Selection)
             targetTimeScale = slowMotionTimeScale;
     }
-    
+
     public void SetTransitionSpeed(float newSpeed)
     {
         transitionSpeed = Mathf.Clamp(newSpeed, 0.01f, 5f);
     }
-    
+
     // Emergency method to reset time scale (useful for debugging)
     [System.Obsolete("Use only for debugging purposes")]
     public void ResetTimeScale()
@@ -195,14 +199,14 @@ public class GameModeManager : MonoBehaviour
         Time.timeScale = 1f;
         Time.fixedDeltaTime = 0.02f;
     }
-    
+
     void OnDestroy()
     {
         // Reset time scale when object is destroyed
         Time.timeScale = 1f;
         Time.fixedDeltaTime = 0.02f;
     }
-    
+
     void OnApplicationPause(bool pauseStatus)
     {
         // Reset time scale when application is paused/unpaused
