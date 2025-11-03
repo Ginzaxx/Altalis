@@ -7,7 +7,7 @@ public class GameModeManager : MonoBehaviour
 
     [Header("Game Mode Settings")]
     public GameMode currentMode = GameMode.Movement;
-    public bool canChangeMode = false;
+    public bool canSwitchMode = false;
     
     [Header("References")]
     public Movement movementScript;
@@ -71,12 +71,19 @@ public class GameModeManager : MonoBehaviour
     
     public void ToggleMode(InputAction.CallbackContext context)
     {
-        if (context.performed && canChangeMode == true)
+        if (context.performed)
         {
-            Debug.Log("Switching Gamemodes");
-            currentMode = (currentMode == GameMode.Movement) ? GameMode.Selection : GameMode.Movement;
-            SwitchMode(currentMode);
-            gridSelection.ClearSelection();
+            if (canSwitchMode == true)
+            {
+                Debug.Log("Switching Gamemodes");
+                currentMode = (currentMode == GameMode.Movement) ? GameMode.Selection : GameMode.Movement;
+                SwitchMode(currentMode);
+                gridSelection.ClearSelection();
+            }
+            else
+            {
+                Debug.Log("Unable to Switch Modes");
+            }
         }
     }
     
