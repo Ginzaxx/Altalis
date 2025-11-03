@@ -1,13 +1,18 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum GameMode
+{
+    Movement,
+    Selection
+}
+
 public class GameModeManager : MonoBehaviour
 {
     public static GameModeManager Instance { get; private set; }
-
+    
     [Header("Game Mode Settings")]
     public GameMode currentMode = GameMode.Movement;
-    public bool canSwitchMode = false;
     
     [Header("References")]
     public Movement movementScript;
@@ -77,17 +82,9 @@ public class GameModeManager : MonoBehaviour
 
         if (context.performed)
         {
-            if (canSwitchMode == true)
-            {
-                Debug.Log("Switching Gamemodes");
-                currentMode = (currentMode == GameMode.Movement) ? GameMode.Selection : GameMode.Movement;
-                SwitchMode(currentMode);
-                gridSelection.ClearSelection();
-            }
-            else
-            {
-                Debug.Log("Unable to Switch Modes");
-            }
+            currentMode = (currentMode == GameMode.Movement) ? GameMode.Selection : GameMode.Movement;
+            SwitchMode(currentMode);
+            gridSelection.ClearSelection();
         }
     }
 
