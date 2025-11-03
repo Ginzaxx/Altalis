@@ -6,13 +6,15 @@ public class ResourceManager : MonoBehaviour
 
     [Header("Mana Settings")]
     [SerializeField] private int startingMana = 2;
+    [SerializeField] private int currentMana = 2;
     [SerializeField] private int manaCostPerPlacement = 1;
+    [SerializeField] private int maxMana;
 
     [Header("Selection Settings")]
     [SerializeField] private int selectLimit = 3;
 
-    private int currentMana;
     public int CurrentMana => currentMana;
+    public int MaxMana => maxMana;
     public int SelectLimit => selectLimit;
 
     private void Awake()
@@ -28,7 +30,8 @@ public class ResourceManager : MonoBehaviour
             return;
         }
 
-        currentMana = startingMana;
+        maxMana = startingMana;
+        currentMana = maxMana;
     }
 
     public bool TrySpendMana() => SpendMana(manaCostPerPlacement);
@@ -50,13 +53,42 @@ public class ResourceManager : MonoBehaviour
 
     public void AddMana(int amount)
     {
-        currentMana += amount;
-        Debug.Log($"➕ Added {amount} mana. Current mana: {currentMana}");
+        currentMana = Mathf.Min(currentMana + amount, maxMana);
+        Debug.Log($"➕ Added {amount} mana. Current mana: {currentMana}/{maxMana}");
     }
 
     public void FullRestoreMana()
     {
-        currentMana = startingMana;
+        currentMana = maxMana;
         Debug.Log($"🔋 Mana restored to full: {currentMana}");
+    }
+
+    public void IncreaseMaxMana(int amount)
+    {
+        maxMana += amount;
+        currentMana = maxMana;
+        Debug.Log($"✨ Increased Max Mana by {amount}. Now Max Mana = {maxMana}");
+    }
+
+    // 🔹 Increase selection limit (no max check — handled in Shop)
+    public void IncreaseSelectionLimit(int amount)
+    {
+        selectLimit += amount;
+        Debug.Log($"🎯 Increased Selection Limit! Now Select Limit = {selectLimit}");
+    }
+
+        public void LoadStatsFromSave(int savedMaxMana, int savedSelectLimit)
+    {
+        // 🔹 Pastikan nilai valid
+        if (savedMaxMana > 0)
+            maxMana = savedMaxMana;
+
+        if (savedSelectLimit > 0)
+            selectLimit = savedSelectLimit;
+
+        // 🔹 Pastikan currentMana sinkron & tidak lebih besar dari max
+        currentMana = Mathf.Min(currentMana, maxMana);
+
+        Debug.Log($"📥 Loaded Resource Stats: MaxMana = {maxMana}, SelectLimit = {selectLimit}");
     }
 }

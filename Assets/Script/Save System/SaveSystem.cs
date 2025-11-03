@@ -26,13 +26,11 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-    // 🔹 Getter untuk file per scene
     private string GetSceneSavePath(string sceneName)
     {
         return Path.Combine(Application.persistentDataPath, $"save_{sceneName}.json");
     }
 
-    // 🔹 Fungsi bantu untuk set & cek mana block yang sudah aktif
     public bool IsManaBlockTriggered(string id) => triggeredManaBlocks.Contains(id);
 
     public void SetManaBlockTriggered(string id)
@@ -41,7 +39,9 @@ public class SaveSystem : MonoBehaviour
             triggeredManaBlocks.Add(id);
     }
 
-    // 🔹 Save global + scene
+    // ============================================================
+    // 🟢 SAVE
+    // ============================================================
     public void Save(Vector3 playerPos, int mana)
     {
         string sceneName = SceneManager.GetActiveScene().name;
@@ -52,7 +52,12 @@ public class SaveSystem : MonoBehaviour
             playerX = playerPos.x,
             playerY = playerPos.y,
             mana = mana,
-            triggeredManaBlocks = new List<string>(triggeredManaBlocks)
+            triggeredManaBlocks = new List<string>(triggeredManaBlocks),
+
+            // 🔹 tambahan untuk resource & gold
+            maxMana = ResourceManager.Instance != null ? ResourceManager.Instance.MaxMana : 0,
+            selectionLimit = ResourceManager.Instance != null ? ResourceManager.Instance.SelectLimit : 0,
+            gold = GoldManager.Instance != null ? GoldManager.Instance.gold : 0
         };
 
         // Simpan semua selectable object
@@ -83,9 +88,12 @@ public class SaveSystem : MonoBehaviour
         File.WriteAllText(savePath, json);
         File.WriteAllText(scenePath, json);
 
-        Debug.Log($"💾 Saved scene '{sceneName}' (global + scene).");
+        Debug.Log($"💾 Saved scene '{sceneName}' | Mana: {data.mana}, MaxMana: {data.maxMana}, SelectLimit: {data.selectionLimit}, Gold: {data.gold}");
     }
 
+    // ============================================================
+    // 🟡 LOAD
+    // ============================================================
     public SaveData Load()
     {
         if (File.Exists(savePath))
@@ -96,6 +104,14 @@ public class SaveSystem : MonoBehaviour
             if (data.triggeredManaBlocks != null)
                 triggeredManaBlocks = new HashSet<string>(data.triggeredManaBlocks);
 
+            // 🔹 Apply langsung ke ResourceManager dan GoldManager
+            if (ResourceManager.Instance != null)
+                ResourceManager.Instance.LoadStatsFromSave(data.maxMana, data.selectionLimit);
+            if (GoldManager.Instance != null)
+            {
+                GoldManager.Instance.LoadGoldFromSave(data.gold);
+            }
+
             Debug.Log($"✅ Loaded global save ({data.placedObjects.Count} objects, {triggeredManaBlocks.Count} ManaBlocks triggered)");
             return data;
         }
@@ -104,7 +120,9 @@ public class SaveSystem : MonoBehaviour
         return null;
     }
 
-    // 🔹 Load data per scene
+    // ============================================================
+    // 🟣 LOAD PER SCENE
+    // ============================================================
     public SaveData LoadSceneData(string sceneName)
     {
         string scenePath = GetSceneSavePath(sceneName);
@@ -124,7 +142,9 @@ public class SaveSystem : MonoBehaviour
         return null;
     }
 
-    // 🔹 Restore + spawn ulang semua object
+    // ============================================================
+    // 🔵 RESTORE SAVE
+    // ============================================================
     public SaveData RestoreSave()
     {
         SaveData data = Load();
@@ -155,10 +175,17 @@ public class SaveSystem : MonoBehaviour
             newObj.transform.localScale = new Vector3(pod.scaleX, pod.scaleY, pod.scaleZ);
         }
 
+        // 🔹 Pulihkan stats resource dan gold
+        if (ResourceManager.Instance != null)
+            ResourceManager.Instance.LoadStatsFromSave(data.maxMana, data.selectionLimit);
+        if (GoldManager.Instance != null)
+        {
+            GoldManager.Instance.LoadGoldFromSave(data.gold);
+        }
+
         return data;
     }
 
-    // 🔹 Hapus global save
     public void DeleteSave()
     {
         if (File.Exists(savePath))
@@ -168,7 +195,6 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-    // 🔹 Load scene terakhir
     public void LoadLastScene()
     {
         SaveData data = Load();
@@ -189,7 +215,6 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-    // 🔹 Hapus semua file save
     public void DeleteAllSaves()
     {
         string dir = Application.persistentDataPath;
@@ -210,7 +235,6 @@ public class SaveSystem : MonoBehaviour
         triggeredManaBlocks.Clear();
     }
 
-    // 🔹 Cari prefab berdasarkan ID
     public GameObject GetPrefabByName(string idName)
     {
         foreach (var prefab in prefabDatabase)
@@ -224,7 +248,9 @@ public class SaveSystem : MonoBehaviour
         return null;
     }
 
-    // 🔹 Save khusus dari ManaBlock
+    // ============================================================
+    // 🟢 SAVE SPECIAL (ManaBlock)
+    // ============================================================
     public void SaveSpecial(string id, Vector3 playerPos, int mana)
     {
         string sceneName = SceneManager.GetActiveScene().name;
@@ -237,10 +263,12 @@ public class SaveSystem : MonoBehaviour
             playerX = playerPos.x,
             playerY = playerPos.y,
             mana = mana,
-            triggeredManaBlocks = new List<string>(triggeredManaBlocks)
+            triggeredManaBlocks = new List<string>(triggeredManaBlocks),
+            maxMana = ResourceManager.Instance != null ? ResourceManager.Instance.MaxMana : 0,
+            selectionLimit = ResourceManager.Instance != null ? ResourceManager.Instance.SelectLimit : 0,
+            gold = GoldManager.Instance != null ? GoldManager.Instance.gold : 0
         };
 
-        // Simpan semua selectable object
         GameObject[] placedObjects = GameObject.FindGameObjectsWithTag("Selectable");
         foreach (var obj in placedObjects)
         {
@@ -263,15 +291,16 @@ public class SaveSystem : MonoBehaviour
 
         string json = JsonUtility.ToJson(data, true);
 
-        // Simpan ke semua lokasi
         File.WriteAllText(specialPath, json);
         File.WriteAllText(savePath, json);
         File.WriteAllText(scenePath, json);
 
-        Debug.Log($"💾 Saved ManaBlock '{id}' to special + scene + global.");
+        Debug.Log($"💾 Saved ManaBlock '{id}' | MaxMana: {data.maxMana}, Gold: {data.gold}, SelectLimit: {data.selectionLimit}");
     }
 
-    // 🔹 Restore dari special save (ManaBlock)
+    // ============================================================
+    // 🔵 RESTORE SPECIAL
+    // ============================================================
     public void RestoreSpecial(string id)
     {
         string path = Path.Combine(Application.persistentDataPath, $"save_manaBlock_{id}.json");
@@ -293,12 +322,10 @@ public class SaveSystem : MonoBehaviour
             return;
         }
 
-        // Hapus object lama
         GameObject[] oldObjects = GameObject.FindGameObjectsWithTag("Selectable");
         foreach (var obj in oldObjects)
             Object.DestroyImmediate(obj);
 
-        // Spawn ulang object dari save
         foreach (var pod in data.placedObjects)
         {
             GameObject prefab = GetPrefabByName(pod.prefabName);
@@ -311,20 +338,21 @@ public class SaveSystem : MonoBehaviour
             newObj.transform.localScale = new Vector3(pod.scaleX, pod.scaleY, pod.scaleZ);
         }
 
-        // Pulihkan posisi player & mana
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
             player.transform.position = new Vector3(data.playerX, data.playerY, player.transform.position.z);
 
         if (ResourceManager.Instance != null)
         {
-            int difference = data.mana - ResourceManager.Instance.CurrentMana;
-            if (difference > 0)
-                ResourceManager.Instance.AddMana(difference);
-            else if (difference < 0)
-                ResourceManager.Instance.SpendMana(-difference);
+            ResourceManager.Instance.LoadStatsFromSave(data.maxMana, data.selectionLimit);
+            ResourceManager.Instance.FullRestoreMana();
         }
 
-        Debug.Log($"✅ Restored from ManaBlock '{id}' ({data.placedObjects.Count} objects, {triggeredManaBlocks.Count} triggered).");
+        if (GoldManager.Instance != null)
+        {
+            GoldManager.Instance.LoadGoldFromSave(data.gold);
+        }
+
+        Debug.Log($"✅ Restored ManaBlock '{id}' | MaxMana {data.maxMana}, SelectLimit {data.selectionLimit}, Gold {data.gold}");
     }
 }

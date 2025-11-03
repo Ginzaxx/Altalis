@@ -18,8 +18,7 @@ public class CameraFollow2D : MonoBehaviour
     public float maxUpOffset = 3f;
     public float maxDownOffset = -2f;
     public float returnSpeed = 3f;
-    bool cameraMoving = false;
-
+    public float currentInputY = 0f;
 
     [Header("World Borders (Manual)")]
     public bool useManualBorders = true;
@@ -50,10 +49,15 @@ public class CameraFollow2D : MonoBehaviour
     {
         if (target == null) return;
 
-        // Jika tidak sedang menahan tombol W/S
-        if (!cameraMoving)
+        // Jika ada input manual (W/S)
+        if (Mathf.Abs(currentInputY) > 0.01f)
         {
-            // Jika dilepas, smooth kembali ke posisi 0
+            // Gerakkan kamera secara manual
+            manualYOffset += currentInputY * manualMoveSpeed * Time.deltaTime;
+        }
+        else
+        {
+            // Jika tidak ada input, smooth kembali ke posisi 0
             manualYOffset = Mathf.Lerp(manualYOffset, 0f, Time.deltaTime * returnSpeed);
         }
 
@@ -85,9 +89,10 @@ public class CameraFollow2D : MonoBehaviour
         transform.position = smoothedPosition;
     }
 
+    // Dipanggil saat tombol W/S ditekan atau dilepas
     public void MoveCamera(InputAction.CallbackContext context)
     {
-        cameraMoving = true;
-        manualYOffset = context.ReadValue<Vector2>().y * manualMoveSpeed * Time.deltaTime;
+        // Baca nilai input (-1 untuk S, +1 untuk W, 0 saat dilepas)
+        currentInputY = context.ReadValue<Vector2>().y;
     }
 }

@@ -33,6 +33,10 @@ public class GoldManager : MonoBehaviour
     {
         gold += amount;
         UpdateGoldUI();
+        SaveSystem.Instance?.Save(
+            GameObject.FindGameObjectWithTag("Player").transform.position,
+            ResourceManager.Instance != null ? ResourceManager.Instance.CurrentMana : 0
+        );
     }
 
     public bool SpendGold(int amount)
@@ -41,6 +45,10 @@ public class GoldManager : MonoBehaviour
         {
             gold -= amount;
             UpdateGoldUI();
+            SaveSystem.Instance?.Save(
+                GameObject.FindGameObjectWithTag("Player").transform.position,
+                ResourceManager.Instance != null ? ResourceManager.Instance.CurrentMana : 0
+            );
             return true;
         }
         return false;
@@ -52,5 +60,12 @@ public class GoldManager : MonoBehaviour
         {
             goldText.text = "Gold: " + gold.ToString();
         }
+    }
+
+    public void LoadGoldFromSave(int savedGold)
+    {
+        gold = Mathf.Max(0, savedGold);
+        UpdateGoldUI();
+        Debug.Log($"📥 Loaded Gold: {gold}");
     }
 }

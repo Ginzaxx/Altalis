@@ -112,14 +112,11 @@ public class CutPlacement : MonoBehaviour
                         // Delete Originals
                         foreach (var orig in originals)
                         {
-                            if (orig != null)
-                            {
-                                var dissolve = orig.GetComponent<DissolveOnDestroy>();
-                                if (dissolve != null)
-                                    dissolve.StartDissolve();
-                                else
-                                    Destroy(orig);
-                            }
+                            var shrink = orig.GetComponent<ShrinkOnDestroy>();
+                            if (shrink != null)
+                                shrink.StartShrink();
+                            else
+                                Destroy(orig);
                         }
 
                         // Feedback

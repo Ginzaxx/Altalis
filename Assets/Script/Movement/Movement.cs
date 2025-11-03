@@ -26,6 +26,7 @@ public class Movement : MonoBehaviour
     public float GroundCheckRad = 0.2f;
     public Transform GroundCheckPos;
     public LayerMask GroundLayer;
+    public bool isOnFly = false;
 
     [Header("Particle System Dust")]
     public ParticleSystem dustParticle;
@@ -35,10 +36,17 @@ public class Movement : MonoBehaviour
         RbD = GetComponent<Rigidbody2D>();
     }
 
+    private bool wasGroundedLastFrame = false;
     void Update()
     {
         // --- Ground Check ---
         IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
+
+        if (IsGrounded == true && !wasGroundedLastFrame)
+        {
+            isOnFly = false;
+            dustParticle.Play();
+        }
 
         // --- Ice Movement ---
         if (!OnIceSlope)
@@ -56,6 +64,9 @@ public class Movement : MonoBehaviour
         }
 
         Flip();
+
+        // Save current grounded state for next frame
+        wasGroundedLastFrame = IsGrounded;
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -72,6 +83,7 @@ public class Movement : MonoBehaviour
             Debug.Log("Pressing Jump");
             if (IsGrounded) // Check if Player is on Ground to Jump
             {
+                isOnFly = true;
                 // Hold Down on Jump Button = Big Jump
                 RbD.velocity = new Vector2(SideMove * SideSpeed, JumpPower);
 
@@ -81,6 +93,7 @@ public class Movement : MonoBehaviour
         }
         else if (context.canceled && RbD.velocity.y >= 0)
         {
+            isOnFly = true;
             // Light Tap on Jump Button = Small Jump
             RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
         }
@@ -142,5 +155,10 @@ public class Movement : MonoBehaviour
         Gizmos.color = Color.green;
         if (GroundCheckPos != null)
             Gizmos.DrawSphere(GroundCheckPos.position, GroundCheckRad);
+    }
+
+    public bool GetIsFacingRight()
+    {
+        return IsFacingRight;
     }
 }

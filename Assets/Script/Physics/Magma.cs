@@ -25,6 +25,7 @@ public class Magma : MonoBehaviour
     private IEnumerator ReloadSceneWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+        ResourceManager.Instance?.FullRestoreMana();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

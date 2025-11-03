@@ -71,6 +71,10 @@ public class GameModeManager : MonoBehaviour
     
     public void ToggleMode(InputAction.CallbackContext context)
     {
+        // ✅ Pastikan script aktif dulu
+        if (!enabled) 
+            return;
+
         if (context.performed)
         {
             if (canSwitchMode == true)
