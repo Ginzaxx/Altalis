@@ -73,9 +73,10 @@ public class InteractTriggerTimeline : MonoBehaviour
 
         // Mulai timeline
         if (timeline != null)
+        {
             timeline.Play();
-        else
             OnTimelineFinished(null);
+        }
     }
 
     private void OnTimelineFinished(PlayableDirector director)
