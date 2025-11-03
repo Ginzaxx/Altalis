@@ -84,9 +84,10 @@ public class InteractTriggerTimeline : MonoBehaviour
 
         // Jalankan timeline
         if (timeline != null)
+        {
             timeline.Play();
-        else
             OnTimelineFinished(null);
+        }
     }
 
     private void OnTimelineFinished(PlayableDirector director)

@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 28
+  spritePixelsToUnits: 42
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -126,12 +126,12 @@ TextureImporter:
       name: pick up item-Sheet_0
       rect:
         serializedVersion: 2
-        x: 59
-        y: 254
-        width: 40
-        height: 60
+        x: 0
+        y: 252
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: pick up item-Sheet_1
       rect:
         serializedVersion: 2
-        x: 185
-        y: 254
-        width: 40
-        height: 60
+        x: 126
+        y: 252
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,12 +168,12 @@ TextureImporter:
       name: pick up item-Sheet_2
       rect:
         serializedVersion: 2
-        x: 311
-        y: 254
-        width: 40
-        height: 60
+        x: 252
+        y: 252
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -189,12 +189,12 @@ TextureImporter:
       name: pick up item-Sheet_3
       rect:
         serializedVersion: 2
-        x: 438
-        y: 254
-        width: 40
-        height: 60
+        x: 378
+        y: 252
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -210,12 +210,12 @@ TextureImporter:
       name: pick up item-Sheet_4
       rect:
         serializedVersion: 2
-        x: 564
-        y: 254
-        width: 40
-        height: 60
+        x: 504
+        y: 252
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -231,12 +231,12 @@ TextureImporter:
       name: pick up item-Sheet_5
       rect:
         serializedVersion: 2
-        x: 690
-        y: 254
-        width: 40
-        height: 60
+        x: 630
+        y: 252
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -252,12 +252,12 @@ TextureImporter:
       name: pick up item-Sheet_6
       rect:
         serializedVersion: 2
-        x: 59
-        y: 128
-        width: 40
-        height: 60
+        x: 0
+        y: 126
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -273,12 +273,12 @@ TextureImporter:
       name: pick up item-Sheet_7
       rect:
         serializedVersion: 2
-        x: 185
-        y: 128
-        width: 40
-        height: 60
+        x: 126
+        y: 126
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -294,12 +294,12 @@ TextureImporter:
       name: pick up item-Sheet_8
       rect:
         serializedVersion: 2
-        x: 311
-        y: 128
-        width: 40
-        height: 60
+        x: 252
+        y: 126
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -315,12 +315,12 @@ TextureImporter:
       name: pick up item-Sheet_9
       rect:
         serializedVersion: 2
-        x: 58
-        y: 2
-        width: 40
-        height: 60
+        x: 0
+        y: 0
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -336,12 +336,12 @@ TextureImporter:
       name: pick up item-Sheet_10
       rect:
         serializedVersion: 2
-        x: 183
-        y: 2
-        width: 40
-        height: 60
+        x: 126
+        y: 0
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -357,12 +357,12 @@ TextureImporter:
       name: pick up item-Sheet_11
       rect:
         serializedVersion: 2
-        x: 310
-        y: 2
-        width: 40
-        height: 60
+        x: 252
+        y: 0
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -378,12 +378,12 @@ TextureImporter:
       name: pick up item-Sheet_12
       rect:
         serializedVersion: 2
-        x: 437
-        y: 2
-        width: 40
-        height: 60
+        x: 378
+        y: 0
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
