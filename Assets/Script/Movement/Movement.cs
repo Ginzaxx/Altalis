@@ -32,12 +32,32 @@ public class Movement : MonoBehaviour
     public LayerMask GroundLayer;
     public bool isOnFly = false;
 
+    [Header("Is Death?")]
+    public bool IsEnablingMovement;
+
 
     [Header("Particle System Dust")]
     public ParticleSystem dustParticle;
 
+
+    
+    /// <summary>
+    /// This function is called when the object becomes enabled and active.
+    /// </summary>
+    void OnEnable()
+    {
+        Magma.OnPlayerDeath += DisableInputMovement;
+        Spike.OnPlayerDeath += DisableInputMovement;
+    }
+
+    private void OnDisable()
+    {
+        Magma.OnPlayerDeath -= DisableInputMovement;
+        Spike.OnPlayerDeath -= DisableInputMovement;
+    }
     void Start()
     {
+        IsEnablingMovement = true;
         RbD = GetComponent<Rigidbody2D>();
         audioWalk = GetComponent<AudioSource>();
         audioWalk.pitch = 2;
@@ -89,34 +109,46 @@ public class Movement : MonoBehaviour
         wasGroundedLastFrame = IsGrounded;
     }
 
+    void DisableInputMovement()
+    {
+        IsEnablingMovement = false;
+        audioWalk.enabled = false;
+    }
+
     public void Move(InputAction.CallbackContext context)
     {
-        // Debug.Log("Pressing Move");
-        SideMove = context.ReadValue<Vector2>().x;
+        if (IsEnablingMovement)
+        {
+            // Debug.Log("Pressing Move");
+            SideMove = context.ReadValue<Vector2>().x;
+        }
     }
 
     public void Jump(InputAction.CallbackContext context)
     {
-        // Convert Player Inputs into Jump values
-        if (context.performed)
+        if (IsEnablingMovement)
         {
-            Debug.Log("Pressing Jump");
-            SoundManager.PlaySound("Jump", 1, null, 1);
-            if (IsGrounded) // Check if Player is on Ground to Jump
+            // Convert Player Inputs into Jump values
+            if (context.performed)
+            {
+                Debug.Log("Pressing Jump");
+                SoundManager.PlaySound("Jump", 1, null, 1);
+                if (IsGrounded) // Check if Player is on Ground to Jump
+                {
+                    isOnFly = true;
+                    // Hold Down on Jump Button = Big Jump
+                    RbD.velocity = new Vector2(SideMove * SideSpeed, JumpPower);
+
+                    // Play Dust Particles ~ Aflah
+                    dustParticle.Play();
+                }
+            }
+            else if (context.canceled && RbD.velocity.y >= 0)
             {
                 isOnFly = true;
-                // Hold Down on Jump Button = Big Jump
-                RbD.velocity = new Vector2(SideMove * SideSpeed, JumpPower);
-
-                // Play Dust Particles ~ Aflah
-                dustParticle.Play();
+                // Light Tap on Jump Button = Small Jump
+                RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
             }
-        }
-        else if (context.canceled && RbD.velocity.y >= 0)
-        {
-            isOnFly = true;
-            // Light Tap on Jump Button = Small Jump
-            RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
         }
     }
 
