@@ -1,6 +1,6 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class PlayerHealth : MonoBehaviour
         if (health <= 0)
         {
             Debug.Log("Player mati!");
-            StartCoroutine(ReloadSceneWithDelay(0.1f));
+            StartCoroutine(ReloadSceneWithDelay(respawnDelay));
         }
     }
 
