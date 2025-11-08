@@ -34,16 +34,12 @@ public class Movement : MonoBehaviour
 
     [Header("Is Death?")]
     public bool IsEnablingMovement;
+    private bool wasGroundedLastFrame = false;
 
 
     [Header("Particle System Dust")]
     public ParticleSystem dustParticle;
 
-
-    
-    /// <summary>
-    /// This function is called when the object becomes enabled and active.
-    /// </summary>
     void OnEnable()
     {
         Magma.OnPlayerDeath += DisableInputMovement;
@@ -55,6 +51,7 @@ public class Movement : MonoBehaviour
         Magma.OnPlayerDeath -= DisableInputMovement;
         Spike.OnPlayerDeath -= DisableInputMovement;
     }
+
     void Start()
     {
         IsEnablingMovement = true;
@@ -63,7 +60,6 @@ public class Movement : MonoBehaviour
         audioWalk.pitch = 2;
     }
 
-    private bool wasGroundedLastFrame = false;
     void Update()
     {
         // --- Ground Check ---
@@ -73,18 +69,15 @@ public class Movement : MonoBehaviour
         {
             isOnFly = false;
             dustParticle.Play();
-            // fall from jump (landing sound)
             SoundManager.PlaySound("JumpLanding", 1, null, 1);
         }
 
         if (IsGrounded && Mathf.Abs(SideMove) != 0.0f)
         {
-            // play walking sound
             audioWalk.enabled = true;
         }
         else
         {
-            // play walking sound
             audioWalk.enabled = false;
         }
 
@@ -103,10 +96,9 @@ public class Movement : MonoBehaviour
             RbD.velocity = newVelocity;
         }
 
-        Flip();
-
-        // Save current grounded state for next frame
         wasGroundedLastFrame = IsGrounded;
+
+        Flip();
     }
 
     void DisableInputMovement()
