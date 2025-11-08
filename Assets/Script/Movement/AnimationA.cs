@@ -26,7 +26,7 @@ public class AnimationA : MonoBehaviour
     /// </summary>
     void OnEnable()
     {
-        if (DeathDetectorRebirth.Instance.isReloadBecauseDeath == true)
+        if (DeathDetectorRebirth.Instance?.isReloadBecauseDeath == true)
         {
             // doing dhe nigga goblok anjing tolol.
             //this fucking code should be fucking working.
