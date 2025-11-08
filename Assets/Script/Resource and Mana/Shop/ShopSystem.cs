@@ -139,7 +139,7 @@ public class ShopSystem : MonoBehaviour
     {
         if (goldText != null && GoldManager.Instance != null)
         {
-            goldText.text = $"Gold: {GoldManager.Instance.gold}";
+            goldText.text = $"Aeon Lights: {GoldManager.Instance.gold}";
         }
     }
 }

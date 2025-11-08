@@ -12,8 +12,6 @@ public class LaunchSelectedObjects : MonoBehaviour
     [Header("Launch Settings")]
     [SerializeField] private float launchForce = 10f;
     [SerializeField] private LayerMask collisionLayers;
-    [SerializeField] private bool autoUnmergeAfterLaunch = true; // Auto unmerge saat launch selesai
-    [SerializeField] private float unmergeDelayAfterStop = 0.5f; // Delay setelah platform berhenti
     
     [Header("Physics Materials")]
     [SerializeField] private PhysicsMaterial2D frictionMaterial;

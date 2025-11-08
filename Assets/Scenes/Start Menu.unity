@@ -1669,8 +1669,13 @@ MonoBehaviour:
   bgmGroups:
   - name: 
     clip: {fileID: 0}
+  ambienceGroups: []
   sfxVolume: 1
   bgmVolume: 1
+  ambienceVolume: 1
+  use3DSound: 1
+  minDistance: 1
+  maxDistance: 25
 --- !u!82 &1692761881
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2248,8 +2253,8 @@ MonoBehaviour:
   settingsCanvas: {fileID: 0}
   blackScreenGroup: {fileID: 778929134}
   fadeDuration: 0.3
-  sceneAsset: {fileID: 102900000, guid: 7b856438e41b5664397b5942a67d3bfb, type: 3}
-  sceneName: tutorial
+  sceneAsset: {fileID: 102900000, guid: de36107c57a84c646b2f8071a2b36d28, type: 3}
+  sceneName: Tutorialfix
 --- !u!1 &2066802320
 GameObject:
   m_ObjectHideFlags: 0
