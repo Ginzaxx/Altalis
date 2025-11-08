@@ -16,6 +16,7 @@ public class ShopInteractable : MonoBehaviour
 
     private void Start()
     {
+        // Pastikan UI shop diawal dalam keadaan nonaktif
         if (shopUIPanel != null)
         {
             shopUIPanel.SetActive(false);
@@ -25,28 +26,30 @@ public class ShopInteractable : MonoBehaviour
         if (interactPrompt != null)
             interactPrompt.SetActive(false);
 
+        // 🔹 Tombol Exit di UI Shop — panggil versi tanpa parameter
         if (exitButton != null)
-            exitButton.onClick.AddListener(CloseShop); // 🔹 tombol Exit
+            exitButton.onClick.AddListener(() => CloseShop(true));
     }
 
     private void Update()
     {
+        // Tekan E untuk buka/tutup shop
         if (isPlayerNearby && Input.GetKeyDown(KeyCode.E))
         {
             ToggleShop();
         }
 
-        // 🔹 ESC untuk keluar juga
+        // 🔹 ESC juga bisa menutup shop
         if (isShopOpen && Input.GetKeyDown(KeyCode.Escape))
         {
-            CloseShop();
+            CloseShop(true);
         }
     }
 
     private void ToggleShop()
     {
         if (isShopOpen)
-            CloseShop();
+            CloseShop(true);
         else
             OpenShop();
     }
@@ -61,14 +64,19 @@ public class ShopInteractable : MonoBehaviour
         if (interactPrompt != null)
             interactPrompt.SetActive(false);
 
+        // Nonaktifkan movement player saat di shop
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;
 
+        // Refresh tampilan shop
         shopSystem?.RefreshShop();
+
+        // Simpan progres hanya saat benar-benar membuka shop
         AutoSave();
     }
 
-    private void CloseShop()
+    // 🔹 CloseShop punya parameter opsional agar bisa dikontrol apakah mau auto-save atau tidak
+    private void CloseShop(bool doSave = true)
     {
         isShopOpen = false;
 
@@ -78,10 +86,13 @@ public class ShopInteractable : MonoBehaviour
         if (interactPrompt != null)
             interactPrompt.SetActive(true);
 
+        // Aktifkan kembali kontrol player
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;
 
-        AutoSave();
+        // Hanya save jika diminta
+        if (doSave)
+            AutoSave();
     }
 
     private void AutoSave()
@@ -111,7 +122,7 @@ public class ShopInteractable : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerNearby = false;
-            CloseShop(); // 🔹 tutup shop otomatis saat keluar area
+            CloseShop(false); // ❌ tidak auto-save saat keluar area
             if (interactPrompt != null)
                 interactPrompt.SetActive(false);
         }
