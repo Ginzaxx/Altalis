@@ -1,6 +1,4 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class AnimationA : MonoBehaviour
 {
@@ -20,10 +18,7 @@ public class AnimationA : MonoBehaviour
     public GameObject DeathCircle;
     public Animator DeathCircleAnim;
 
-
-    /// <summary>
     /// This function is called when the object becomes enabled and active.
-    /// </summary>
     void OnEnable()
     {
         if (DeathDetectorRebirth.Instance.isReloadBecauseDeath == true)
@@ -38,11 +33,7 @@ public class AnimationA : MonoBehaviour
         Spike.OnPlayerDeath += DeathListener;
     }
 
-
-
-    /// <summary>
     /// This function is called when the behaviour becomes disabled or inactive.
-    /// </summary>
     void OnDisable()
     {
         Magma.OnPlayerDeath -= DeathListener;
@@ -55,6 +46,7 @@ public class AnimationA : MonoBehaviour
         Magma.OnPlayerDeath -= DeathListener;
         Spike.OnPlayerDeath -= DeathListener;
     }
+
     void Start()
     {
         RbD = GetComponent<Rigidbody2D>();
@@ -77,6 +69,7 @@ public class AnimationA : MonoBehaviour
         {
             return; // Object is being destroyed, exit early
         }
+        
         Animate.SetTrigger("Die");
         DeathCircle.SetActive(true);
         DeathCircleAnim.SetTrigger("Death");
