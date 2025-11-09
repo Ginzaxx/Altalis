@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,14 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class Spike : MonoBehaviour
 {
-    public static event Action OnPlayerDeath;
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // Cek apakah objek yang menabrak adalah Player atau Selectable
         if (other.gameObject.CompareTag("Player"))
         {
-            // Invoke event FIRST, then start coroutine
-            OnPlayerDeath?.Invoke();
-            StartCoroutine(ReloadSceneWithDelay(5f, other.gameObject));
+            Destroy(other.gameObject);
+            StartCoroutine(ReloadSceneWithDelay(1f, other.gameObject));
         }
         else if (other.gameObject.CompareTag("Selectable"))
         {
@@ -21,10 +19,9 @@ public class Spike : MonoBehaviour
         }
     }
 
-
     private IEnumerator ReloadSceneWithDelay(float delay, GameObject target)
     {
-        // Event already invoked before coroutine started
+        // give audio death
         SoundManager.PlaySound("Death", 1, target.transform.position);
         yield return new WaitForSeconds(delay);
         ResourceManager.Instance?.FullRestoreMana();
