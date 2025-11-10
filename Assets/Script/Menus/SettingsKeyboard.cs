@@ -132,6 +132,7 @@ public class SettingsKeyboard : MonoBehaviour
 
     private void ClosePanel()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         settingsPanel.SetActive(true);
         keyboardPanel.SetActive(false);
     }

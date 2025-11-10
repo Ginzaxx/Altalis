@@ -55,6 +55,7 @@ private void Start()
             player = collision.transform;
             if (indicatorSprite != null)
                 indicatorSprite.enabled = true;
+            SoundManager.PlaySound("Checkpoint", 0.8f);
         }
     }
 

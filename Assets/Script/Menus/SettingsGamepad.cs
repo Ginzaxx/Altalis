@@ -131,6 +131,7 @@ public class SettingsGamepad : MonoBehaviour
 
     private void ClosePanel()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         settingsPanel.SetActive(true);
         gamepadPanel.SetActive(false);
     }

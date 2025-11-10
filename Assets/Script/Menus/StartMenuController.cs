@@ -67,6 +67,7 @@ public class StartMenuController : MonoBehaviour
         if (SaveSystem.Instance != null && SaveSystem.Instance.Load() != null)
         {
             // ✅ Ada save → load scene terakhir dari save
+            SoundManager.PlaySound("MenuActive", 0.8f);
             SaveSystem.Instance.LoadLastScene();
         }
         else
@@ -80,6 +81,7 @@ public class StartMenuController : MonoBehaviour
     {
         if (SaveSystem.Instance != null)
         {
+            SoundManager.PlaySound("MenuActive", 0.8f);
             SaveSystem.Instance.DeleteAllSaves(); // 🗑️ Delete semua save
         }
 
@@ -88,16 +90,19 @@ public class StartMenuController : MonoBehaviour
 
     public void OnCreditsClicked()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         creditsCanvas.SetActive(!creditsCanvas.activeSelf);
     }
 
     public void OnSettingsClicked()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         settingsCanvas.SetActive(!settingsCanvas.activeSelf);
     }
 
     public void OnExitClick()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
     #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
     #else

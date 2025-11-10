@@ -38,6 +38,7 @@ public class SettingsKeybinds : MonoBehaviour
 
     private void Close()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         settingsPanel.SetActive(false);
         pausePanel.SetActive(true);
     }

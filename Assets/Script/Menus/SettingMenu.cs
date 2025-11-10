@@ -160,6 +160,7 @@ public class SettingMenu : MonoBehaviour
 
     private void ClosePanel()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         if (settingsPanel != null)
             settingsPanel.SetActive(false);
     }
