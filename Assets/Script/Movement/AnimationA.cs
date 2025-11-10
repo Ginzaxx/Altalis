@@ -20,6 +20,7 @@ public class AnimationA : MonoBehaviour
     public GameObject DeathCircle;
     public Animator DeathCircleAnim;
 
+    private MonoBehaviour MovementScript;
 
     /// <summary>
     /// This function is called when the object becomes enabled and active.
@@ -57,6 +58,7 @@ public class AnimationA : MonoBehaviour
     }
     void Start()
     {
+        MovementScript = GameObject.Find("Player").GetComponent<Movement>();
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
     }
@@ -65,9 +67,12 @@ public class AnimationA : MonoBehaviour
     {
         IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
 
-        Animate.SetFloat("Walking", Mathf.Abs(Movement.SideMove));
-        Animate.SetFloat("YVelocity", RbD.velocity.y);
-        Animate.SetBool("Jumping", !IsGrounded);
+        if (MovementScript.enabled == true)
+        {
+            Animate.SetFloat("Walking", Mathf.Abs(Movement.SideMove));
+            Animate.SetFloat("YVelocity", RbD.velocity.y);
+            Animate.SetBool("Jumping", !IsGrounded);
+        }
     }
 
     void DeathListener()
@@ -77,10 +82,14 @@ public class AnimationA : MonoBehaviour
         {
             return; // Object is being destroyed, exit early
         }
+        // disabled movement
+        MovementScript.enabled = false;
         Animate.SetTrigger("Die");
         DeathCircle.SetActive(true);
         DeathCircleAnim.SetTrigger("Death");
         DeathDetectorRebirth.Instance.isReloadBecauseDeath = true;
+        Magma.OnPlayerDeath -= DeathListener;
+        Spike.OnPlayerDeath -= DeathListener;
     }
 
 }
