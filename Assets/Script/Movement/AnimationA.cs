@@ -6,8 +6,9 @@ public class AnimationA : MonoBehaviour
     private Rigidbody2D RbD;
     private Animator Animate;
 
-    [Header("Movement")]
+    [Header("References")]
     public Movement Movement;
+    public CameraFollow2D Camera;
 
     [Header("Ground Check")]
     public float GroundCheckRad = 0.2f;
@@ -58,8 +59,10 @@ public class AnimationA : MonoBehaviour
         IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
 
         Animate.SetFloat("Walking", Mathf.Abs(Movement.SideMove));
-        Animate.SetFloat("YVelocity", RbD.velocity.y);
-        Animate.SetBool("Jumping", !IsGrounded);
+        Animate.SetBool("IsJumping", !IsGrounded);
+        Animate.SetFloat("Jumping", RbD.velocity.y);
+        Animate.SetBool("IsLooking", Camera.IsLooking);
+        Animate.SetFloat("Looking", Camera.currentInputY);
     }
 
     void DeathListener()
