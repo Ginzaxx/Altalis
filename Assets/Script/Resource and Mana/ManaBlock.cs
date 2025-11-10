@@ -33,6 +33,7 @@ private void Start()
 
         if (collision.collider.CompareTag("Player"))
         {
+            SoundManager.PlaySound("Checkpoint", 0.8f);
             hasTriggered = true;
             SaveSystem.Instance?.SetManaBlockTriggered(blockID);
 
@@ -55,7 +56,6 @@ private void Start()
             player = collision.transform;
             if (indicatorSprite != null)
                 indicatorSprite.enabled = true;
-            SoundManager.PlaySound("Checkpoint", 0.8f);
         }
     }
 
@@ -73,6 +73,7 @@ private void Start()
     {
         if (context.performed && playerInRange)
         {
+            SoundManager.PlaySound("ReloadCheckpoint", 0.8f);
             StartCoroutine(RestoreFromManaBlock());
         }
     }

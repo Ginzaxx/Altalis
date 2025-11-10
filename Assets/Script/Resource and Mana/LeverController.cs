@@ -19,6 +19,7 @@ public class LeverController : MonoBehaviour
     {
         if (isPlayerNear && Input.GetKeyDown(interactKey))
         {
+            SoundManager.PlaySound("Lever", 0.8f);
             ToggleLever();
         }
     }

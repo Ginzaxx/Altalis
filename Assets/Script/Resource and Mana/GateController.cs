@@ -27,11 +27,13 @@ public class GateController : MonoBehaviour
 
     public void OpenGate()
     {
+        SoundManager.PlaySound("Door", 0.8f);
         isOpen = true;
     }
 
     public void CloseGate()
     {
+        SoundManager.PlaySound("Door", 0.8f);
         isOpen = false;
     }
 
