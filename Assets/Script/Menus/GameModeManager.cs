@@ -49,7 +49,6 @@ public class GameModeManager : MonoBehaviour
 
         // Restore + ambil datanya sekali saja
         SaveData data = SaveSystem.Instance.RestoreSave();
-        SaveSystem.Instance.LoadPlacedObjectsOnly();
 
         // apply posisi player
         if (data != null && movementScript != null)

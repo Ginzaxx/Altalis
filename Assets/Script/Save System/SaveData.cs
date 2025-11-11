@@ -14,7 +14,6 @@ public class PlacedObjectData
 public class SaveData
 {
     public string sceneName;
-    public string lastManaBlockID;
     public float playerX, playerY;
     public int mana;
     public List<PlacedObjectData> placedObjects = new List<PlacedObjectData>();

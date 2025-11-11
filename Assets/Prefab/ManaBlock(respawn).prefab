@@ -27,8 +27,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.002, y: 1.239, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 0.493, y: 0.493, z: 0.493}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4045187600193642609}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -103584211, guid: ccf971ee7f39f2b4b85fb7adb1dc035d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 86e08f743de7d634dbfbd061c1c2ea0a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -178,7 +178,6 @@ GameObject:
   - component: {fileID: 5268372934719739406}
   - component: {fileID: 7569640256778842355}
   - component: {fileID: 7133338033548923279}
-  - component: {fileID: 605276592293842448}
   m_Layer: 7
   m_Name: ManaBlock(respawn)
   m_TagString: Untagged
@@ -314,51 +313,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockID: ManaBlock_01
   indicatorSprite: {fileID: 5713106713618349288}
-  interactionTrigger: {fileID: 605276592293842448}
   interactRange: 0.5
   interactKey: 101
---- !u!61 &605276592293842448
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7629353983298431104}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 1.4}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.5, y: 5}
-  m_EdgeRadius: 0
