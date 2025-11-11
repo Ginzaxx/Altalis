@@ -49,6 +49,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         pauseMenuUI.SetActive(false);
         settingPanelUI.SetActive(false);
         Time.timeScale = 1f;
@@ -64,6 +65,7 @@ public class PauseMenu : MonoBehaviour
 
     public void OpenSetting()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         pauseMenuUI.SetActive(false);
         settingPanelUI.SetActive(true);
     }
@@ -76,6 +78,7 @@ public class PauseMenu : MonoBehaviour
 
     public void QuitGame()
     {
+        SoundManager.PlaySound("MenuActive", 0.8f);
         Time.timeScale = 1f; // biar game normal lagi pas keluar
         SceneManager.LoadScene(0);
     }

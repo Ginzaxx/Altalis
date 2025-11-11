@@ -256,6 +256,26 @@ public class NextSceneTrigger : MonoBehaviour
 
             anim?.SetBool("Jumping", false);
         }
+        // 🔽 BLOK BARU YANG ANDA TAMBAHKAN (SUDAH DIPERBAIKI) 🔽
+        else if (jumpInstead && moveDirection == MoveDirection.Up)
+        {
+            // Reset kecepatan sebelumnya agar hasilnya konsisten
+            rb.velocity = Vector2.zero;
+            yield return null; // Tunggu 1 frame supaya velocity reset
+
+            // 🎯 Gunakan AddForce dengan ForceMode2D.Impulse untuk lompatan vertikal
+            // Komponen horizontal (x) adalah 0, komponen vertikal (y) adalah jumpForce
+            Vector2 jumpVelocity = new Vector2(0f, jumpForce);
+            rb.AddForce(jumpVelocity, ForceMode2D.Impulse);
+
+            // Aktifkan animasi lompat
+            anim?.SetBool("Jumping", true);
+
+            // Tunggu sampai player mendarat atau waktu maksimal
+            yield return new WaitForSeconds(0.8f);
+
+            anim?.SetBool("Jumping", false);
+        }
         else if (dir != Vector2.zero)
         {
             // 🟢 Aktifkan animasi jalan dengan sistem Movement milikmu
