@@ -24,6 +24,7 @@ public class LaunchSelectedObjects : MonoBehaviour
         {
             Debug.Log("Tombol B ditekan! Merging & Launching...");
             MergeAndLaunch();
+            SoundManager.PlaySound("Launch", 0.8f);
         }
     }
 
