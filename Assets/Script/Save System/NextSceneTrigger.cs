@@ -67,7 +67,7 @@ public class NextSceneTrigger : MonoBehaviour
                 SaveSystem.Instance.SavePlacedObjectsOnly();
 
             SceneManager.LoadScene(nextSceneName);
-
+            
             isTriggered = true;
             StartCoroutine(LoadNextSceneWithDelay(other.gameObject));
         }

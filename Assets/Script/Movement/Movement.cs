@@ -40,6 +40,19 @@ public class Movement : MonoBehaviour
     [Header("Particle System Dust")]
     public ParticleSystem dustParticle;
 
+    [Header("Death Circle Animation")]
+    public GameObject DeathCircle;
+    public Animator DeathCircleAnim;
+
+
+    private Animator Animate;
+    private MonoBehaviour MovementScript;
+
+
+
+    /// <summary>
+    /// This function is called when the object becomes enabled and active.
+    /// </summary>
     void OnEnable()
     {
         Magma.OnPlayerDeath += DisableInputMovement;
@@ -54,6 +67,7 @@ public class Movement : MonoBehaviour
 
     void Start()
     {
+        MovementScript = GameObject.Find("Player").GetComponent<Movement>();
         IsEnablingMovement = true;
         RbD = GetComponent<Rigidbody2D>();
         audioWalk = GetComponent<AudioSource>();
@@ -101,47 +115,53 @@ public class Movement : MonoBehaviour
         Flip();
     }
 
-    void DisableInputMovement()
+    void DisableInputMovement(string objCausedOfDeath)
     {
-        IsEnablingMovement = false;
-        audioWalk.enabled = false;
+
+
+        // 🛑 TAMBAHKAN 3 BARIS INI UNTUK MEMBEKUKAN PLAYER 🛑
+        if (RbD != null && objCausedOfDeath.Equals("spike"))
+        {
+            RbD.velocity = Vector2.zero;         // 1. Hentikan semua pergerakan/geseran
+            RbD.angularVelocity = 0f;          // 2. Hentikan semua rotasi
+            RbD.gravityScale = 0f;             // 3. Hentikan pemain agar tidak jatuh (biarkan animasi yang mengontrol)
+        }
+
     }
 
     public void Move(InputAction.CallbackContext context)
     {
-        if (IsEnablingMovement)
-        {
-            // Debug.Log("Pressing Move");
-            SideMove = context.ReadValue<Vector2>().x;
-        }
+
+        // Debug.Log("Pressing Move");
+        SideMove = context.ReadValue<Vector2>().x;
+
     }
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (IsEnablingMovement)
-        {
-            // Convert Player Inputs into Jump values
-            if (context.performed)
-            {
-                Debug.Log("Pressing Jump");
-                SoundManager.PlaySound("Jump", 1, null, 1);
-                if (IsGrounded) // Check if Player is on Ground to Jump
-                {
-                    isOnFly = true;
-                    // Hold Down on Jump Button = Big Jump
-                    RbD.velocity = new Vector2(SideMove * SideSpeed, JumpPower);
 
-                    // Play Dust Particles ~ Aflah
-                    dustParticle.Play();
-                }
-            }
-            else if (context.canceled && RbD.velocity.y >= 0)
+        // Convert Player Inputs into Jump values
+        if (context.performed)
+        {
+            Debug.Log("Pressing Jump");
+            SoundManager.PlaySound("Jump", 1, null, 1);
+            if (IsGrounded) // Check if Player is on Ground to Jump
             {
                 isOnFly = true;
-                // Light Tap on Jump Button = Small Jump
-                RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
+                // Hold Down on Jump Button = Big Jump
+                RbD.velocity = new Vector2(SideMove * SideSpeed, JumpPower);
+
+                // Play Dust Particles ~ Aflah
+                dustParticle.Play();
             }
         }
+        else if (context.canceled && RbD.velocity.y >= 0)
+        {
+            isOnFly = true;
+            // Light Tap on Jump Button = Small Jump
+            RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
+        }
+
     }
 
     private void Flip()

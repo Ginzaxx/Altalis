@@ -1,24 +1,25 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
+    public HealthUI healthUI;
     public int health = 3;
     public float respawnDelay = 1f;
 
     public void TakeDamage(int amount)
     {
         health -= amount;
-        Debug.Log("Player kena damage! Sisa nyawa: " + health);
+        healthUI.LoseHealth(amount);
+        Debug.Log("Player took damage! Remaining lives: " + health);
 
         if (health <= 0)
         {
-            Debug.Log("Player mati!");
-            StartCoroutine(ReloadSceneWithDelay(0.1f));
+            Debug.Log("Player Died!");
+            StartCoroutine(ReloadSceneWithDelay(respawnDelay));
         }
     }
-
 
     private IEnumerator ReloadSceneWithDelay(float delay)
     {
