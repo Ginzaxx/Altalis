@@ -63,6 +63,11 @@ public class NextSceneTrigger : MonoBehaviour
 
         if (!isTriggered && other.CompareTag("Player"))
         {
+            if (SaveSystem.Instance != null)
+                SaveSystem.Instance.SavePlacedObjectsOnly();
+
+            SceneManager.LoadScene(nextSceneName);
+            
             isTriggered = true;
             StartCoroutine(LoadNextSceneWithDelay(other.gameObject));
         }

@@ -10,19 +10,9 @@ public class UndoManager : MonoBehaviour
         {
             if (SaveSystem.Instance != null)
             {
-                Debug.Log("↩️ Undo pressed! Restoring last save...");
-
-                var data = SaveSystem.Instance.Load();
-                if (data != null)
-                {
-                    // Reload scene → RestoreSave() dipanggil otomatis lewat GameModeManager.Start()
-                    ResourceManager.Instance?.FullRestoreMana();
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                }
-                else
-                {
-                    Debug.LogWarning("⚠️ No Saves to Undo!");
-                }
+                Debug.Log("↩️ Undo pressed! Restoring from last ManaBlock...");
+                ResourceManager.Instance?.FullRestoreMana();
+                SaveSystem.Instance.RestoreLastManaBlock();
             }
             else
             {
