@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement; // untuk reload scene
 
 public class Magma : MonoBehaviour
 {
-    public static event Action OnPlayerDeath;
+    public static event Action<string> OnPlayerDeath;
     private void Start()
     {
         SoundManager.PlayAmbience("Magma", transform.position);
@@ -26,7 +26,7 @@ public class Magma : MonoBehaviour
     private IEnumerator ReloadSceneWithDelay(float delay, GameObject target)
     {
         // give audio death
-        OnPlayerDeath?.Invoke();
+        OnPlayerDeath?.Invoke("magma");
         SoundManager.PlaySound("Death", 1, target.transform.position);
         yield return new WaitForSeconds(delay);
         ResourceManager.Instance?.FullRestoreMana();

@@ -118,12 +118,12 @@ public class Movement : MonoBehaviour
         wasGroundedLastFrame = IsGrounded;
     }
 
-    void DisableInputMovement()
+    void DisableInputMovement(string objCausedOfDeath)
     {
 
 
         // 🛑 TAMBAHKAN 3 BARIS INI UNTUK MEMBEKUKAN PLAYER 🛑
-        if (RbD != null)
+        if (RbD != null && objCausedOfDeath.Equals("spike"))
         {
             RbD.velocity = Vector2.zero;         // 1. Hentikan semua pergerakan/geseran
             RbD.angularVelocity = 0f;          // 2. Hentikan semua rotasi
