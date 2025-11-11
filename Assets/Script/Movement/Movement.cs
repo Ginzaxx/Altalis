@@ -32,12 +32,41 @@ public class Movement : MonoBehaviour
     public LayerMask GroundLayer;
     public bool isOnFly = false;
 
+    [Header("Is Death?")]
+    public bool IsEnablingMovement;
+
 
     [Header("Particle System Dust")]
     public ParticleSystem dustParticle;
 
+    [Header("Death Circle Animation")]
+    public GameObject DeathCircle;
+    public Animator DeathCircleAnim;
+
+
+    private Animator Animate;
+    private MonoBehaviour MovementScript;
+
+
+
+    /// <summary>
+    /// This function is called when the object becomes enabled and active.
+    /// </summary>
+    void OnEnable()
+    {
+        Magma.OnPlayerDeath += DisableInputMovement;
+        Spike.OnPlayerDeath += DisableInputMovement;
+    }
+
+    private void OnDisable()
+    {
+        Magma.OnPlayerDeath -= DisableInputMovement;
+        Spike.OnPlayerDeath -= DisableInputMovement;
+    }
     void Start()
     {
+        MovementScript = GameObject.Find("Player").GetComponent<Movement>();
+        IsEnablingMovement = true;
         RbD = GetComponent<Rigidbody2D>();
         audioWalk = GetComponent<AudioSource>();
         audioWalk.pitch = 2;
@@ -89,14 +118,31 @@ public class Movement : MonoBehaviour
         wasGroundedLastFrame = IsGrounded;
     }
 
+    void DisableInputMovement()
+    {
+
+
+        // 🛑 TAMBAHKAN 3 BARIS INI UNTUK MEMBEKUKAN PLAYER 🛑
+        if (RbD != null)
+        {
+            RbD.velocity = Vector2.zero;         // 1. Hentikan semua pergerakan/geseran
+            RbD.angularVelocity = 0f;          // 2. Hentikan semua rotasi
+            RbD.gravityScale = 0f;             // 3. Hentikan pemain agar tidak jatuh (biarkan animasi yang mengontrol)
+        }
+
+    }
+
     public void Move(InputAction.CallbackContext context)
     {
+
         // Debug.Log("Pressing Move");
         SideMove = context.ReadValue<Vector2>().x;
+
     }
 
     public void Jump(InputAction.CallbackContext context)
     {
+
         // Convert Player Inputs into Jump values
         if (context.performed)
         {
@@ -118,6 +164,7 @@ public class Movement : MonoBehaviour
             // Light Tap on Jump Button = Small Jump
             RbD.velocity = new Vector2(RbD.velocity.x, RbD.velocity.y * 0.5f);
         }
+
     }
 
     private void Flip()
