@@ -10,12 +10,13 @@ public class GridSelection : MonoBehaviour
     [SerializeField] public RectTransform selectionBoxUI;
     public bool IsSelectionEnabled { get; set; } = true;
 
-    private Vector2 startPos;
-    private Vector2 endPos;
-    private bool IsDragging = false;
-
     [Header("Slow Motion Settings")]
     public bool useUnscaledTimeForUI = true;
+
+    private bool IsDragging = false;
+    private float distancePos = 20f;
+    private Vector2 startPos;
+    private Vector2 endPos;
 
     public List<GameObject> SelectedObjects { get; private set; } = new List<GameObject>();
     private List<GameObject> SelectionPreview = new List<GameObject>();
@@ -43,7 +44,7 @@ public class GridSelection : MonoBehaviour
             endPos = Input.mousePosition;
 
             // If Big Drag → Drag Select
-            if (Vector2.Distance(startPos, endPos) > 15f)
+            if (Vector2.Distance(startPos, endPos) > distancePos)
             {
                 if (selectionBoxUI != null)
                     selectionBoxUI.gameObject.SetActive(true);
@@ -55,16 +56,16 @@ public class GridSelection : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            // If Small Drag
-            if (Vector2.Distance(startPos, Input.mousePosition) < 15f)
-                HandleTapSelection();
-            else
-                ConfirmSelection();
-
             IsDragging = false;
 
             if (selectionBoxUI != null)
                 selectionBoxUI.gameObject.SetActive(false);
+
+            // If Small Drag
+            if (Vector2.Distance(startPos, Input.mousePosition) < distancePos)
+                HandleTapSelection();
+            else
+                ConfirmSelection();
         }
     }
 
@@ -159,10 +160,8 @@ public class GridSelection : MonoBehaviour
     {
         // Reset Previous Preview Color
         foreach (var obj in SelectionPreview)
-        {
             if (obj != null && !SelectedObjects.Contains(obj))
                 SetColor(obj, Color.white);
-        }
         SelectionPreview.Clear();
 
         Vector3 p1 = cam.ScreenToWorldPoint(startPos);
@@ -189,6 +188,7 @@ public class GridSelection : MonoBehaviour
         }
     }
 
+    // Paste Selection List
     void ConfirmSelection()
     {
         foreach (var obj in SelectionPreview)
@@ -196,15 +196,14 @@ public class GridSelection : MonoBehaviour
             if (obj == null) continue;
 
             if (!SelectedObjects.Contains(obj))
-                if (SelectedObjects.Count < MaxSelectable) SelectObject(obj);
+                if (SelectedObjects.Count < MaxSelectable) 
+                    SelectObject(obj);
         }
 
         // Reset Preview Color
         foreach (var obj in SelectionPreview)
-        {
             if (obj != null && !SelectedObjects.Contains(obj))
                 SetColor(obj, Color.white);
-        }
         SelectionPreview.Clear();
 
         Debug.Log($"Selected {SelectedObjects.Count} objects");
@@ -225,8 +224,8 @@ public class GridSelection : MonoBehaviour
     {
         if (SelectedObjects.Contains(obj))
         {
-            SelectedObjects.Remove(obj);
             SetColor(obj, Color.white);
+            SelectedObjects.Remove(obj);
         }
     }
 

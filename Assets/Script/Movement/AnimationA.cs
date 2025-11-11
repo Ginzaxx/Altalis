@@ -1,6 +1,4 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class AnimationA : MonoBehaviour
 {
@@ -8,8 +6,9 @@ public class AnimationA : MonoBehaviour
     private Rigidbody2D RbD;
     private Animator Animate;
 
-    [Header("Movement")]
+    [Header("References")]
     public Movement Movement;
+    public CameraFollow2D Camera;
 
     [Header("Ground Check")]
     public float GroundCheckRad = 0.2f;
@@ -20,14 +19,10 @@ public class AnimationA : MonoBehaviour
     public GameObject DeathCircle;
     public Animator DeathCircleAnim;
 
-    private MonoBehaviour MovementScript;
-
-    /// <summary>
     /// This function is called when the object becomes enabled and active.
-    /// </summary>
     void OnEnable()
     {
-        if (DeathDetectorRebirth.Instance?.isReloadBecauseDeath == true)
+        if (DeathDetectorRebirth.Instance.isReloadBecauseDeath == true)
         {
             // doing dhe nigga goblok anjing tolol.
             //this fucking code should be fucking working.
@@ -39,11 +34,7 @@ public class AnimationA : MonoBehaviour
         Spike.OnPlayerDeath += DeathListener;
     }
 
-
-
-    /// <summary>
     /// This function is called when the behaviour becomes disabled or inactive.
-    /// </summary>
     void OnDisable()
     {
         Magma.OnPlayerDeath -= DeathListener;
@@ -56,9 +47,9 @@ public class AnimationA : MonoBehaviour
         Magma.OnPlayerDeath -= DeathListener;
         Spike.OnPlayerDeath -= DeathListener;
     }
+
     void Start()
     {
-        MovementScript = GameObject.Find("Player").GetComponent<Movement>();
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
     }
@@ -67,31 +58,25 @@ public class AnimationA : MonoBehaviour
     {
         IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
 
-        if (MovementScript.enabled == true)
-        {
-            Animate.SetFloat("Walking", Mathf.Abs(Movement.SideMove));
-            Animate.SetFloat("YVelocity", RbD.velocity.y);
-            Animate.SetBool("Jumping", !IsGrounded);
-        }
+        Animate.SetFloat("Walking", Mathf.Abs(Movement.SideMove));
+        Animate.SetBool("IsJumping", !IsGrounded);
+        Animate.SetFloat("Jumping", RbD.velocity.y);
+        Animate.SetBool("IsLooking", Camera.IsLooking);
+        Animate.SetFloat("Looking", Camera.currentInputY);
     }
 
-
-
-    void DeathListener(string objCausedOfDeath)
+    void DeathListener()
     {
         // Check if objects still exist before using them
         if (this == null || DeathCircle == null || DeathCircleAnim == null)
         {
             return; // Object is being destroyed, exit early
         }
-        // disabled movement
-        MovementScript.enabled = false;
+        
         Animate.SetTrigger("Die");
         DeathCircle.SetActive(true);
         DeathCircleAnim.SetTrigger("Death");
         DeathDetectorRebirth.Instance.isReloadBecauseDeath = true;
-        Magma.OnPlayerDeath -= DeathListener;
-        Spike.OnPlayerDeath -= DeathListener;
     }
 
 }

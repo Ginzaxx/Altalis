@@ -13,12 +13,13 @@ public class CameraFollow2D : MonoBehaviour
     public float smoothSpeed = 0.125f;
 
     [Header("Manual Camera Control")]
-    public float manualMoveSpeed = 5f;
     private float manualYOffset = 0f;
+    public float manualMoveSpeed = 5f;
     public float maxUpOffset = 3f;
     public float maxDownOffset = -2f;
     public float returnSpeed = 3f;
     public float currentInputY = 0f;
+    public bool IsLooking = false;
 
     [Header("World Borders (Manual)")]
     public bool useManualBorders = true;
@@ -54,11 +55,13 @@ public class CameraFollow2D : MonoBehaviour
         {
             // Gerakkan kamera secara manual
             manualYOffset += currentInputY * manualMoveSpeed * Time.deltaTime;
+            IsLooking = true;
         }
         else
         {
             // Jika tidak ada input, smooth kembali ke posisi 0
             manualYOffset = Mathf.Lerp(manualYOffset, 0f, Time.deltaTime * returnSpeed);
+            IsLooking = false;
         }
 
         // Clamp manualYOffset agar tidak melebihi batas

@@ -16,12 +16,11 @@ public class LaunchSelectedObjects : MonoBehaviour
     [Header("Physics Materials")]
     [SerializeField] private PhysicsMaterial2D frictionMaterial;
 
-    void Update()
+    public void StartLaunch(InputAction.CallbackContext context)
     {
-        if (gridSelection == null || gridSelection.SelectedObjects.Count == 0)
-            return;
+        if (gridSelection == null || gridSelection.SelectedObjects.Count == 0) return;
 
-        if (Keyboard.current != null && Keyboard.current.bKey.wasPressedThisFrame)
+        if (context.performed)
         {
             Debug.Log("Tombol B ditekan! Merging & Launching...");
             MergeAndLaunch();

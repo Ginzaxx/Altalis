@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cf7f2da95adeebd48a30553333b054d0
+guid: c638e5cd962891b4b9b409a41503a0f2
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 42
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -93,94 +93,110 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: iPhone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Windows Store Apps
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 0
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sprite HP Mana_0
+      name: Sprite Look Up_0
       rect:
         serializedVersion: 2
-        x: 790
-        y: 320
-        width: 160
-        height: 290
+        x: 0
+        y: 0
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8ce71ff145e2ecb42811f18793769bb8
-      internalID: 1412783694
+      spriteID: 4c2a0e184c5e16c47a69499aa3ea62a3
+      internalID: 17158993
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite HP Mana_1
+      name: Sprite Look Up_1
       rect:
         serializedVersion: 2
-        x: 20
-        y: 750
-        width: 710
-        height: 130
+        x: 126
+        y: 0
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e23e282b52a23d740af697aa09db7d8e
-      internalID: 65743259
+      spriteID: bb8083612bfed904c89d5b02f591ec8e
+      internalID: -2086226306
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Sprite HP Mana_2
+      name: Sprite Look Up_2
       rect:
         serializedVersion: 2
-        x: 250
-        y: 810
-        width: 420
-        height: 30
+        x: 252
+        y: 0
+        width: 126
+        height: 126
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ff4f78f4dec65141bad7bb131dcefc9
-      internalID: 1675864224
+      spriteID: e14f29314047b6140b5a92f0b47bb2d7
+      internalID: 49896553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Look Up_3
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80258543f8278fd4bb2ae165e8f046f9
+      internalID: 1597362446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sprite Look Up_4
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 0
+        width: 126
+        height: 126
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18e61f56534b79c43bf4075b136472aa
+      internalID: 1051227870
       vertices: []
       indices: 
       edges: []
@@ -196,12 +212,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Sprite HP Mana_0: 1412783694
-      Sprite HP Mana_1: 65743259
-      Sprite HP Mana_2: 1675864224
-      Sprite HP Mana_4: -953683594
-      Sprite HP Mana_5: 365267382
-      Sprite HP Mana_6: 1014250157
+      Sprite Look Up_0: 17158993
+      Sprite Look Up_1: -2086226306
+      Sprite Look Up_2: 49896553
+      Sprite Look Up_3: 1597362446
+      Sprite Look Up_4: 1051227870
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
