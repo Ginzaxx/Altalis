@@ -6,13 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class Spike : MonoBehaviour
 {
-    public static event Action OnPlayerDeath;
+    public static event Action<string> OnPlayerDeath;
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
             // Invoke event FIRST, then start coroutine
-            OnPlayerDeath?.Invoke();
+            OnPlayerDeath?.Invoke("spike");
             StartCoroutine(ReloadSceneWithDelay(5f, other.gameObject));
         }
         else if (other.gameObject.CompareTag("Selectable"))

@@ -71,7 +71,9 @@ public class AnimationA : MonoBehaviour
         }
     }
 
-    void DeathListener()
+
+
+    void DeathListener(string objCausedOfDeath)
     {
         // Check if objects still exist before using them
         if (this == null || DeathCircle == null || DeathCircleAnim == null)
