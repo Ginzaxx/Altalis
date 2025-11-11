@@ -19,10 +19,12 @@ public class AnimationA : MonoBehaviour
     public GameObject DeathCircle;
     public Animator DeathCircleAnim;
 
+    private MonoBehaviour MovementScript;
+
     /// This function is called when the object becomes enabled and active.
     void OnEnable()
     {
-        if (DeathDetectorRebirth.Instance.isReloadBecauseDeath == true)
+        if (DeathDetectorRebirth.Instance?.isReloadBecauseDeath == true)
         {
             // doing dhe nigga goblok anjing tolol.
             //this fucking code should be fucking working.
@@ -50,6 +52,7 @@ public class AnimationA : MonoBehaviour
 
     void Start()
     {
+        MovementScript = GameObject.Find("Player").GetComponent<Movement>();
         RbD = GetComponent<Rigidbody2D>();
         Animate = GetComponent<Animator>();
     }
@@ -58,11 +61,14 @@ public class AnimationA : MonoBehaviour
     {
         IsGrounded = Physics2D.OverlapCircle(GroundCheckPos.position, GroundCheckRad, GroundLayer);
 
-        Animate.SetFloat("Walking", Mathf.Abs(Movement.SideMove));
-        Animate.SetBool("IsJumping", !IsGrounded);
-        Animate.SetFloat("Jumping", RbD.velocity.y);
-        Animate.SetBool("IsLooking", Camera.IsLooking);
-        Animate.SetFloat("Looking", Camera.currentInputY);
+        if (MovementScript.enabled == true)
+        {
+            Animate.SetFloat("Walking", Mathf.Abs(Movement.SideMove));
+            Animate.SetBool("IsJumping", !IsGrounded);
+            Animate.SetFloat("Jumping", RbD.velocity.y);
+            Animate.SetBool("IsLooking", Camera.IsLooking);
+            Animate.SetFloat("Looking", Camera.currentInputY);
+        }
     }
 
     void DeathListener()
@@ -72,11 +78,15 @@ public class AnimationA : MonoBehaviour
         {
             return; // Object is being destroyed, exit early
         }
-        
+
+        // Disabled Movement
+        MovementScript.enabled = false;
         Animate.SetTrigger("Die");
         DeathCircle.SetActive(true);
         DeathCircleAnim.SetTrigger("Death");
         DeathDetectorRebirth.Instance.isReloadBecauseDeath = true;
+        Magma.OnPlayerDeath -= DeathListener;
+        Spike.OnPlayerDeath -= DeathListener;
     }
 
 }
